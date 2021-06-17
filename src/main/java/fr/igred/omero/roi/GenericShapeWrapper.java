@@ -16,6 +16,7 @@
 package fr.igred.omero.roi;
 
 
+import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
 import ij.gui.Roi;
 import ome.model.units.BigResult;
@@ -42,10 +43,11 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
     /**
      * Constructor of the GenericShapeWrapper class using a ShapeData.
      *
-     * @param shape the shape
+     * @param client The client handling the connection.
+     * @param shape  the shape
      */
-    protected GenericShapeWrapper(T shape) {
-        super(shape);
+    protected GenericShapeWrapper(Client client, T shape) {
+        super(client, shape);
     }
 
 
@@ -284,7 +286,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
         double width  = rectangle.getWidth();
         double height = rectangle.getHeight();
 
-        RectangleWrapper boundingBox = new RectangleWrapper(x, y, width, height);
+        RectangleWrapper boundingBox = new RectangleWrapper(client, x, y, width, height);
         boundingBox.setCZT(getC(), getZ(), getT());
         boundingBox.setText(getText() + " (Bounding Box)");
         boundingBox.setStroke(getStroke());

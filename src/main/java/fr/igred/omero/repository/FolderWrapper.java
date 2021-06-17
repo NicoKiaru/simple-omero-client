@@ -55,20 +55,22 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Constructor of the FolderWrapper class.
      *
+     * @param client The client handling the connection.
      * @param folder FolderData to contain.
      */
-    public FolderWrapper(FolderData folder) {
-        super(folder);
+    public FolderWrapper(Client client, FolderData folder) {
+        super(client, folder);
     }
 
 
     /**
      * Constructor of the FolderWrapper class.
      *
+     * @param client The client handling the connection.
      * @param folder Folder to contain.
      */
-    public FolderWrapper(Folder folder) {
-        super(new FolderData(folder));
+    public FolderWrapper(Client client, Folder folder) {
+        super(client, new FolderData(folder));
     }
 
 
@@ -82,7 +84,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      * @throws OMEROServerError Server error.
      */
     public FolderWrapper(Client client, String name) throws ServiceException, OMEROServerError {
-        super(new FolderData());
+        super(client, new FolderData());
         data.setName(name);
         try {
             Folder f = (Folder) client.getGateway()
@@ -138,14 +140,13 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Add an ROI to the folder and associate it to the image id set(an image need to be associated)
      *
-     * @param client The client handling the connection.
-     * @param roi    ROI to add.
+     * @param roi ROI to add.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException If the ROIFacility can't be retrieved or instantiated.
      */
-    public void addROI(Client client, ROIWrapper roi)
+    public void addROI(ROIWrapper roi)
     throws ServiceException, AccessException, ExecutionException {
         ROIFacility roiFac = client.getRoiFacility();
         try {
@@ -162,15 +163,13 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Gets the ROI contained in the folder associated with the image id set (an image need to be associated)
      *
-     * @param client The client handling the connection.
-     *
      * @return List of ROIWrapper containing the ROI.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ROIWrapper> getROIs(Client client)
+    public List<ROIWrapper> getROIs()
     throws ServiceException, AccessException, ExecutionException {
         ROIFacility roiFac = client.getRoiFacility();
 
@@ -187,7 +186,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
             Collection<ROIData> rois = r.getROIs();
             for (ROIData roi : rois) {
-                ROIWrapper temp = new ROIWrapper(roi);
+                ROIWrapper temp = new ROIWrapper(client, roi);
                 roiWrappers.add(temp);
             }
         }
@@ -199,15 +198,13 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Unlink all ROI, associated to the image set, in the folder. ROIs are now linked to the image directly
      *
-     * @param client The client handling the connection.
-     *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void unlinkAllROI(Client client) throws ServiceException, AccessException, ExecutionException {
+    public void unlinkAllROI() throws ServiceException, AccessException, ExecutionException {
         try {
-            List<ROIWrapper> rois = getROIs(client);
+            List<ROIWrapper> rois = getROIs();
             for (ROIWrapper roi : rois) {
                 client.getRoiFacility().removeRoisFromFolders(client.getCtx(),
                                                               this.imageId,
@@ -223,14 +220,13 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Unlink an ROI, associated to the image set, in the folder. the ROI is now linked to the image directly
      *
-     * @param client The client handling the connection.
-     * @param roi    ROI to unlink.
+     * @param roi ROI to unlink.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void unlinkROI(Client client, ROIWrapper roi)
+    public void unlinkROI(ROIWrapper roi)
     throws ServiceException, AccessException, ExecutionException {
         try {
             client.getRoiFacility().removeRoisFromFolders(client.getCtx(),

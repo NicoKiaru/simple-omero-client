@@ -18,6 +18,7 @@
 package fr.igred.omero.roi;
 
 
+import fr.igred.omero.Client;
 import ij.gui.Roi;
 import omero.gateway.model.MaskData;
 
@@ -31,32 +32,36 @@ public class MaskWrapper extends GenericShapeWrapper<MaskData> {
     /**
      * Constructor of the MaskWrapper class using a MaskData.
      *
-     * @param shape the shape
+     * @param client The client handling the connection.
+     * @param shape  the shape
      */
-    public MaskWrapper(MaskData shape) {
-        super(shape);
+    public MaskWrapper(Client client, MaskData shape) {
+        super(client, shape);
     }
 
 
     /**
      * Constructor of the MaskWrapper class using a new empty MaskData.
+     *
+     * @param client The client handling the connection.
      */
-    public MaskWrapper() {
-        this(new MaskData());
+    public MaskWrapper(Client client) {
+        this(client, new MaskData());
     }
 
 
     /**
      * Constructor of the MaskWrapper class using a new MaskData.
      *
+     * @param client The client handling the connection.
      * @param x      The x-coordinate of the top-left corner of the image.
      * @param y      The y-coordinate of the top-left corner of the image.
      * @param width  The width of the image.
      * @param height The height of the image.
      * @param mask   The mask image.
      */
-    public MaskWrapper(double x, double y, double width, double height, byte[] mask) {
-        this(new MaskData(x, y, width, height, mask));
+    public MaskWrapper(Client client, double x, double y, double width, double height, byte[] mask) {
+        this(client, new MaskData(x, y, width, height, mask));
     }
 
 
@@ -286,8 +291,8 @@ public class MaskWrapper extends GenericShapeWrapper<MaskData> {
         if (transform == null) {
             roi = new ij.gui.Roi(getX(), getY(), getWidth(), getHeight());
         } else {
-            PointWrapper p1 = new PointWrapper(getX(), getY() + getHeight() / 2);
-            PointWrapper p2 = new PointWrapper(getX() + getWidth(), getY() + getHeight() / 2);
+            PointWrapper p1 = new PointWrapper(null, getX(), getY() + getHeight() / 2);
+            PointWrapper p2 = new PointWrapper(null, getX() + getWidth(), getY() + getHeight() / 2);
             p1.setTransform(toAWTTransform());
             p2.setTransform(toAWTTransform());
 

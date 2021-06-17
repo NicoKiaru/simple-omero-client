@@ -62,8 +62,7 @@ public class ImageTest extends UserTest {
 
         DatasetWrapper dataset = client.getDataset(2L);
 
-        dataset.importImages(client,
-                             "./8bit-unsigned&pixelType=uint8&sizeZ=5&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake",
+        dataset.importImages("./8bit-unsigned&pixelType=uint8&sizeZ=5&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake",
                              "./8bit-unsigned&pixelType=uint8&sizeZ=4&sizeC=5&sizeT=6&sizeX=512&sizeY=512.fake");
 
         if (!f.delete())
@@ -72,7 +71,7 @@ public class ImageTest extends UserTest {
         if (!f2.delete())
             System.err.println("\"" + f2.getCanonicalPath() + "\" could not be deleted.");
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         assertEquals(2, images.size());
 
@@ -80,7 +79,7 @@ public class ImageTest extends UserTest {
             client.deleteImage(image);
         }
 
-        images = dataset.getImages(client);
+        images = dataset.getImages();
 
         assert (images.isEmpty());
     }
@@ -94,13 +93,12 @@ public class ImageTest extends UserTest {
 
         DatasetWrapper dataset = client.getDataset(2L);
 
-        dataset.importImages(client,
-                             "./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake");
+        dataset.importImages("./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake");
 
         if (!f.delete())
             System.err.println("\"" + f.getCanonicalPath() + "\" could not be deleted.");
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         ImageWrapper image = images.get(0);
 
@@ -112,21 +110,21 @@ public class ImageTest extends UserTest {
         result2.add(new NamedValue("Test result2", "Value Test"));
         result2.add(new NamedValue("Test2 result2", "Value Test2"));
 
-        MapAnnotationWrapper mapAnnotation1 = new MapAnnotationWrapper(result1);
+        MapAnnotationWrapper mapAnnotation1 = new MapAnnotationWrapper(client, result1);
 
         MapAnnotationData mapData2 = new MapAnnotationData();
         mapData2.setContent(result2);
-        MapAnnotationWrapper mapAnnotation2 = new MapAnnotationWrapper(mapData2);
+        MapAnnotationWrapper mapAnnotation2 = new MapAnnotationWrapper(client, mapData2);
 
         assertEquals(result1, mapAnnotation1.getContent());
 
-        image.addMapAnnotation(client, mapAnnotation1);
-        image.addMapAnnotation(client, mapAnnotation2);
+        image.addMapAnnotation(mapAnnotation1);
+        image.addMapAnnotation(mapAnnotation2);
 
-        List<NamedValue> result = image.getKeyValuePairs(client);
+        List<NamedValue> result = image.getKeyValuePairs();
 
         assertEquals(4, result.size());
-        assertEquals("Value Test", image.getValue(client, "Test result1"));
+        assertEquals("Value Test", image.getValue("Test result1"));
 
         client.deleteImage(image);
     }
@@ -140,13 +138,12 @@ public class ImageTest extends UserTest {
 
         DatasetWrapper dataset = client.getDataset(2L);
 
-        dataset.importImages(client,
-                             "./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake");
+        dataset.importImages("./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake");
 
         if (!f.delete())
             System.err.println("\"" + f.getCanonicalPath() + "\" could not be deleted.");
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         ImageWrapper image = images.get(0);
 
@@ -154,15 +151,15 @@ public class ImageTest extends UserTest {
         result.add(new NamedValue("Test result1", "Value Test"));
         result.add(new NamedValue("Test2 result1", "Value Test2"));
 
-        MapAnnotationWrapper mapAnnotation = new MapAnnotationWrapper();
+        MapAnnotationWrapper mapAnnotation = new MapAnnotationWrapper(client);
         mapAnnotation.setContent(result);
 
-        image.addMapAnnotation(client, mapAnnotation);
+        image.addMapAnnotation(mapAnnotation);
 
-        List<NamedValue> results = image.getKeyValuePairs(client);
+        List<NamedValue> results = image.getKeyValuePairs();
 
         assertEquals(2, results.size());
-        assertEquals("Value Test", image.getValue(client, "Test result1"));
+        assertEquals("Value Test", image.getValue("Test result1"));
 
         client.deleteImage(image);
     }
@@ -178,24 +175,23 @@ public class ImageTest extends UserTest {
 
         DatasetWrapper dataset = client.getDataset(2L);
 
-        dataset.importImages(client,
-                             "./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake");
+        dataset.importImages("./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=512&sizeY=512.fake");
 
         if (!f.delete())
             System.err.println("\"" + f.getCanonicalPath() + "\" could not be deleted.");
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         ImageWrapper image = images.get(0);
 
-        image.addPairKeyValue(client, "Test result1", "Value Test");
-        image.addPairKeyValue(client, "Test result2", "Value Test2");
+        image.addPairKeyValue("Test result1", "Value Test");
+        image.addPairKeyValue("Test result2", "Value Test2");
 
-        List<NamedValue> results = image.getKeyValuePairs(client);
+        List<NamedValue> results = image.getKeyValuePairs();
 
         assertEquals(2, results.size());
         try {
-            image.getValue(client, "Nonexistent value");
+            image.getValue("Nonexistent value");
         } catch (Exception e) {
             exception = true;
         }
@@ -361,7 +357,7 @@ public class ImageTest extends UserTest {
 
         ImageWrapper image = client.getImage(1L);
 
-        ImagePlus imp = image.toImagePlus(client, xBound, yBound, cBound, zBound, tBound);
+        ImagePlus imp = image.toImagePlus(xBound, yBound, cBound, zBound, tBound);
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus       difference = calculator.run("difference create stack", crop, imp);
@@ -390,7 +386,7 @@ public class ImageTest extends UserTest {
 
         ImageWrapper image = client.getImage(3L);
 
-        ImagePlus imp = image.toImagePlus(client);
+        ImagePlus imp = image.toImagePlus();
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus       difference = calculator.run("difference create stack", reference, imp);
@@ -403,7 +399,7 @@ public class ImageTest extends UserTest {
     @Test
     public void testGetImageChannel() throws Exception {
         ImageWrapper image = client.getImage(1L);
-        assertEquals("0", image.getChannelName(client, 0));
+        assertEquals("0", image.getChannelName(0));
     }
 
 
@@ -411,7 +407,7 @@ public class ImageTest extends UserTest {
     public void testGetImageChannelError() throws Exception {
         ImageWrapper image = client.getImage(1L);
         try {
-            image.getChannelName(client, 6);
+            image.getChannelName(6);
             fail();
         } catch (Exception e) {
             assertTrue(true);
@@ -425,7 +421,7 @@ public class ImageTest extends UserTest {
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "image tag", "tag attached to an image");
 
-        image.addTag(client, tag);
+        image.addTag(tag);
 
         List<TagAnnotationWrapper> tags = image.getTags(client);
 
@@ -443,7 +439,7 @@ public class ImageTest extends UserTest {
     public void testAddTagToImage2() throws Exception {
         ImageWrapper image = client.getImage(3L);
 
-        image.addTag(client, "image tag", "tag attached to an image");
+        image.addTag("image tag", "tag attached to an image");
 
         List<TagAnnotationWrapper> tags = client.getTags("image tag");
         assertEquals(1, tags.size());
@@ -462,7 +458,7 @@ public class ImageTest extends UserTest {
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "image tag", "tag attached to an image");
 
-        image.addTag(client, tag.getId());
+        image.addTag(tag.getId());
 
         List<TagAnnotationWrapper> tags = image.getTags(client);
 
@@ -485,7 +481,7 @@ public class ImageTest extends UserTest {
         TagAnnotationWrapper tag3 = new TagAnnotationWrapper(client, "Image tag", "tag attached to an image");
         TagAnnotationWrapper tag4 = new TagAnnotationWrapper(client, "Image tag", "tag attached to an image");
 
-        image.addTags(client, tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
+        image.addTags(tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
 
         List<TagAnnotationWrapper> tags = image.getTags(client);
 
@@ -511,7 +507,7 @@ public class ImageTest extends UserTest {
         TagAnnotationWrapper tag3 = new TagAnnotationWrapper(client, "Image tag", "tag attached to an image");
         TagAnnotationWrapper tag4 = new TagAnnotationWrapper(client, "Image tag", "tag attached to an image");
 
-        image.addTags(client, tag1, tag2, tag3, tag4);
+        image.addTags(tag1, tag2, tag3, tag4);
 
         List<TagAnnotationWrapper> tags = image.getTags(client);
 
@@ -552,7 +548,7 @@ public class ImageTest extends UserTest {
             out.print(generatedString);
         }
 
-        Long id = image.addFile(client, file);
+        Long id = image.addFile(file);
         if (!file.delete())
             System.err.println("\"" + file.getCanonicalPath() + "\" could not be deleted.");
 
@@ -585,7 +581,7 @@ public class ImageTest extends UserTest {
 
     @Test
     public void testGetChannel() throws Exception {
-        ChannelWrapper channel = client.getImage(1L).getChannels(client).get(0);
+        ChannelWrapper channel = client.getImage(1L).getChannels().get(0);
         assertEquals(0, channel.getIndex());
         channel.setName("Foo channel");
         assertEquals("Foo channel", channel.getName());
@@ -597,10 +593,10 @@ public class ImageTest extends UserTest {
         ImageWrapper image       = client.getImage(1L);
         String       description = image.getDescription();
         image.setDescription("Foo");
-        image.saveAndUpdate(client);
+        image.saveAndUpdate();
         assertEquals("Foo", client.getImage(1L).getDescription());
         image.setDescription(description);
-        image.saveAndUpdate(client);
+        image.saveAndUpdate();
         assertEquals(description, client.getImage(1L).getDescription());
     }
 
@@ -610,10 +606,10 @@ public class ImageTest extends UserTest {
         ImageWrapper image = client.getImage(1L);
         String       name  = image.getName();
         image.setName("Foo image");
-        image.saveAndUpdate(client);
+        image.saveAndUpdate();
         assertEquals("Foo image", client.getImage(1L).getName());
         image.setName(name);
-        image.saveAndUpdate(client);
+        image.saveAndUpdate();
         assertEquals(name, image.getName());
     }
 
@@ -622,18 +618,18 @@ public class ImageTest extends UserTest {
     public void testGetCropFromROI() throws Exception {
         ImageWrapper image = client.getImage(1L);
 
-        RectangleWrapper rectangle = new RectangleWrapper(30, 30, 20, 20);
+        RectangleWrapper rectangle = new RectangleWrapper(client, 30, 30, 20, 20);
         rectangle.setCZT(0, 1, 2);
 
-        EllipseWrapper ellipse = new EllipseWrapper(50, 50, 20, 40);
+        EllipseWrapper ellipse = new EllipseWrapper(client, 50, 50, 20, 40);
         ellipse.setCZT(1, 0, 1);
 
-        ROIWrapper roiWrapper = new ROIWrapper();
+        ROIWrapper roiWrapper = new ROIWrapper(client);
         roiWrapper.setImage(image);
         roiWrapper.addShape(rectangle);
         roiWrapper.addShape(ellipse);
 
-        ImagePlus imp1 = image.toImagePlus(client, roiWrapper);
+        ImagePlus imp1 = image.toImagePlus(roiWrapper);
 
         int[] xBound = {30, 69};
         int[] yBound = {10, 89};
@@ -641,7 +637,7 @@ public class ImageTest extends UserTest {
         int[] zBound = {0, 1};
         int[] tBound = {1, 2};
 
-        ImagePlus imp2 = image.toImagePlus(client, xBound, yBound, cBound, zBound, tBound);
+        ImagePlus imp2 = image.toImagePlus(xBound, yBound, cBound, zBound, tBound);
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus       difference = calculator.run("difference create stack", imp1, imp2);
@@ -659,7 +655,7 @@ public class ImageTest extends UserTest {
     @Test
     public void testGetThumbnail() throws Exception {
         ImageWrapper image = client.getImage(1L);
-        BufferedImage thumbnail = image.getThumbnail(client, 96);
+        BufferedImage thumbnail = image.getThumbnail(96);
         assertNotNull(thumbnail);
         assertEquals(96, thumbnail.getWidth());
         assertEquals(96, thumbnail.getHeight());

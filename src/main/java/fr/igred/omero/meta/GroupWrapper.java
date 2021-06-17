@@ -18,6 +18,7 @@
 package fr.igred.omero.meta;
 
 
+import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
 import fr.igred.omero.meta.ExperimenterWrapper.SortByLastName;
 import omero.gateway.model.ExperimenterData;
@@ -34,10 +35,11 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
     /**
      * Constructor of the class GroupWrapper.
      *
-     * @param group The object contained in the GroupWrapper.
+     * @param client The client handling the connection.
+     * @param group  The object contained in the GroupWrapper.
      */
-    public GroupWrapper(GroupData group) {
-        super(group);
+    public GroupWrapper(Client client, GroupData group) {
+        super(client, group);
     }
 
 
@@ -103,7 +105,7 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
 
         List<ExperimenterWrapper> wrappers = new ArrayList<>(leaders.size());
         for (ExperimenterData leader : leaders) {
-            wrappers.add(new ExperimenterWrapper(leader));
+            wrappers.add(new ExperimenterWrapper(client, leader));
         }
         wrappers.sort(new SortByLastName<>());
         return wrappers;
@@ -120,7 +122,7 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
 
         List<ExperimenterWrapper> wrappers = new ArrayList<>(experimenters.size());
         for (ExperimenterData experimenter : experimenters) {
-            wrappers.add(new ExperimenterWrapper(experimenter));
+            wrappers.add(new ExperimenterWrapper(client, experimenter));
         }
         wrappers.sort(new SortByLastName<>());
         return wrappers;
@@ -137,7 +139,7 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
 
         List<ExperimenterWrapper> wrappers = new ArrayList<>(members.size());
         for (ExperimenterData member : members) {
-            wrappers.add(new ExperimenterWrapper(member));
+            wrappers.add(new ExperimenterWrapper(client, member));
         }
         wrappers.sort(new SortByLastName<>());
         return wrappers;

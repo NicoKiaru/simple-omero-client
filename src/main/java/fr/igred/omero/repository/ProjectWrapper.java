@@ -48,10 +48,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Constructor of the ProjectWrapper class.
      *
+     * @param client  The client handling the connection.
      * @param project ProjectData to be contained.
      */
-    public ProjectWrapper(ProjectData project) {
-        super(project);
+    public ProjectWrapper(Client client, ProjectData project) {
+        super(client, project);
     }
 
 
@@ -93,7 +94,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
 
         List<DatasetWrapper> wrappers = new ArrayList<>(datasets.size());
         for (DatasetData dataset : datasets) {
-            wrappers.add(new DatasetWrapper(dataset));
+            wrappers.add(new DatasetWrapper(client, dataset));
         }
         wrappers.sort(new SortById<>());
 
@@ -118,7 +119,6 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Add a dataset to the project in OMERO. Create the dataset.
      *
-     * @param client      The client handling the connection.
      * @param name        Dataset name.
      * @param description Dataset description.
      *
@@ -128,19 +128,18 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public DatasetWrapper addDataset(Client client, String name, String description)
+    public DatasetWrapper addDataset(String name, String description)
     throws ServiceException, AccessException, ExecutionException {
         DatasetData datasetData = new DatasetData();
         datasetData.setName(name);
         datasetData.setDescription(description);
-        return addDataset(client, datasetData);
+        return addDataset(datasetData);
     }
 
 
     /**
      * Add a dataset to the project in OMERO.
      *
-     * @param client  The client handling the connection.
      * @param dataset Dataset to be added.
      *
      * @return The object saved in OMERO.
@@ -149,16 +148,15 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public DatasetWrapper addDataset(Client client, DatasetWrapper dataset)
+    public DatasetWrapper addDataset(DatasetWrapper dataset)
     throws ServiceException, AccessException, ExecutionException {
-        return addDataset(client, dataset.asDatasetData());
+        return addDataset(dataset.asDatasetData());
     }
 
 
     /**
      * Private function. Add a dataset to the project.
      *
-     * @param client      The client handling the connection.
      * @param datasetData Dataset to be added.
      *
      * @return The object saved in OMERO.
@@ -167,13 +165,13 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    private DatasetWrapper addDataset(Client client, DatasetData datasetData)
+    private DatasetWrapper addDataset(DatasetData datasetData)
     throws ServiceException, AccessException, ExecutionException {
         DatasetWrapper newDataset;
         datasetData.setProjects(Collections.singleton(data));
         DatasetData dataset = (DatasetData) PojoMapper.asDataObject(client.save(datasetData.asIObject()));
-        refresh(client);
-        newDataset = new DatasetWrapper(dataset);
+        refresh();
+        newDataset = new DatasetWrapper(client, dataset);
         return newDataset;
     }
 
@@ -199,19 +197,17 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project available from OMERO.
      *
-     * @param client The client handling the connection.
-     *
      * @return ImageWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public List<ImageWrapper> getImages(Client client) throws ServiceException, AccessException {
+    public List<ImageWrapper> getImages() throws ServiceException, AccessException {
         Collection<DatasetWrapper> datasets = getDatasets();
 
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : datasets) {
-            images.addAll(dataset.getImages(client));
+            images.addAll(dataset.getImages());
         }
         images.sort(new SortById<>());
 
@@ -236,7 +232,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
 
         List<ImageWrapper> imageWrappers = new ArrayList<>();
         for (DatasetWrapper dataset : datasets) {
-            imageWrappers.addAll(dataset.getImages(client, name));
+            imageWrappers.addAll(dataset.getImages(name));
         }
         imageWrappers.sort(new SortById<>());
 
@@ -247,19 +243,18 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project with a certain motif in their name from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param motif  Motif searched in an image name.
+     * @param motif Motif searched in an image name.
      *
      * @return ImageWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public List<ImageWrapper> getImagesLike(Client client, String motif)
+    public List<ImageWrapper> getImagesLike(String motif)
     throws ServiceException, AccessException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesLike(client, motif));
+            images.addAll(dataset.getImagesLike(motif));
         }
         images.sort(new SortById<>());
 
@@ -270,8 +265,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project tagged with a specified tag from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param tag    TagAnnotationWrapper containing the tag researched.
+     * @param tag TagAnnotationWrapper containing the tag researched.
      *
      * @return ImageWrapper list.
      *
@@ -279,11 +273,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<ImageWrapper> getImagesTagged(Client client, TagAnnotationWrapper tag)
+    public List<ImageWrapper> getImagesTagged(TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesTagged(client, tag));
+            images.addAll(dataset.getImagesTagged(tag));
         }
         images.sort(new SortById<>());
 
@@ -294,8 +288,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project tagged with a specified tag from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param tagId  Id of the tag researched.
+     * @param tagId Id of the tag researched.
      *
      * @return ImageWrapper list.
      *
@@ -303,11 +296,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<ImageWrapper> getImagesTagged(Client client, Long tagId)
+    public List<ImageWrapper> getImagesTagged(Long tagId)
     throws ServiceException, AccessException, OMEROServerError {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesTagged(client, tagId));
+            images.addAll(dataset.getImagesTagged(tagId));
         }
         images.sort(new SortById<>());
 
@@ -318,8 +311,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project with a certain key
      *
-     * @param client The client handling the connection.
-     * @param key    Name of the key researched.
+     * @param key Name of the key researched.
      *
      * @return ImageWrapper list.
      *
@@ -327,11 +319,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesKey(Client client, String key)
+    public List<ImageWrapper> getImagesKey(String key)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesKey(client, key));
+            images.addAll(dataset.getImagesKey(key));
         }
         images.sort(new SortById<>());
 
@@ -356,7 +348,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesPairKeyValue(client, key, value));
+            images.addAll(dataset.getImagesPairKeyValue(key, value));
         }
         images.sort(new SortById<>());
 
@@ -367,12 +359,10 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Refreshes the wrapped project.
      *
-     * @param client The client handling the connection.
-     *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public void refresh(Client client) throws ServiceException, AccessException {
+    public void refresh() throws ServiceException, AccessException {
         try {
             data = client.getBrowseFacility()
                          .getProjects(client.getCtx(), Collections.singletonList(this.getId()))

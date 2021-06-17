@@ -170,7 +170,7 @@ public class ClientTest extends UserTest {
 
         for (ImageWrapper image : images) {
             /* Get the value for the key */
-            String value = image.getValue(client, key);
+            String value = image.getValue(key);
 
             /* Condition */
             if (value.compareTo("25") > 0) {

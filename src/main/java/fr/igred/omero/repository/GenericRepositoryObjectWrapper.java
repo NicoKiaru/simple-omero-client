@@ -53,17 +53,17 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Constructor of the class GenericRepositoryObjectWrapper.
      *
+     * @param client The client handling the connection.
      * @param object The object contained in the GenericRepositoryObjectWrapper.
      */
-    protected GenericRepositoryObjectWrapper(T object) {
-        super(object);
+    protected GenericRepositoryObjectWrapper(Client client, T object) {
+        super(client, object);
     }
 
 
     /**
      * Adds a newly created tag to the object in OMERO, if possible.
      *
-     * @param client      The client handling the connection.
      * @param name        Tag Name.
      * @param description Tag description.
      *
@@ -71,42 +71,40 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addTag(Client client, String name, String description)
+    public void addTag(String name, String description)
     throws ServiceException, AccessException, ExecutionException {
         TagAnnotationData tagData = new TagAnnotationData(name);
         tagData.setTagDescription(description);
 
-        addTag(client, tagData);
+        addTag(tagData);
     }
 
 
     /**
      * Adds a tag to the object in OMERO, if possible.
      *
-     * @param client The client handling the connection.
-     * @param tag    Tag to be added.
+     * @param tag Tag to be added.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addTag(Client client, TagAnnotationWrapper tag)
+    public void addTag(TagAnnotationWrapper tag)
     throws ServiceException, AccessException, ExecutionException {
-        addTag(client, tag.asTagAnnotationData());
+        addTag(tag.asTagAnnotationData());
     }
 
 
     /**
      * Private function. Adds a tag to the object in OMERO, if possible.
      *
-     * @param client  The client handling the connection.
      * @param tagData Tag to be added.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    protected void addTag(Client client, TagAnnotationData tagData)
+    protected void addTag(TagAnnotationData tagData)
     throws ServiceException, AccessException, ExecutionException {
         try {
             client.getDm().attachAnnotation(client.getCtx(), tagData, data);
@@ -119,35 +117,33 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Adds multiple tags to the object in OMERO, if possible.
      *
-     * @param client The client handling the connection.
-     * @param id     Id in OMERO of tag to add.
+     * @param id Id in OMERO of tag to add.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addTag(Client client, Long id)
+    public void addTag(Long id)
     throws ServiceException, AccessException, ExecutionException {
         TagAnnotationI    tag     = new TagAnnotationI(id, false);
         TagAnnotationData tagData = new TagAnnotationData(tag);
-        addTag(client, tagData);
+        addTag(tagData);
     }
 
 
     /**
      * Adds multiple tag to the object in OMERO, if possible.
      *
-     * @param client The client handling the connection.
-     * @param tags   Array of TagAnnotationWrapper to add.
+     * @param tags Array of TagAnnotationWrapper to add.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addTags(Client client, TagAnnotationWrapper... tags)
+    public void addTags(TagAnnotationWrapper... tags)
     throws ServiceException, AccessException, ExecutionException {
         for (TagAnnotationWrapper tag : tags) {
-            addTag(client, tag.asTagAnnotationData());
+            addTag(tag.asTagAnnotationData());
         }
     }
 
@@ -155,17 +151,16 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Adds multiple tags by ID to the object in OMERO, if possible.
      *
-     * @param client The client handling the connection.
-     * @param ids    Array of tag id in OMERO to add.
+     * @param ids Array of tag id in OMERO to add.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addTags(Client client, Long... ids)
+    public void addTags(Long... ids)
     throws ServiceException, AccessException, ExecutionException {
         for (Long id : ids) {
-            addTag(client, id);
+            addTag(id);
         }
     }
 
@@ -198,7 +193,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
             for (AnnotationData annotation : annotations) {
                 TagAnnotationData tagAnnotation = (TagAnnotationData) annotation;
 
-                tags.add(new TagAnnotationWrapper(tagAnnotation));
+                tags.add(new TagAnnotationWrapper(client, tagAnnotation));
             }
         }
 
@@ -210,29 +205,26 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Adds a single Key-Value pair to the object.
      *
-     * @param client The client handling the connection.
-     * @param key    Name of the key.
-     * @param value  Value associated to the key.
+     * @param key   Name of the key.
+     * @param value Value associated to the key.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addPairKeyValue(Client client, String key, String value)
+    public void addPairKeyValue(String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         List<NamedValue> result = new ArrayList<>();
         result.add(new NamedValue(key, value));
 
         MapAnnotationData mapData = new MapAnnotationData();
         mapData.setContent(result);
-        addMapAnnotation(client, new MapAnnotationWrapper(mapData));
+        addMapAnnotation(new MapAnnotationWrapper(client, mapData));
     }
 
 
     /**
      * Gets the List of NamedValue (Key-Value pair) associated to an object.
-     *
-     * @param client The client handling the connection.
      *
      * @return Collection of NamedValue.
      *
@@ -240,7 +232,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<NamedValue> getKeyValuePairs(Client client)
+    public List<NamedValue> getKeyValuePairs()
     throws ServiceException, AccessException, ExecutionException {
         List<NamedValue> keyValuePairs = new ArrayList<>();
 
@@ -275,8 +267,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Gets the value from a Key-Value pair associated to the object
      *
-     * @param client The client handling the connection.
-     * @param key    Key researched.
+     * @param key Key researched.
      *
      * @return Value associated to the key.
      *
@@ -285,9 +276,9 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws NoSuchElementException Key not found.
      * @throws ExecutionException     A Facility can't be retrieved or instantiated.
      */
-    public String getValue(Client client, String key)
+    public String getValue(String key)
     throws ServiceException, AccessException, NoSuchElementException, ExecutionException {
-        Collection<NamedValue> keyValuePairs = getKeyValuePairs(client);
+        Collection<NamedValue> keyValuePairs = getKeyValuePairs();
 
         for (NamedValue namedValue : keyValuePairs) {
             if (namedValue.name.equals(key)) {
@@ -303,14 +294,13 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * Adds a List of Key-Value pair to the object
      * <p>The list is contained in the MapAnnotationWrapper
      *
-     * @param client        The client handling the connection.
      * @param mapAnnotation MapAnnotationWrapper containing a list of NamedValue.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addMapAnnotation(Client client, MapAnnotationWrapper mapAnnotation)
+    public void addMapAnnotation(MapAnnotationWrapper mapAnnotation)
     throws ServiceException, AccessException, ExecutionException {
         try {
             client.getDm().attachAnnotation(client.getCtx(),
@@ -325,14 +315,13 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Adds a table to the object in OMERO
      *
-     * @param client The client handling the connection.
-     * @param table  Table to add to the object.
+     * @param table Table to add to the object.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addTable(Client client, TableWrapper table)
+    public void addTable(TableWrapper table)
     throws ServiceException, AccessException, ExecutionException {
         TableData tableData = table.createTable();
         try {
@@ -347,7 +336,6 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Gets a certain table linked to the object in OMERO
      *
-     * @param client The client handling the connection.
      * @param fileId FileId of the table researched.
      *
      * @return TableWrapper containing the table information.
@@ -356,7 +344,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public TableWrapper getTable(Client client, Long fileId)
+    public TableWrapper getTable(Long fileId)
     throws ServiceException, AccessException, ExecutionException {
         TableData table = null;
         try {
@@ -371,15 +359,13 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Gets all table linked to the object in OMERO.
      *
-     * @param client The client handling the connection.
-     *
      * @return List of TableWrapper containing the tables information.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<TableWrapper> getTables(Client client)
+    public List<TableWrapper> getTables()
     throws ServiceException, AccessException, ExecutionException {
         Collection<FileAnnotationData> tables = new ArrayList<>();
         try {
@@ -390,7 +376,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
 
         List<TableWrapper> tablesWrapper = new ArrayList<>(tables.size());
         for (FileAnnotationData table : tables) {
-            TableWrapper tableWrapper = getTable(client, table.getFileID());
+            TableWrapper tableWrapper = getTable(table.getFileID());
             tableWrapper.setId(table.getId());
             tablesWrapper.add(tableWrapper);
         }
@@ -402,15 +388,14 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Links a file to the object
      *
-     * @param client The client handling the connection.
-     * @param file   File to add.
+     * @param file File to add.
      *
      * @return ID of the file created in OMERO.
      *
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
      * @throws InterruptedException The thread was interrupted.
      */
-    public long addFile(Client client, File file) throws ExecutionException, InterruptedException {
+    public long addFile(File file) throws ExecutionException, InterruptedException {
         return client.getDm().attachFile(client.getCtx(),
                                          file,
                                          null,

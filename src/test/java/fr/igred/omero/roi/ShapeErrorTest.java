@@ -26,49 +26,49 @@ public class ShapeErrorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPointNullCoordinates() {
-        PointWrapper point = new PointWrapper();
+        PointWrapper point = new PointWrapper(null);
         point.setCoordinates(null);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testTextNullCoordinates() {
-        TextWrapper text = new TextWrapper();
+        TextWrapper text = new TextWrapper(null);
         text.setCoordinates(null);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testRectangleNullCoordinates() {
-        RectangleWrapper rectangle = new RectangleWrapper();
+        RectangleWrapper rectangle = new RectangleWrapper(null);
         rectangle.setCoordinates(null);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testMaskNullCoordinates() {
-        MaskWrapper mask = new MaskWrapper();
+        MaskWrapper mask = new MaskWrapper(null);
         mask.setCoordinates(null);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testEllipseNullCoordinates() {
-        EllipseWrapper ellipse = new EllipseWrapper();
+        EllipseWrapper ellipse = new EllipseWrapper(null);
         ellipse.setCoordinates(null);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testLineNullCoordinates() {
-        LineWrapper line = new LineWrapper();
+        LineWrapper line = new LineWrapper(null);
         line.setCoordinates(null);
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testPointWrongCoordinates() {
-        PointWrapper point       = new PointWrapper();
+        PointWrapper point       = new PointWrapper(null);
         double[]     coordinates = {2, 2, 4, 4};
         point.setCoordinates(coordinates);
     }
@@ -76,7 +76,7 @@ public class ShapeErrorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testTextWrongCoordinates() {
-        TextWrapper text        = new TextWrapper();
+        TextWrapper text        = new TextWrapper(null);
         double[]    coordinates = {2, 2, 4, 4};
         text.setCoordinates(coordinates);
     }
@@ -84,7 +84,7 @@ public class ShapeErrorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testRectangleWrongCoordinates() {
-        RectangleWrapper rectangle   = new RectangleWrapper();
+        RectangleWrapper rectangle   = new RectangleWrapper(null);
         double[]         coordinates = {2, 2};
         rectangle.setCoordinates(coordinates);
     }
@@ -92,7 +92,7 @@ public class ShapeErrorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMaskWrongCoordinates() {
-        MaskWrapper mask        = new MaskWrapper();
+        MaskWrapper mask        = new MaskWrapper(null);
         double[]    coordinates = {2, 2};
         mask.setCoordinates(coordinates);
     }
@@ -100,7 +100,7 @@ public class ShapeErrorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testEllipseWrongCoordinates() {
-        EllipseWrapper ellipse     = new EllipseWrapper();
+        EllipseWrapper ellipse     = new EllipseWrapper(null);
         double[]       coordinates = {2, 2};
         ellipse.setCoordinates(coordinates);
     }
@@ -108,7 +108,7 @@ public class ShapeErrorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testLineWrongCoordinates() {
-        LineWrapper line        = new LineWrapper();
+        LineWrapper line        = new LineWrapper(null);
         double[]    coordinates = {2, 2};
         line.setCoordinates(coordinates);
     }

@@ -18,6 +18,7 @@
 package fr.igred.omero.roi;
 
 
+import fr.igred.omero.Client;
 import ij.gui.TextRoi;
 import omero.gateway.model.TextData;
 
@@ -30,30 +31,34 @@ public class TextWrapper extends GenericShapeWrapper<TextData> {
     /**
      * Constructor of the TextWrapper class using a TextData.
      *
-     * @param shape the shape
+     * @param client The client handling the connection.
+     * @param shape  the shape
      */
-    public TextWrapper(TextData shape) {
-        super(shape);
+    public TextWrapper(Client client, TextData shape) {
+        super(client, shape);
     }
 
 
     /**
      * Constructor of the TextWrapper class using a new empty ShapeData.
+     *
+     * @param client The client handling the connection.
      */
-    public TextWrapper() {
-        this(new TextData());
+    public TextWrapper(Client client) {
+        this(client, new TextData());
     }
 
 
     /**
      * Creates a new instance of the TextWrapper, sets the centre and major, minor axes.
      *
-     * @param text Object text.
-     * @param x    x-coordinate of the shape.
-     * @param y    y-coordinate of the shape.
+     * @param client The client handling the connection.
+     * @param text   Object text.
+     * @param x      x-coordinate of the shape.
+     * @param y      y-coordinate of the shape.
      */
-    public TextWrapper(String text, double x, double y) {
-        this(new TextData(text, x, y));
+    public TextWrapper(Client client, String text, double x, double y) {
+        this(client, new TextData(text, x, y));
     }
 
 

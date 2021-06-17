@@ -42,10 +42,10 @@ public class GroupTest extends RootTest {
         GroupWrapper group = client.getGroup("testGroup2");
         assertEquals("testGroup2", group.getName());
         group.setName("Empty");
-        group.saveAndUpdate(client);
+        group.saveAndUpdate();
         assertEquals("Empty", group.getName());
         group.setName("testGroup2");
-        group.saveAndUpdate(client);
+        group.saveAndUpdate();
         assertEquals("testGroup2", group.getName());
     }
 
@@ -54,7 +54,7 @@ public class GroupTest extends RootTest {
     public void testSetDescription() throws Exception {
         GroupWrapper group = client.getGroup("testGroup1");
         group.setDescription("Test");
-        group.saveAndUpdate(client);
+        group.saveAndUpdate();
         assertEquals("Test", client.getGroup("testGroup1").getDescription());
     }
 

@@ -18,6 +18,7 @@
 package fr.igred.omero.roi;
 
 
+import fr.igred.omero.Client;
 import ij.gui.PointRoi;
 import omero.gateway.model.PointData;
 
@@ -30,29 +31,33 @@ public class PointWrapper extends GenericShapeWrapper<PointData> {
     /**
      * Constructor of the PointWrapper class using a PointData.
      *
-     * @param shape the shape
+     * @param client The client handling the connection.
+     * @param shape  the shape
      */
-    public PointWrapper(PointData shape) {
-        super(shape);
+    public PointWrapper(Client client, PointData shape) {
+        super(client, shape);
     }
 
 
     /**
      * Constructor of the PointWrapper class using a new empty PointData.
+     *
+     * @param client The client handling the connection.
      */
-    public PointWrapper() {
-        this(new PointData());
+    public PointWrapper(Client client) {
+        this(client, new PointData());
     }
 
 
     /**
      * Constructor of the PointWrapper class using a new empty ShapeData.
      *
-     * @param x x-coordinate of the shape.
-     * @param y y-coordinate of the shape.
+     * @param client The client handling the connection.
+     * @param x      x-coordinate of the shape.
+     * @param y      y-coordinate of the shape.
      */
-    public PointWrapper(double x, double y) {
-        this(new PointData(x, y));
+    public PointWrapper(Client client, double x, double y) {
+        this(client, new PointData(x, y));
     }
 
 

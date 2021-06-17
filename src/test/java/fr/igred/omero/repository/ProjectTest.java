@@ -54,7 +54,7 @@ public class ProjectTest extends UserTest {
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
 
-        project.addTag(client, tag);
+        project.addTag(tag);
 
         List<TagAnnotationWrapper> tags = project.getTags(client);
 
@@ -72,7 +72,7 @@ public class ProjectTest extends UserTest {
     public void testAddTagToProject2() throws Exception {
         ProjectWrapper project = client.getProject(2L);
 
-        project.addTag(client, "test", "test");
+        project.addTag("test", "test");
 
         List<TagAnnotationWrapper> tags = client.getTags("test");
         assertEquals(1, tags.size());
@@ -90,7 +90,7 @@ public class ProjectTest extends UserTest {
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
 
-        project.addTag(client, tag.getId());
+        project.addTag(tag.getId());
 
         List<TagAnnotationWrapper> tags = project.getTags(client);
         assertEquals(1, tags.size());
@@ -111,7 +111,7 @@ public class ProjectTest extends UserTest {
         TagAnnotationWrapper tag3 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
         TagAnnotationWrapper tag4 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
 
-        project.addTags(client, tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
+        project.addTags(tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
 
         List<TagAnnotationWrapper> tags = project.getTags(client);
 
@@ -137,7 +137,7 @@ public class ProjectTest extends UserTest {
         TagAnnotationWrapper tag3 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
         TagAnnotationWrapper tag4 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
 
-        project.addTags(client, tag1, tag2, tag3, tag4);
+        project.addTags(tag1, tag2, tag3, tag4);
 
         List<TagAnnotationWrapper> tags = project.getTags(client);
 
@@ -158,7 +158,7 @@ public class ProjectTest extends UserTest {
     public void testGetImagesInProject() throws Exception {
         ProjectWrapper project = client.getProject(2L);
 
-        List<ImageWrapper> images = project.getImages(client);
+        List<ImageWrapper> images = project.getImages();
 
         assertEquals(3, images.size());
     }
@@ -178,7 +178,7 @@ public class ProjectTest extends UserTest {
     public void testGetImagesLikeInProject() throws Exception {
         ProjectWrapper project = client.getProject(2L);
 
-        List<ImageWrapper> images = project.getImagesLike(client, ".fake");
+        List<ImageWrapper> images = project.getImagesLike(".fake");
 
         assertEquals(3, images.size());
     }
@@ -188,7 +188,7 @@ public class ProjectTest extends UserTest {
     public void testGetImagesTaggedInProject() throws Exception {
         ProjectWrapper project = client.getProject(2L);
 
-        List<ImageWrapper> images = project.getImagesTagged(client, 1L);
+        List<ImageWrapper> images = project.getImagesTagged(1L);
 
         assertEquals(2, images.size());
     }
@@ -199,7 +199,7 @@ public class ProjectTest extends UserTest {
         TagAnnotationWrapper tag     = client.getTag(2L);
         ProjectWrapper       project = client.getProject(2L);
 
-        List<ImageWrapper> images = project.getImagesTagged(client, tag);
+        List<ImageWrapper> images = project.getImagesTagged(tag);
 
         assertEquals(1, images.size());
     }
@@ -209,7 +209,7 @@ public class ProjectTest extends UserTest {
     public void testGetImagesKeyInProject() throws Exception {
         ProjectWrapper project = client.getProject(2L);
 
-        List<ImageWrapper> images = project.getImagesKey(client, "testKey1");
+        List<ImageWrapper> images = project.getImagesKey("testKey1");
 
         assertEquals(3, images.size());
     }

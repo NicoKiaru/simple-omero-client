@@ -48,7 +48,7 @@ public class ExperimenterTest extends RootTest {
         user.setFirstName("Test");
         user.setLastName("User");
         user.setMiddleName("O.");
-        user.saveAndUpdate(client);
+        user.saveAndUpdate();
         assertEquals("Test", client.getUser("testUser").getFirstName());
         assertEquals("User", client.getUser("testUser").getLastName());
         assertEquals("O.", client.getUser("testUser").getMiddleName());
@@ -59,7 +59,7 @@ public class ExperimenterTest extends RootTest {
     public void testSetEmail() throws Exception {
         ExperimenterWrapper user = client.getUser("testUser");
         user.setEmail("test.user@example.org");
-        user.saveAndUpdate(client);
+        user.saveAndUpdate();
         assertEquals("test.user@example.org", client.getUser("testUser").getEmail());
     }
 
@@ -68,7 +68,7 @@ public class ExperimenterTest extends RootTest {
     public void testSetInstitution() throws Exception {
         ExperimenterWrapper user = client.getUser("testUser");
         user.setInstitution("Example");
-        user.saveAndUpdate(client);
+        user.saveAndUpdate();
         assertEquals("Example", client.getUser("testUser").getInstitution());
     }
 

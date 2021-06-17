@@ -18,6 +18,7 @@
 package fr.igred.omero.annotations;
 
 
+import fr.igred.omero.Client;
 import omero.gateway.model.MapAnnotationData;
 import omero.model.NamedValue;
 
@@ -34,29 +35,33 @@ public class MapAnnotationWrapper extends GenericAnnotationWrapper<MapAnnotation
     /**
      * Constructor of the MapAnnotationWrapper class.
      *
-     * @param data MapAnnotationData to be contained.
+     * @param client The client handling the connection.
+     * @param data   MapAnnotationData to be contained.
      */
-    public MapAnnotationWrapper(MapAnnotationData data) {
-        super(data);
+    public MapAnnotationWrapper(Client client, MapAnnotationData data) {
+        super(client, data);
     }
 
 
     /**
      * Constructor of the MapAnnotationWrapper class. Sets the content of the MapAnnotationData
      *
+     * @param client The client handling the connection.
      * @param result List of NamedValue(Key-Value pair).
      */
-    public MapAnnotationWrapper(List<NamedValue> result) {
-        super(new MapAnnotationData());
+    public MapAnnotationWrapper(Client client, List<NamedValue> result) {
+        super(client, new MapAnnotationData());
         data.setContent(result);
     }
 
 
     /**
      * Constructor of the MapAnnotationWrapper class.
+     *
+     * @param client The client handling the connection.
      */
-    public MapAnnotationWrapper() {
-        super(new MapAnnotationData());
+    public MapAnnotationWrapper(Client client) {
+        super(client, new MapAnnotationData());
     }
 
 

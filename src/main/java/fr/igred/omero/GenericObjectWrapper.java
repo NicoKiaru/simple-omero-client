@@ -41,13 +41,17 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
     protected T data;
 
+    protected Client client;
+
 
     /**
      * Constructor of the class GenericObjectWrapper.
      *
+     * @param client The client handling the connection.
      * @param object The object contained in the GenericObjectWrapper.
      */
-    protected GenericObjectWrapper(T object) {
+    protected GenericObjectWrapper(Client client, T object) {
+        this.client = client;
         this.data = object;
     }
 
@@ -78,7 +82,7 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      * @return owner id.
      */
     public ExperimenterWrapper getOwner() {
-        return new ExperimenterWrapper(data.getOwner());
+        return new ExperimenterWrapper(client, data.getOwner());
     }
 
 
@@ -106,14 +110,12 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
     /**
      * Saves and updates object.
      *
-     * @param client The client handling the connection.
-     *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     @SuppressWarnings("unchecked")
-    public void saveAndUpdate(Client client) throws ExecutionException, ServiceException, AccessException {
+    public void saveAndUpdate() throws ExecutionException, ServiceException, AccessException {
         try {
             data = (T) client.getDm().saveAndReturnObject(client.getCtx(), data);
         } catch (DSOutOfServiceException | DSAccessException e) {

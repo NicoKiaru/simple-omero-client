@@ -18,6 +18,7 @@
 package fr.igred.omero.annotations;
 
 
+import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
 import omero.gateway.model.AnnotationData;
 
@@ -35,10 +36,11 @@ public abstract class GenericAnnotationWrapper<T extends AnnotationData> extends
     /**
      * Constructor of the GenericAnnotationWrapper class.
      *
+     * @param client     The client handling the connection.
      * @param annotation Annotation to be contained.
      */
-    protected GenericAnnotationWrapper(T annotation) {
-        super(annotation);
+    protected GenericAnnotationWrapper(Client client, T annotation) {
+        super(client, annotation);
     }
 
 

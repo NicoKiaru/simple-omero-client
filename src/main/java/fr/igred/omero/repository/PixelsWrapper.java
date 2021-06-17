@@ -46,10 +46,11 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
     /**
      * Constructor of the PixelsWrapper class
      *
+     * @param client The client handling the connection.
      * @param pixels PixelData to be contained.
      */
-    public PixelsWrapper(PixelsData pixels) {
-        super(pixels);
+    public PixelsWrapper(Client client, PixelsData pixels) {
+        super(client, pixels);
     }
 
 

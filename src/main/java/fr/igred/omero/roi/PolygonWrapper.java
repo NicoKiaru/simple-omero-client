@@ -18,6 +18,7 @@
 package fr.igred.omero.roi;
 
 
+import fr.igred.omero.Client;
 import omero.gateway.model.PolygonData;
 
 import java.awt.Shape;
@@ -32,28 +33,32 @@ public class PolygonWrapper extends GenericShapeWrapper<PolygonData> {
     /**
      * Constructor of the PolygonWrapper class using a PolygonData.
      *
-     * @param shape the shape.
+     * @param client The client handling the connection.
+     * @param shape  the shape.
      */
-    public PolygonWrapper(PolygonData shape) {
-        super(shape);
+    public PolygonWrapper(Client client, PolygonData shape) {
+        super(client, shape);
     }
 
 
     /**
      * Constructor of the PolygonWrapper class using a new empty LineData.
+     *
+     * @param client The client handling the connection.
      */
-    public PolygonWrapper() {
-        this(new PolygonData());
+    public PolygonWrapper(Client client) {
+        this(client, new PolygonData());
     }
 
 
     /**
      * Constructor of the PolygonWrapper class using a new LineData.
      *
+     * @param client The client handling the connection.
      * @param points the points in the polyline.
      */
-    public PolygonWrapper(List<Point2D.Double> points) {
-        this(new PolygonData(points));
+    public PolygonWrapper(Client client, List<Point2D.Double> points) {
+        this(client, new PolygonData(points));
     }
 
 

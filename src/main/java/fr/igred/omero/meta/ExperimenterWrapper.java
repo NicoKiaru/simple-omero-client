@@ -18,6 +18,7 @@
 package fr.igred.omero.meta;
 
 
+import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
 import fr.igred.omero.meta.GroupWrapper.SortByName;
 import omero.gateway.model.ExperimenterData;
@@ -33,10 +34,11 @@ public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> 
     /**
      * Constructor of the class ExperimenterWrapper.
      *
+     * @param client       The client handling the connection.
      * @param experimenter The experimenter contained in the ExperimenterWrapper.
      */
-    public ExperimenterWrapper(ExperimenterData experimenter) {
-        super(experimenter);
+    public ExperimenterWrapper(Client client, ExperimenterData experimenter) {
+        super(client, experimenter);
     }
 
 
@@ -148,7 +150,7 @@ public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> 
 
         List<GroupWrapper> groupWrappers = new ArrayList<>(groups.size());
         for (GroupData group : groups) {
-            groupWrappers.add(new GroupWrapper(group));
+            groupWrappers.add(new GroupWrapper(client, group));
         }
         groupWrappers.sort(new SortByName<>());
         return groupWrappers;
@@ -161,7 +163,7 @@ public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> 
      * @return See above.
      */
     public GroupWrapper getDefaultGroup() {
-        return new GroupWrapper(data.getDefaultGroup());
+        return new GroupWrapper(client, data.getDefaultGroup());
     }
 
 

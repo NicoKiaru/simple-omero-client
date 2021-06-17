@@ -82,7 +82,7 @@ public class ConnectionTest extends BasicTest {
         List<ImageWrapper> images = test.getImages();
 
         for (ImageWrapper image : images) {
-            image.addTag(test, tag);
+            image.addTag(tag);
         }
 
         List<ImageWrapper> tagged = test.getImagesTagged(tag);

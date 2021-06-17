@@ -62,11 +62,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Constructor of the DatasetWrapper class
      *
+     * @param client      The client handling the connection.
      * @param name        Name of the dataset.
      * @param description Description of the dataset.
      */
-    public DatasetWrapper(String name, String description) {
-        super(new DatasetData());
+    public DatasetWrapper(Client client, String name, String description) {
+        super(client, new DatasetData());
         this.data.setName(name);
         this.data.setDescription(description);
     }
@@ -75,10 +76,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Constructor of the DatasetWrapper class
      *
+     * @param client  The client handling the connection.
      * @param dataset Dataset to be contained.
      */
-    public DatasetWrapper(DatasetData dataset) {
-        super(dataset);
+    public DatasetWrapper(Client client, DatasetData dataset) {
+        super(client, dataset);
     }
 
 
@@ -121,7 +123,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         List<ImageWrapper> imageWrappers = new ArrayList<>(images.size());
 
         for (ImageData image : images) {
-            imageWrappers.add(new ImageWrapper(image));
+            imageWrappers.add(new ImageWrapper(client, image));
         }
         imageWrappers.sort(new SortById<>());
 
@@ -132,14 +134,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset available from OMERO.
      *
-     * @param client The client handling the connection.
-     *
      * @return ImageWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public List<ImageWrapper> getImages(Client client) throws ServiceException, AccessException {
+    public List<ImageWrapper> getImages() throws ServiceException, AccessException {
         Collection<ImageData> images = new ArrayList<>();
         try {
             images = client.getBrowseFacility()
@@ -156,17 +156,16 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset with a certain from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param name   Name searched.
+     * @param name Name searched.
      *
      * @return ImageWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public List<ImageWrapper> getImages(Client client, String name)
+    public List<ImageWrapper> getImages(String name)
     throws ServiceException, AccessException {
-        List<ImageWrapper> images = getImages(client);
+        List<ImageWrapper> images = getImages();
         images.removeIf(image -> !image.getName().equals(name));
         return images;
     }
@@ -175,17 +174,16 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset with a certain motif in their name from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param motif  Motif searched in an image name.
+     * @param motif Motif searched in an image name.
      *
      * @return ImageWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public List<ImageWrapper> getImagesLike(Client client, String motif)
+    public List<ImageWrapper> getImagesLike(String motif)
     throws ServiceException, AccessException {
-        List<ImageWrapper> images = getImages(client);
+        List<ImageWrapper> images = getImages();
         final String       regexp = ".*" + motif + ".*";
         images.removeIf(image -> !image.getName().matches(regexp));
         return images;
@@ -195,8 +193,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset tagged with a specified tag from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param tag    TagAnnotationWrapper containing the tag researched.
+     * @param tag TagAnnotationWrapper containing the tag researched.
      *
      * @return ImageWrapper list.
      *
@@ -204,7 +201,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<ImageWrapper> getImagesTagged(Client client, TagAnnotationWrapper tag)
+    public List<ImageWrapper> getImagesTagged(TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError {
         List<ImageWrapper> selected = new ArrayList<>();
         List<IObject> os = client.findByQuery("select link.parent " +
@@ -228,8 +225,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset tagged with a specified tag from OMERO.
      *
-     * @param client The client handling the connection.
-     * @param tagId  Id of the tag researched.
+     * @param tagId Id of the tag researched.
      *
      * @return ImageWrapper list.
      *
@@ -237,7 +233,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<ImageWrapper> getImagesTagged(Client client, Long tagId)
+    public List<ImageWrapper> getImagesTagged(Long tagId)
     throws ServiceException, AccessException, OMEROServerError {
         List<ImageWrapper> selected = new ArrayList<>();
         List<IObject> os = client.findByQuery("select link.parent " +
@@ -261,8 +257,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset with a certain key
      *
-     * @param client The client handling the connection.
-     * @param key    Name of the key researched.
+     * @param key Name of the key researched.
      *
      * @return ImageWrapper list.
      *
@@ -270,7 +265,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesKey(Client client, String key)
+    public List<ImageWrapper> getImagesKey(String key)
     throws ServiceException, AccessException, ExecutionException {
         Collection<ImageData> selected = new ArrayList<>();
         Collection<ImageData> images   = new ArrayList<>();
@@ -283,9 +278,9 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         }
 
         for (ImageData image : images) {
-            ImageWrapper imageWrapper = new ImageWrapper(image);
+            ImageWrapper imageWrapper = new ImageWrapper(client, image);
 
-            Collection<NamedValue> pairsKeyValue = imageWrapper.getKeyValuePairs(client);
+            Collection<NamedValue> pairsKeyValue = imageWrapper.getKeyValuePairs();
 
             for (NamedValue pairKeyValue : pairsKeyValue) {
                 if (pairKeyValue.name.equals(key)) {
@@ -302,9 +297,8 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Gets all images in the dataset with a certain key value pair from OMERO
      *
-     * @param client The client handling the connection.
-     * @param key    Name of the key researched.
-     * @param value  Value associated with the key.
+     * @param key   Name of the key researched.
+     * @param value Value associated with the key.
      *
      * @return ImageWrapper list.
      *
@@ -312,7 +306,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesPairKeyValue(Client client, String key, String value)
+    public List<ImageWrapper> getImagesPairKeyValue(String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         Collection<ImageData> selected = new ArrayList<>();
         Collection<ImageData> images   = new ArrayList<>();
@@ -325,9 +319,9 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         }
 
         for (ImageData image : images) {
-            ImageWrapper imageWrapper = new ImageWrapper(image);
+            ImageWrapper imageWrapper = new ImageWrapper(client, image);
 
-            Collection<NamedValue> pairsKeyValue = imageWrapper.getKeyValuePairs(client);
+            Collection<NamedValue> pairsKeyValue = imageWrapper.getKeyValuePairs();
 
             for (NamedValue pairKeyValue : pairsKeyValue) {
                 if (pairKeyValue.name.equals(key) && pairKeyValue.value.equals(value)) {
@@ -383,13 +377,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Imports all images candidates in the paths to the dataset in OMERO.
      *
-     * @param client The client handling the connection.
-     * @param paths  Paths to the image on your computer.
+     * @param paths Paths to the image on your computer.
      *
      * @throws Exception        OMEROMetadataStoreClient creation failed.
      * @throws OMEROServerError Server error.
      */
-    public void importImages(Client client, String... paths) throws Exception {
+    public void importImages(String... paths) throws Exception {
         ImportConfig clientConfig = client.getConfig();
 
         // Copy client config to ensure thread safety

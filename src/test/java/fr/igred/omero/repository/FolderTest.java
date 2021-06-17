@@ -37,16 +37,16 @@ public class FolderTest extends UserTest {
 
         FolderWrapper folder = new FolderWrapper(client, "Test1");
         try {
-            RectangleWrapper rectangle = new RectangleWrapper(0, 0, 10, 10);
+            RectangleWrapper rectangle = new RectangleWrapper(client, 0, 0, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
             rectangle.setC(0);
 
-            ROIWrapper roi = new ROIWrapper();
+            ROIWrapper roi = new ROIWrapper(client);
             roi.addShape(rectangle);
-            roi.saveROI(client);
+            roi.saveROI();
 
-            folder.addROI(client, roi);
+            folder.addROI(roi);
         } catch (Exception e) {
             exception = true;
         }
@@ -62,38 +62,38 @@ public class FolderTest extends UserTest {
         folder.setImage(image);
 
         for (int i = 0; i < 8; i++) {
-            ROIWrapper roi = new ROIWrapper();
+            ROIWrapper roi = new ROIWrapper(client);
 
-            RectangleWrapper rectangle = new RectangleWrapper();
+            RectangleWrapper rectangle = new RectangleWrapper(client);
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
             rectangle.setC(0);
 
             roi.addShape(rectangle);
-            roi.saveROI(client);
+            roi.saveROI();
 
-            folder.addROI(client, roi);
+            folder.addROI(roi);
         }
 
-        folder = image.getFolder(client, folder.getId());
-        List<ROIWrapper> rois = folder.getROIs(client);
+        folder = image.getFolder(folder.getId());
+        List<ROIWrapper> rois = folder.getROIs();
         assertEquals(8, rois.size());
         assertEquals("Test", folder.getName());
-        assertEquals(8, image.getROIs(client).size());
+        assertEquals(8, image.getROIs().size());
 
         for (ROIWrapper roi : rois) {
             client.deleteROI(roi);
         }
 
-        rois = folder.getROIs(client);
+        rois = folder.getROIs();
         assertEquals(0, rois.size());
-        assertEquals(0, image.getROIs(client).size());
+        assertEquals(0, image.getROIs().size());
 
         client.deleteFolder(folder);
 
         try {
-            image.getFolder(client, folder.getId());
+            image.getFolder(folder.getId());
             fail();
         } catch (Exception e) {
             assertTrue(true);
@@ -107,25 +107,25 @@ public class FolderTest extends UserTest {
         folder.setImage(3L);
 
         for (int i = 0; i < 8; i++) {
-            RectangleWrapper rectangle = new RectangleWrapper();
+            RectangleWrapper rectangle = new RectangleWrapper(client);
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
             rectangle.setC(0);
 
-            ROIWrapper roi = new ROIWrapper();
+            ROIWrapper roi = new ROIWrapper(client);
             roi.addShape(rectangle);
-            roi.saveROI(client);
+            roi.saveROI();
 
-            folder.addROI(client, roi);
+            folder.addROI(roi);
         }
 
-        List<ROIWrapper> rois = folder.getROIs(client);
+        List<ROIWrapper> rois = folder.getROIs();
         assertEquals(8, rois.size());
 
-        folder.unlinkROI(client, rois.get(0));
+        folder.unlinkROI(rois.get(0));
         client.deleteROI(rois.get(0));
-        rois = folder.getROIs(client);
+        rois = folder.getROIs();
         assertEquals(7, rois.size());
 
         client.deleteFolder(folder);
@@ -144,56 +144,56 @@ public class FolderTest extends UserTest {
         folder.setImage(image);
 
         for (int i = 0; i < 8; i++) {
-            ROIWrapper roi = new ROIWrapper();
+            ROIWrapper roi = new ROIWrapper(client);
 
-            RectangleWrapper rectangle = new RectangleWrapper();
+            RectangleWrapper rectangle = new RectangleWrapper(client);
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
             rectangle.setC(0);
 
             roi.addShape(rectangle);
-            roi.saveROI(client);
+            roi.saveROI();
 
-            folder.addROI(client, roi);
+            folder.addROI(roi);
         }
 
         folder = new FolderWrapper(client, "Test2");
         folder.setImage(image);
 
         for (int i = 0; i < 8; i++) {
-            ROIWrapper roi = new ROIWrapper();
+            ROIWrapper roi = new ROIWrapper(client);
 
-            RectangleWrapper rectangle = new RectangleWrapper();
+            RectangleWrapper rectangle = new RectangleWrapper(client);
             rectangle.setCoordinates(i * 2, i * 2, 5, 5);
             rectangle.setZ(i);
             rectangle.setT(0);
             rectangle.setC(0);
 
             roi.addShape(rectangle);
-            roi.saveROI(client);
+            roi.saveROI();
 
-            folder.addROI(client, roi);
+            folder.addROI(roi);
         }
 
-        List<FolderWrapper> folders = image.getFolders(client);
+        List<FolderWrapper> folders = image.getFolders();
         assertEquals(2, folders.size());
-        assertEquals(16, image.getROIs(client).size());
+        assertEquals(16, image.getROIs().size());
 
         for (FolderWrapper RoiFolder : folders) {
             client.deleteFolder(RoiFolder);
         }
 
-        folders = image.getFolders(client);
+        folders = image.getFolders();
         assertEquals(0, folders.size());
-        assertEquals(16, image.getROIs(client).size());
+        assertEquals(16, image.getROIs().size());
 
-        List<ROIWrapper> rois = image.getROIs(client);
+        List<ROIWrapper> rois = image.getROIs();
         for (ROIWrapper roi : rois) {
             client.deleteROI(roi);
         }
 
-        assertEquals(0, image.getROIs(client).size());
+        assertEquals(0, image.getROIs().size());
     }
 
 }

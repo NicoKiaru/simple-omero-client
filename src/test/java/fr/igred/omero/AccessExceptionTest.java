@@ -97,7 +97,7 @@ public class AccessExceptionTest extends BasicTest {
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "image tag", "tag attached to an image");
 
         try {
-            image.addTag(client, tag);
+            image.addTag(tag);
         } catch (AccessException e) {
             exception = true;
         }
@@ -195,21 +195,21 @@ public class AccessExceptionTest extends BasicTest {
 
     @Test(expected = AccessException.class)
     public void testSudoFailGetKVPairs() throws Exception {
-        ImageWrapper image = client.getImage(1L);
-        image.getKeyValuePairs(sudo);
+        ImageWrapper image = new ImageWrapper(sudo, client.getImage(1L).asImageData());
+        image.getKeyValuePairs();
     }
 
 
     @Test(expected = AccessException.class)
     public void testSudoFailAddKVPair() throws Exception {
-        ImageWrapper image = client.getImage(1L);
+        ImageWrapper image = new ImageWrapper(sudo, client.getImage(1L).asImageData());
 
         List<NamedValue> result1 = new ArrayList<>();
         result1.add(new NamedValue("Test result1", "Value Test"));
         result1.add(new NamedValue("Test2 result1", "Value Test2"));
 
-        MapAnnotationWrapper mapAnnotation1 = new MapAnnotationWrapper(result1);
-        image.addMapAnnotation(sudo, mapAnnotation1);
+        MapAnnotationWrapper mapAnnotation1 = new MapAnnotationWrapper(sudo, result1);
+        image.addMapAnnotation(mapAnnotation1);
     }
 
 

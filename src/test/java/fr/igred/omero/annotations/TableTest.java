@@ -34,7 +34,7 @@ public class TableTest extends UserTest {
     public void testCreateTable() throws Exception {
         DatasetWrapper dataset = client.getDataset(1L);
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         TableWrapper table = new TableWrapper(2, "TableTest");
 
@@ -57,15 +57,15 @@ public class TableTest extends UserTest {
         assertEquals(images.get(0).asImageData(), table.getData(0, 0));
         assertEquals(images.get(1).getName(), table.getData(0, 1));
 
-        dataset.addTable(client, table);
+        dataset.addTable(table);
 
-        List<TableWrapper> tables = dataset.getTables(client);
+        List<TableWrapper> tables = dataset.getTables();
 
         assertEquals(1, tables.size());
 
         client.deleteTable(tables.get(0));
 
-        tables = dataset.getTables(client);
+        tables = dataset.getTables();
 
         assertEquals(0, tables.size());
     }
@@ -76,7 +76,7 @@ public class TableTest extends UserTest {
         boolean        exception = false;
         DatasetWrapper dataset   = client.getDataset(1L);
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         TableWrapper table = new TableWrapper(2, "TableTest");
         table.setName("TableTestNewName");
@@ -120,7 +120,7 @@ public class TableTest extends UserTest {
 
         DatasetWrapper dataset = client.getDataset(1L);
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         TableWrapper table = new TableWrapper(2, "TableTest");
         table.setColumn(0, "Image", ImageData.class);
@@ -143,7 +143,7 @@ public class TableTest extends UserTest {
 
         DatasetWrapper dataset = client.getDataset(1L);
 
-        List<ImageWrapper> images = dataset.getImages(client);
+        List<ImageWrapper> images = dataset.getImages();
 
         TableWrapper table = new TableWrapper(2, "TableTest");
         table.setColumn(0, "Image", ImageData.class);

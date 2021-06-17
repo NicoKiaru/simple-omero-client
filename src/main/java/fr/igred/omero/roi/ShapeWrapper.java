@@ -18,6 +18,7 @@
 package fr.igred.omero.roi;
 
 
+import fr.igred.omero.Client;
 import omero.gateway.model.ShapeData;
 
 
@@ -26,10 +27,11 @@ public class ShapeWrapper extends GenericShapeWrapper<ShapeData> {
     /**
      * Constructor of the ShapeWrapper class using a ShapeData.
      *
-     * @param shape the shape
+     * @param client The client handling the connection.
+     * @param shape  the shape
      */
-    public ShapeWrapper(ShapeData shape) {
-        super(shape);
+    public ShapeWrapper(Client client, ShapeData shape) {
+        super(client, shape);
     }
 
 

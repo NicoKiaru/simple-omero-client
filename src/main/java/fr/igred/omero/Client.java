@@ -329,7 +329,7 @@ public class Client {
         disconnect();
 
         try {
-            this.user = new ExperimenterWrapper(gateway.connect(cred));
+            this.user = new ExperimenterWrapper(this, gateway.connect(cred));
         } catch (DSOutOfServiceException oos) {
             throw new ServiceException(oos, oos.getConnectionStatus());
         }
@@ -343,7 +343,7 @@ public class Client {
      * Disconnects the user
      */
     public void disconnect() {
-        if(gateway.isConnected()) {
+        if (gateway.isConnected()) {
             gateway.disconnect();
         }
     }
@@ -371,7 +371,7 @@ public class Client {
         if (projects.isEmpty()) {
             throw new NoSuchElementException(String.format("Project %d doesn't exist in this context", id));
         }
-        return new ProjectWrapper(projects.iterator().next());
+        return new ProjectWrapper(this, projects.iterator().next());
     }
 
 
@@ -393,7 +393,7 @@ public class Client {
 
         List<ProjectWrapper> projectWrappers = new ArrayList<>(projects.size());
         for (ProjectData project : projects) {
-            projectWrappers.add(new ProjectWrapper(project));
+            projectWrappers.add(new ProjectWrapper(this, project));
         }
         projectWrappers.sort(new SortById<>());
         return projectWrappers;
@@ -420,7 +420,7 @@ public class Client {
 
         List<ProjectWrapper> projectWrappers = new ArrayList<>(projects.size());
         for (ProjectData project : projects) {
-            projectWrappers.add(new ProjectWrapper(project));
+            projectWrappers.add(new ProjectWrapper(this, project));
         }
         projectWrappers.sort(new SortById<>());
         return projectWrappers;
@@ -449,7 +449,7 @@ public class Client {
         if (datasets.isEmpty()) {
             throw new NoSuchElementException(String.format("Dataset %d doesn't exist in this context", id));
         }
-        return new DatasetWrapper(datasets.iterator().next());
+        return new DatasetWrapper(this, datasets.iterator().next());
     }
 
 
@@ -495,7 +495,7 @@ public class Client {
 
         List<DatasetWrapper> datasetWrappers = new ArrayList<>(datasets.size());
         for (DatasetData dataset : datasets) {
-            datasetWrappers.add(new DatasetWrapper(dataset));
+            datasetWrappers.add(new DatasetWrapper(this, dataset));
         }
         datasetWrappers.sort(new SortById<>());
         return datasetWrappers;
@@ -513,7 +513,7 @@ public class Client {
         List<ImageWrapper> imageWrappers = new ArrayList<>(images.size());
 
         for (ImageData image : images) {
-            imageWrappers.add(new ImageWrapper(image));
+            imageWrappers.add(new ImageWrapper(this, image));
         }
 
         imageWrappers.sort(new SortById<>());
@@ -544,7 +544,7 @@ public class Client {
         if (image == null) {
             throw new NoSuchElementException(String.format("Image %d doesn't exist in this context", id));
         }
-        return new ImageWrapper(image);
+        return new ImageWrapper(this, image);
     }
 
 
@@ -589,7 +589,7 @@ public class Client {
         List<ImageWrapper> selected = new ArrayList<>();
         for (ImageData image : images) {
             if (image.getName().equals(name)) {
-                selected.add(new ImageWrapper(image));
+                selected.add(new ImageWrapper(this, image));
             }
         }
 
@@ -686,7 +686,7 @@ public class Client {
         List<ImageWrapper> images   = getImages();
 
         for (ImageWrapper image : images) {
-            Collection<NamedValue> pairsKeyValue = image.getKeyValuePairs(this);
+            Collection<NamedValue> pairsKeyValue = image.getKeyValuePairs();
             for (NamedValue pairKeyValue : pairsKeyValue) {
                 if (pairKeyValue.name.equals(key)) {
                     selected.add(image);
@@ -716,7 +716,7 @@ public class Client {
         List<ImageWrapper> selected = new ArrayList<>();
         List<ImageWrapper> images   = getImages();
         for (ImageWrapper image : images) {
-            Collection<NamedValue> pairsKeyValue = image.getKeyValuePairs(this);
+            Collection<NamedValue> pairsKeyValue = image.getKeyValuePairs();
             for (NamedValue pairKeyValue : pairsKeyValue) {
                 if (pairKeyValue.name.equals(key) && pairKeyValue.value.equals(value)) {
                     selected.add(image);
@@ -789,7 +789,7 @@ public class Client {
         List<TagAnnotationWrapper> tags = new ArrayList<>(os.size());
         for (IObject o : os) {
             TagAnnotationData tag = new TagAnnotationData((TagAnnotation) o);
-            tags.add(new TagAnnotationWrapper(tag));
+            tags.add(new TagAnnotationWrapper(this, tag));
         }
 
         tags.sort(new SortById<>());
@@ -836,7 +836,7 @@ public class Client {
         TagAnnotationData tag = new TagAnnotationData((TagAnnotation) Objects.requireNonNull(o));
         tag.setNameSpace(tag.getContentAsString());
 
-        return new TagAnnotationWrapper(tag);
+        return new TagAnnotationWrapper(this, tag);
     }
 
 
@@ -1143,7 +1143,7 @@ public class Client {
                                                    IllegalArgumentException,
                                                    OMEROServerError,
                                                    InterruptedException {
-        folder.unlinkAllROI(this);
+        folder.unlinkAllROI();
         delete(folder.asFolderData().asIObject());
     }
 
@@ -1168,7 +1168,7 @@ public class Client {
             handleServiceOrAccess(e, "Cannot retrieve user: " + username);
         }
         if (experimenter != null) {
-            return new ExperimenterWrapper(experimenter);
+            return new ExperimenterWrapper(this, experimenter);
         } else {
             return null;
         }
@@ -1195,7 +1195,7 @@ public class Client {
             handleServiceOrAccess(e, "Cannot retrieve group: " + groupName);
         }
         if (group != null) {
-            return new GroupWrapper(group);
+            return new GroupWrapper(this, group);
         } else {
             return null;
         }

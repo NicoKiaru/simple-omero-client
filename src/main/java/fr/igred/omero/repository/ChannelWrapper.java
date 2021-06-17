@@ -18,6 +18,7 @@
 package fr.igred.omero.repository;
 
 
+import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
 import omero.gateway.model.ChannelData;
 
@@ -30,10 +31,11 @@ public class ChannelWrapper extends GenericObjectWrapper<ChannelData> {
     /**
      * Constructor of the class ChannelWrapper.
      *
+     * @param client  The client handling the connection.
      * @param channel The ChannelData contained in the ChannelWrapper.
      */
-    public ChannelWrapper(ChannelData channel) {
-        super(channel);
+    public ChannelWrapper(Client client, ChannelData channel) {
+        super(client, channel);
     }
 
 

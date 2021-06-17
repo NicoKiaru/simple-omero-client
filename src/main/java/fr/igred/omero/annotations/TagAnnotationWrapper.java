@@ -36,10 +36,11 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     /**
      * Constructor of the TagAnnotationWrapper class.
      *
-     * @param tag Tag to be contained.
+     * @param client The client handling the connection.
+     * @param tag    Tag to be contained.
      */
-    public TagAnnotationWrapper(TagAnnotationData tag) {
-        super(tag);
+    public TagAnnotationWrapper(Client client, TagAnnotationData tag) {
+        super(client, tag);
         this.data.setNameSpace(tag.getContentAsString());
     }
 
@@ -57,7 +58,7 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
      */
     public TagAnnotationWrapper(Client client, String name, String description)
     throws ServiceException, AccessException, ExecutionException {
-        super((TagAnnotationData) PojoMapper
+        super(client, (TagAnnotationData) PojoMapper
                 .asDataObject(client.save(new TagAnnotationData(name, description).asIObject())));
     }
 

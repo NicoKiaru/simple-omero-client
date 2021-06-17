@@ -52,19 +52,22 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
 
     /**
      * Constructor of the ROIWrapper class.
+     *
+     * @param client The client handling the connection.
      */
-    public ROIWrapper() {
-        super(new ROIData());
+    public ROIWrapper(Client client) {
+        super(client, new ROIData());
     }
 
 
     /**
      * Constructor of the ROIWrapper class.
      *
+     * @param client The client handling the connection.
      * @param shapes List of shapes to add to the ROIData.
      */
-    public ROIWrapper(List<GenericShapeWrapper<?>> shapes) {
-        super(new ROIData());
+    public ROIWrapper(Client client, List<GenericShapeWrapper<?>> shapes) {
+        super(client, new ROIData());
 
         for (GenericShapeWrapper<?> shape : shapes)
             addShape(shape);
@@ -74,22 +77,24 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
     /**
      * Constructor of the ROIWrapper class.
      *
-     * @param data ROIData to be contained.
+     * @param client The client handling the connection.
+     * @param data   ROIData to be contained.
      */
-    public ROIWrapper(ROIData data) {
-        super(data);
+    public ROIWrapper(Client client, ROIData data) {
+        super(client, data);
     }
 
 
     /**
      * Converts an ImageJ list of ROIs to a list of OMERO ROIs
      *
+     * @param client   The client handling the connection.
      * @param ijRois   A list of ImageJ ROIs.
      * @param property The property where 4D ROI ID is stored, defaults to "ROI".
      *
      * @return The converted list of OMERO ROIs.
      */
-    public static List<ROIWrapper> fromImageJ(List<ij.gui.Roi> ijRois, String property) {
+    public static List<ROIWrapper> fromImageJ(Client client, List<ij.gui.Roi> ijRois, String property) {
         if (property == null || property.equals("")) property = "ROI";
 
         Map<Long, ROIWrapper> rois4D = new TreeMap<>();
@@ -100,10 +105,10 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             String value = ijRois.get(i).getProperty(property);
             if (value != null && value.matches("-?\\d+")) {
                 long id = Long.parseLong(value);
-                rois4D.computeIfAbsent(id, val -> new ROIWrapper());
+                rois4D.computeIfAbsent(id, val -> new ROIWrapper(client));
                 shape2roi.put(i, rois4D.get(id));
             } else {
-                shape2roi.put(i, new ROIWrapper());
+                shape2roi.put(i, new ROIWrapper(client));
             }
         }
 
@@ -181,7 +186,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
     public ShapeList getShapes() {
         ShapeList shapes = new ShapeList();
         for (ShapeData shape : data.getShapes()) {
-            shapes.add(shape);
+            shapes.add(client, shape);
         }
         return shapes;
     }
@@ -232,12 +237,10 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
     /**
      * Saves the ROI.
      *
-     * @param client The client handling the connection.
-     *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws OMEROServerError Server error.
      */
-    public void saveROI(Client client) throws OMEROServerError, ServiceException {
+    public void saveROI() throws OMEROServerError, ServiceException {
         try {
             Roi roi = (Roi) client.getGateway().getUpdateService(client.getCtx()).saveAndReturnObject(data.asIObject());
             data = new ROIData(roi);
@@ -317,7 +320,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double x = ijRoi.getBounds().getX();
             double y = ijRoi.getBounds().getY();
 
-            shape = new TextWrapper(text, x, y);
+            shape = new TextWrapper(client, text, x, y);
             shape.setCZT(c, z, t);
             addShape(shape);
         } else if (ijRoi instanceof OvalRoi) {
@@ -326,7 +329,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double w = ijRoi.getBounds().getWidth();
             double h = ijRoi.getBounds().getHeight();
 
-            shape = new EllipseWrapper(x + w / 2, y + h / 2, w / 2, h / 2);
+            shape = new EllipseWrapper(client, x + w / 2, y + h / 2, w / 2, h / 2);
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
             addShape(shape);
@@ -336,7 +339,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double y1 = ((Line) ijRoi).y1d;
             double y2 = ((Line) ijRoi).y2d;
 
-            shape = new LineWrapper(x1, y1, x2, y2);
+            shape = new LineWrapper(client, x1, y1, x2, y2);
             shape.asShapeData().getShapeSettings().setMarkerEnd(ARROW);
             if (((Arrow) ijRoi).getDoubleHeaded()) {
                 shape.asShapeData().getShapeSettings().setMarkerStart(ARROW);
@@ -350,7 +353,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double y1 = ((Line) ijRoi).y1d;
             double y2 = ((Line) ijRoi).y2d;
 
-            shape = new LineWrapper(x1, y1, x2, y2);
+            shape = new LineWrapper(client, x1, y1, x2, y2);
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
             addShape(shape);
@@ -360,7 +363,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
 
             List<PointWrapper> points = new LinkedList<>();
             IntStream.range(0, x.length)
-                     .forEach(i -> points.add(new PointWrapper(x[i], y[i])));
+                     .forEach(i -> points.add(new PointWrapper(client, x[i], y[i])));
             points.forEach(p -> p.setText(ijRoi.getName()));
             points.forEach(p -> p.setCZT(c, z, t));
             points.forEach(this::addShape);
@@ -373,9 +376,9 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             List<Point2D.Double> points = new LinkedList<>();
             IntStream.range(0, x.length).forEach(i -> points.add(new Point2D.Double(x[i], y[i])));
             if (type.equals("Polyline") || type.equals("Freeline") || type.equals("Angle")) {
-                shape = new PolylineWrapper(points);
+                shape = new PolylineWrapper(client, points);
             } else {
-                shape = new PolygonWrapper(points);
+                shape = new PolygonWrapper(client, points);
             }
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
@@ -392,7 +395,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double w = ijRoi.getBounds().getWidth();
             double h = ijRoi.getBounds().getHeight();
 
-            shape = new RectangleWrapper(x, y, w, h);
+            shape = new RectangleWrapper(client, x, y, w, h);
 
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
