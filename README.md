@@ -35,7 +35,7 @@ These objects can then be used to retrieve their children:
 
 ```java
 for(DatasetWrapper dataset:datasets){
-    List<ImageWrapper> images=dataset.getImages(client);
+    List<ImageWrapper> images=dataset.getImages();
     //...
 }
 ```
@@ -48,15 +48,15 @@ For each type of objects (project, dataset or image), annotations can be retriev
 
 ```java
 TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "name", "description");
-dataset.addTag(client, tag);
-List<TagAnnotationWrapper> tags = dataset.getTags(client);
+dataset.addTag(tag);
+List<TagAnnotationWrapper> tags = dataset.getTags();
 ```
 
 * ####Key/Value pairs:
 
 ```java
-dataset.addPairKeyValue(client, "key", "value");
-String value = dataset.getValue(client, "key");
+dataset.addPairKeyValue("key", "value");
+String value = dataset.getValue("key");
 ```
 
 * #### Tables:
@@ -71,7 +71,7 @@ List<TableWrapper> tables = dataset.getTables(client);
 
 ```java
 File file = new File("file.csv");
-dataset.addFile(client, file);
+dataset.addFile(file);
 ```
 
 ### Images
@@ -80,14 +80,14 @@ Pixel intensities can be downloaded from images to a Java array or as an ImagePl
 
 ```java
 double[][][][][] pixels = image.getPixels().getAllPixels(client);
-ImagePlus imp = image.toImagePlus(client);
+ImagePlus imp = image.toImagePlus();
 ```
 
 Thumbnails of the specified size can be retrieved:
 
 ```java
 int size = 128;
-BufferedImage thumbnail = image.getThumbnail(client, size);
+BufferedImage thumbnail = image.getThumbnail(size);
 ```
 
 ### ROIs
@@ -96,10 +96,10 @@ ROIs can be added to images or retrieved from them:
 
 ```java
 ROIWrapper roi = new ROIWrapper();
-roi.addShape(new RectangleWrapper(0, 0, 5, 5));
+roi.addShape(new RectangleWrapper(client, 0, 0, 5, 5));
 roi.setImage(image);
-image.saveROI(client, roi);
-List<ROIWrapper> rois = image.getROIs(client);
+image.saveROI(roi);
+List<ROIWrapper> rois = image.getROIs();
 ```
 
 They can also be converted from or to ImageJ Rois:
@@ -108,8 +108,8 @@ They can also be converted from or to ImageJ Rois:
 // The property is a string used to create 3D/4D ROIs in OMERO, by grouping shapes sharing the same value
 List<ROIWrapper> omeroRois = ROIWrapper.fromImageJ(ijRois, property);
 
-ROIWrapper roi = new ROIWrapper();
-roi.addShape(new RectangleWrapper(0, 0, 5, 5));
+ROIWrapper roi = new ROIWrapper(client);
+roi.addShape(new RectangleWrapper(client, 0, 0, 5, 5));
 List<Roi> imagejRois = roi.toImageJ();
 ```
 
