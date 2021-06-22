@@ -56,7 +56,7 @@ public class ROITest extends UserTest {
         assertEquals(4, rois.get(0).getShapes().size());
 
         for (ROIWrapper roi : rois) {
-            client.deleteROI(roi);
+            client.delete(roi);
         }
 
         rois = image.getROIs();
@@ -91,7 +91,7 @@ public class ROITest extends UserTest {
         assertEquals(4, rois.get(0).getShapes().size());
 
         for (ROIWrapper roi : rois) {
-            client.deleteROI(roi);
+            client.delete(roi);
         }
 
         rois = image.getROIs();
@@ -224,7 +224,7 @@ public class ROITest extends UserTest {
         assertEquals(1, polygons.size());
 
         for (ROIWrapper roi : rois) {
-            client.deleteROI(roi);
+            client.delete(roi);
         }
 
         rois = image.getROIs();

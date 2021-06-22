@@ -83,14 +83,14 @@ public class FolderTest extends UserTest {
         assertEquals(8, image.getROIs().size());
 
         for (ROIWrapper roi : rois) {
-            client.deleteROI(roi);
+            client.delete(roi);
         }
 
         rois = folder.getROIs();
         assertEquals(0, rois.size());
         assertEquals(0, image.getROIs().size());
 
-        client.deleteFolder(folder);
+        client.delete(folder);
 
         try {
             image.getFolder(folder.getId());
@@ -124,14 +124,14 @@ public class FolderTest extends UserTest {
         assertEquals(8, rois.size());
 
         folder.unlinkROI(rois.get(0));
-        client.deleteROI(rois.get(0));
+        client.delete(rois.get(0));
         rois = folder.getROIs();
         assertEquals(7, rois.size());
 
-        client.deleteFolder(folder);
+        client.delete(folder);
 
         for (ROIWrapper roi : rois) {
-            client.deleteROI(roi);
+            client.delete(roi);
         }
     }
 
@@ -141,6 +141,10 @@ public class FolderTest extends UserTest {
         ImageWrapper image = client.getImage(3L);
 
         FolderWrapper folder = new FolderWrapper(client, "Test1");
+        folder.setDescription("Test 1");
+        folder.saveAndUpdate();
+        assertEquals("Test1", folder.getName());
+        assertEquals("Test 1", folder.getDescription());
         folder.setImage(image);
 
         for (int i = 0; i < 8; i++) {
@@ -158,7 +162,10 @@ public class FolderTest extends UserTest {
             folder.addROI(roi);
         }
 
-        folder = new FolderWrapper(client, "Test2");
+        folder = new FolderWrapper(client, "Test");
+        folder.setName("Test2");
+        folder.saveAndUpdate();
+        assertEquals("Test2", folder.getName());
         folder.setImage(image);
 
         for (int i = 0; i < 8; i++) {
@@ -181,7 +188,7 @@ public class FolderTest extends UserTest {
         assertEquals(16, image.getROIs().size());
 
         for (FolderWrapper RoiFolder : folders) {
-            client.deleteFolder(RoiFolder);
+            client.delete(RoiFolder);
         }
 
         folders = image.getFolders();
@@ -190,7 +197,7 @@ public class FolderTest extends UserTest {
 
         List<ROIWrapper> rois = image.getROIs();
         for (ROIWrapper roi : rois) {
-            client.deleteROI(roi);
+            client.delete(roi);
         }
 
         assertEquals(0, image.getROIs().size());

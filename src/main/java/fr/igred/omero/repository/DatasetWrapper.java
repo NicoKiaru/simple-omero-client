@@ -41,12 +41,12 @@ import omero.model.DatasetI;
 import omero.model.DatasetImageLink;
 import omero.model.DatasetImageLinkI;
 import omero.model.IObject;
-import omero.model.NamedValue;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
@@ -95,12 +95,34 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
 
 
     /**
+     * Sets the name of the dataset.
+     *
+     * @param name The name of the dataset. Mustn't be <code>null</code>.
+     *
+     * @throws IllegalArgumentException If the name is <code>null</code>.
+     */
+    public void setName(String name) {
+        data.setName(name);
+    }
+
+
+    /**
      * Gets the DatasetData description
      *
      * @return DatasetData description.
      */
     public String getDescription() {
         return data.getDescription();
+    }
+
+
+    /**
+     * Sets the description of the dataset.
+     *
+     * @param description The description of the dataset.
+     */
+    public void setDescription(String description) {
+        data.setDescription(description);
     }
 
 
@@ -280,13 +302,9 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         for (ImageData image : images) {
             ImageWrapper imageWrapper = new ImageWrapper(client, image);
 
-            Collection<NamedValue> pairsKeyValue = imageWrapper.getKeyValuePairs();
-
-            for (NamedValue pairKeyValue : pairsKeyValue) {
-                if (pairKeyValue.name.equals(key)) {
-                    selected.add(image);
-                    break;
-                }
+            Map<String, String> pairsKeyValue = imageWrapper.getKeyValuePairs();
+            if (pairsKeyValue.get(key) != null) {
+                selected.add(image);
             }
         }
 
@@ -321,13 +339,9 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         for (ImageData image : images) {
             ImageWrapper imageWrapper = new ImageWrapper(client, image);
 
-            Collection<NamedValue> pairsKeyValue = imageWrapper.getKeyValuePairs();
-
-            for (NamedValue pairKeyValue : pairsKeyValue) {
-                if (pairKeyValue.name.equals(key) && pairKeyValue.value.equals(value)) {
-                    selected.add(image);
-                    break;
-                }
+            Map<String, String> pairsKeyValue = imageWrapper.getKeyValuePairs();
+            if (pairsKeyValue.get(key) != null && pairsKeyValue.get(key).equals(value)) {
+                selected.add(image);
             }
         }
 

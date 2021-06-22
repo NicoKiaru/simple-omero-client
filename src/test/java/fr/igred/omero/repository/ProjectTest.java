@@ -30,7 +30,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetDatasetFromProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<DatasetWrapper> datasets = project.getDatasets();
 
@@ -40,7 +40,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetDatasetFromProject2() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<DatasetWrapper> datasets = project.getDatasets("TestDataset");
 
@@ -50,7 +50,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testAddTagToProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
 
@@ -60,7 +60,7 @@ public class ProjectTest extends UserTest {
 
         assertEquals(1, tags.size());
 
-        client.deleteTag(tag);
+        client.delete(tag);
 
         tags = project.getTags(client);
 
@@ -70,14 +70,14 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testAddTagToProject2() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         project.addTag("test", "test");
 
         List<TagAnnotationWrapper> tags = client.getTags("test");
         assertEquals(1, tags.size());
 
-        client.deleteTag(tags.get(0).getId());
+        client.delete(tags.get(0));
 
         tags = client.getTags("test");
         assertEquals(0, tags.size());
@@ -86,7 +86,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testAddTagIdToProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
 
@@ -95,7 +95,7 @@ public class ProjectTest extends UserTest {
         List<TagAnnotationWrapper> tags = project.getTags(client);
         assertEquals(1, tags.size());
 
-        client.deleteTag(tag);
+        client.delete(tag);
 
         tags = project.getTags(client);
         assertEquals(0, tags.size());
@@ -104,7 +104,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testAddTagsToProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         TagAnnotationWrapper tag1 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
         TagAnnotationWrapper tag2 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
@@ -117,10 +117,10 @@ public class ProjectTest extends UserTest {
 
         assertEquals(4, tags.size());
 
-        client.deleteTag(tag1);
-        client.deleteTag(tag2);
-        client.deleteTag(tag3);
-        client.deleteTag(tag4);
+        client.delete(tag1);
+        client.delete(tag2);
+        client.delete(tag3);
+        client.delete(tag4);
 
         tags = project.getTags(client);
 
@@ -130,7 +130,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testAddTagsToProject2() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         TagAnnotationWrapper tag1 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
         TagAnnotationWrapper tag2 = new TagAnnotationWrapper(client, "Project tag", "tag attached to a project");
@@ -143,10 +143,10 @@ public class ProjectTest extends UserTest {
 
         assertEquals(4, tags.size());
 
-        client.deleteTag(tag1);
-        client.deleteTag(tag2);
-        client.deleteTag(tag3);
-        client.deleteTag(tag4);
+        client.delete(tag1);
+        client.delete(tag2);
+        client.delete(tag3);
+        client.delete(tag4);
 
         tags = project.getTags(client);
 
@@ -156,7 +156,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetImagesInProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImages();
 
@@ -166,7 +166,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetImagesByNameInProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImages(client, "image1.fake");
 
@@ -176,7 +176,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetImagesLikeInProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImagesLike(".fake");
 
@@ -186,7 +186,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetImagesTaggedInProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImagesTagged(1L);
 
@@ -197,7 +197,7 @@ public class ProjectTest extends UserTest {
     @Test
     public void testGetImagesTaggedInProject2() throws Exception {
         TagAnnotationWrapper tag     = client.getTag(2L);
-        ProjectWrapper       project = client.getProject(2L);
+        ProjectWrapper       project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImagesTagged(tag);
 
@@ -207,7 +207,7 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetImagesKeyInProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImagesKey("testKey1");
 
@@ -217,11 +217,44 @@ public class ProjectTest extends UserTest {
 
     @Test
     public void testGetImagesPairKeyValueInProject() throws Exception {
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProject(1L);
 
         List<ImageWrapper> images = project.getImagesPairKeyValue(client, "testKey1", "testValue1");
 
         assertEquals(2, images.size());
+    }
+
+
+    @Test
+    public void testSetName() throws Exception {
+        ProjectWrapper project = client.getProject(1L);
+
+        String name  = project.getName();
+        String name2 = "NewName";
+        project.setName(name2);
+        project.saveAndUpdate();
+        assertEquals(name2, client.getProject(1L).getName());
+
+        project.setName(name);
+        project.saveAndUpdate();
+        assertEquals(name, client.getProject(1L).getName());
+    }
+
+
+    @Test
+    public void testSetDescription() throws Exception {
+        ProjectWrapper project = client.getProject(1L);
+
+        String description  = project.getDescription();
+
+        String description2 = "NewName";
+        project.setDescription(description2);
+        project.saveAndUpdate();
+        assertEquals(description2, client.getProject(1L).getDescription());
+
+        project.setDescription(description);
+        project.saveAndUpdate();
+        assertEquals(description, client.getProject(1L).getDescription());
     }
 
 }

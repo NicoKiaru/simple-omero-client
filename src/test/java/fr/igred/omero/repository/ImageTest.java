@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -76,7 +77,7 @@ public class ImageTest extends UserTest {
         assertEquals(2, images.size());
 
         for (ImageWrapper image : images) {
-            client.deleteImage(image);
+            client.delete(image);
         }
 
         images = dataset.getImages();
@@ -121,12 +122,12 @@ public class ImageTest extends UserTest {
         image.addMapAnnotation(mapAnnotation1);
         image.addMapAnnotation(mapAnnotation2);
 
-        List<NamedValue> result = image.getKeyValuePairs();
+        Map<String, String> result = image.getKeyValuePairs();
 
         assertEquals(4, result.size());
         assertEquals("Value Test", image.getValue("Test result1"));
 
-        client.deleteImage(image);
+        client.delete(image);
     }
 
 
@@ -156,12 +157,12 @@ public class ImageTest extends UserTest {
 
         image.addMapAnnotation(mapAnnotation);
 
-        List<NamedValue> results = image.getKeyValuePairs();
+        Map<String, String> results = image.getKeyValuePairs();
 
         assertEquals(2, results.size());
         assertEquals("Value Test", image.getValue("Test result1"));
 
-        client.deleteImage(image);
+        client.delete(image);
     }
 
 
@@ -187,7 +188,7 @@ public class ImageTest extends UserTest {
         image.addPairKeyValue("Test result1", "Value Test");
         image.addPairKeyValue("Test result2", "Value Test2");
 
-        List<NamedValue> results = image.getKeyValuePairs();
+        Map<String, String> results = image.getKeyValuePairs();
 
         assertEquals(2, results.size());
         try {
@@ -195,7 +196,7 @@ public class ImageTest extends UserTest {
         } catch (Exception e) {
             exception = true;
         }
-        client.deleteImage(image);
+        client.delete(image);
         assertTrue(exception);
     }
 
@@ -427,7 +428,7 @@ public class ImageTest extends UserTest {
 
         assertEquals(1, tags.size());
 
-        client.deleteTag(tag);
+        client.delete(tag);
 
         tags = image.getTags(client);
 
@@ -444,7 +445,7 @@ public class ImageTest extends UserTest {
         List<TagAnnotationWrapper> tags = client.getTags("image tag");
         assertEquals(1, tags.size());
 
-        client.deleteTag(tags.get(0).getId());
+        client.delete(tags.get(0));
 
         tags = client.getTags("image tag");
 
@@ -464,7 +465,7 @@ public class ImageTest extends UserTest {
 
         assertEquals(1, tags.size());
 
-        client.deleteTag(tag);
+        client.delete(tag);
 
         tags = image.getTags(client);
 
@@ -487,10 +488,10 @@ public class ImageTest extends UserTest {
 
         assertEquals(4, tags.size());
 
-        client.deleteTag(tag1);
-        client.deleteTag(tag2);
-        client.deleteTag(tag3);
-        client.deleteTag(tag4);
+        client.delete(tag1);
+        client.delete(tag2);
+        client.delete(tag3);
+        client.delete(tag4);
 
         tags = image.getTags(client);
 
@@ -513,10 +514,10 @@ public class ImageTest extends UserTest {
 
         assertEquals(4, tags.size());
 
-        client.deleteTag(tag1);
-        client.deleteTag(tag2);
-        client.deleteTag(tag3);
-        client.deleteTag(tag4);
+        client.delete(tag1);
+        client.delete(tag2);
+        client.delete(tag3);
+        client.delete(tag4);
 
         tags = image.getTags(client);
 
@@ -590,11 +591,13 @@ public class ImageTest extends UserTest {
 
     @Test
     public void testSetDescription() throws Exception {
-        ImageWrapper image       = client.getImage(1L);
-        String       description = image.getDescription();
-        image.setDescription("Foo");
+        ImageWrapper image = client.getImage(1L);
+
+        String description  = image.getDescription();
+        String description2 = "Foo";
+        image.setDescription(description2);
         image.saveAndUpdate();
-        assertEquals("Foo", client.getImage(1L).getDescription());
+        assertEquals(description2, client.getImage(1L).getDescription());
         image.setDescription(description);
         image.saveAndUpdate();
         assertEquals(description, client.getImage(1L).getDescription());
@@ -604,10 +607,12 @@ public class ImageTest extends UserTest {
     @Test
     public void testSetName() throws Exception {
         ImageWrapper image = client.getImage(1L);
-        String       name  = image.getName();
-        image.setName("Foo image");
+
+        String name  = image.getName();
+        String name2 = "Foo image";
+        image.setName(name2);
         image.saveAndUpdate();
-        assertEquals("Foo image", client.getImage(1L).getName());
+        assertEquals(name2, client.getImage(1L).getName());
         image.setName(name);
         image.saveAndUpdate();
         assertEquals(name, image.getName());
@@ -654,7 +659,7 @@ public class ImageTest extends UserTest {
 
     @Test
     public void testGetThumbnail() throws Exception {
-        ImageWrapper image = client.getImage(1L);
+        ImageWrapper  image     = client.getImage(1L);
         BufferedImage thumbnail = image.getThumbnail(96);
         assertNotNull(thumbnail);
         assertEquals(96, thumbnail.getWidth());

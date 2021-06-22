@@ -32,11 +32,7 @@ import omero.model.NamedValue;
 import omero.model.TagAnnotationI;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
@@ -232,9 +228,9 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<NamedValue> getKeyValuePairs()
+    public Map<String, String> getKeyValuePairs()
     throws ServiceException, AccessException, ExecutionException {
-        List<NamedValue> keyValuePairs = new ArrayList<>();
+        Map<String, String> keyValuePairs = new HashMap<>();
 
         List<Long> userIds = new ArrayList<>();
         userIds.add(client.getId());
@@ -256,7 +252,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
                 @SuppressWarnings("unchecked")
                 List<NamedValue> list = (List<NamedValue>) mapAnnotation.getContent();
 
-                keyValuePairs.addAll(list);
+                list.forEach(kv -> keyValuePairs.put(kv.name, kv.value));
             }
         }
 
@@ -278,15 +274,14 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      */
     public String getValue(String key)
     throws ServiceException, AccessException, NoSuchElementException, ExecutionException {
-        Collection<NamedValue> keyValuePairs = getKeyValuePairs();
-
-        for (NamedValue namedValue : keyValuePairs) {
-            if (namedValue.name.equals(key)) {
-                return namedValue.value;
-            }
+        Map<String, String> keyValuePairs = getKeyValuePairs();
+        String value = keyValuePairs.get(key);
+        if(value != null) {
+            return value;
         }
-
-        throw new NoSuchElementException("Key value pair " + key + " not found");
+        else {
+            throw new NoSuchElementException("Key value pair " + key + " not found");
+        }
     }
 
 
