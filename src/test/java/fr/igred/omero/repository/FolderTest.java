@@ -37,7 +37,7 @@ public class FolderTest extends UserTest {
 
         FolderWrapper folder = new FolderWrapper(client, "Test1");
         try {
-            RectangleWrapper rectangle = new RectangleWrapper(client, 0, 0, 10, 10);
+            RectangleWrapper rectangle = new RectangleWrapper(0, 0, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
             rectangle.setC(0);
@@ -64,7 +64,7 @@ public class FolderTest extends UserTest {
         for (int i = 0; i < 8; i++) {
             ROIWrapper roi = new ROIWrapper(client);
 
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
@@ -107,7 +107,7 @@ public class FolderTest extends UserTest {
         folder.setImage(3L);
 
         for (int i = 0; i < 8; i++) {
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
@@ -150,7 +150,7 @@ public class FolderTest extends UserTest {
         for (int i = 0; i < 8; i++) {
             ROIWrapper roi = new ROIWrapper(client);
 
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
@@ -171,7 +171,7 @@ public class FolderTest extends UserTest {
         for (int i = 0; i < 8; i++) {
             ROIWrapper roi = new ROIWrapper(client);
 
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 5, 5);
             rectangle.setZ(i);
             rectangle.setT(0);

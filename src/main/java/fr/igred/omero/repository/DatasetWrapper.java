@@ -352,17 +352,16 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Adds a list of image to the dataset in OMERO.
      *
-     * @param client The client handling the connection.
      * @param images Image to add to the dataset.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addImages(Client client, List<ImageWrapper> images)
+    public void addImages(List<ImageWrapper> images)
     throws ServiceException, AccessException, ExecutionException {
         for (ImageWrapper image : images) {
-            addImage(client, image);
+            addImage(image);
         }
     }
 
@@ -370,14 +369,13 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Adds a single image to the dataset in OMERO
      *
-     * @param client The client handling the connection.
      * @param image  Image to add.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addImage(Client client, ImageWrapper image)
+    public void addImage(ImageWrapper image)
     throws ServiceException, AccessException, ExecutionException {
         DatasetImageLink link = new DatasetImageLinkI();
         link.setChild(image.asImageData().asImage());

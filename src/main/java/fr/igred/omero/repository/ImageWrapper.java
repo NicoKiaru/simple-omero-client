@@ -300,7 +300,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
     throws ServiceException, AccessException, ExecutionException {
         PixelsWrapper pixels = this.getPixels();
 
-        boolean createdRawDataFacility = pixels.createRawDataFacility(client);
+        boolean createdRawDataFacility = pixels.createRawDataFacility();
 
         Bounds bounds = pixels.getBounds(xBound, yBound, cBound, zBound, tBound);
 
@@ -360,7 +360,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
 
                     Coordinates pos = new Coordinates(startX, startY, posC, posZ, posT);
 
-                    byte[] tiles = pixels.getRawTile(client, pos, sizeX, sizeY, bpp);
+                    byte[] tiles = pixels.getRawTile(pos, sizeX, sizeY, bpp);
 
                     int n = imp.getStackIndex(c + 1, z + 1, t + 1);
                     stack.setPixels(DataTools.makeDataArray(tiles, bpp, isFloat, false), n);

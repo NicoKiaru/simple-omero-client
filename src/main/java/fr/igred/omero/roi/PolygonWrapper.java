@@ -44,21 +44,19 @@ public class PolygonWrapper extends GenericShapeWrapper<PolygonData> {
     /**
      * Constructor of the PolygonWrapper class using a new empty LineData.
      *
-     * @param client The client handling the connection.
      */
-    public PolygonWrapper(Client client) {
-        this(client, new PolygonData());
+    public PolygonWrapper() {
+        this(null, new PolygonData());
     }
 
 
     /**
      * Constructor of the PolygonWrapper class using a new LineData.
      *
-     * @param client The client handling the connection.
      * @param points the points in the polyline.
      */
-    public PolygonWrapper(Client client, List<Point2D.Double> points) {
-        this(client, new PolygonData(points));
+    public PolygonWrapper(List<Point2D.Double> points) {
+        this(null, new PolygonData(points));
     }
 
 

@@ -43,24 +43,21 @@ public class RectangleWrapper extends GenericShapeWrapper<RectangleData> {
     /**
      * Constructor of the RectangleWrapper class using a new empty RectangleData.
      *
-     * @param client The client handling the connection.
      */
-    public RectangleWrapper(Client client) {
-        this(client, new RectangleData());
+    public RectangleWrapper() {
+        this(null, new RectangleData());
     }
 
 
     /**
      * Constructor of the RectangleWrapper class using a new RectangleData.
-     *
-     * @param client The client handling the connection.
-     * @param x      The x-coordinate of the top-left corner.
+     *  @param x      The x-coordinate of the top-left corner.
      * @param y      The y-coordinate of the top-left corner.
      * @param width  The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    public RectangleWrapper(Client client, double x, double y, double width, double height) {
-        this(client, new RectangleData(x, y, width, height));
+    public RectangleWrapper(double x, double y, double width, double height) {
+        this(null, new RectangleData(x, y, width, height));
     }
 
 
@@ -240,8 +237,8 @@ public class RectangleWrapper extends GenericShapeWrapper<RectangleData> {
         if (transform == null) {
             roi = new ij.gui.Roi(getX(), getY(), getWidth(), getHeight());
         } else {
-            PointWrapper p1 = new PointWrapper(null, getX(), getY() + getHeight() / 2);
-            PointWrapper p2 = new PointWrapper(null, getX() + getWidth(), getY() + getHeight() / 2);
+            PointWrapper p1 = new PointWrapper(getX(), getY() + getHeight() / 2);
+            PointWrapper p2 = new PointWrapper(getX() + getWidth(), getY() + getHeight() / 2);
             p1.setTransform(transform);
             p2.setTransform(transform);
 

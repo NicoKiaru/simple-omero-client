@@ -59,7 +59,7 @@ public class TagTest extends UserTest {
     @Test
     public void testGetProjects() throws Exception {
         TagAnnotationWrapper tag = client.getTag(1L);
-        List<ProjectWrapper> projects = tag.getProjects(client);
+        List<ProjectWrapper> projects = tag.getProjects();
         assertEquals(1, projects.size());
         assertEquals(2L, projects.get(0).getId());
     }
@@ -68,7 +68,7 @@ public class TagTest extends UserTest {
     @Test
     public void testGetDatasets() throws Exception {
         TagAnnotationWrapper tag = client.getTag(1L);
-        List<DatasetWrapper> datasets = tag.getDatasets(client);
+        List<DatasetWrapper> datasets = tag.getDatasets();
         assertEquals(1, datasets.size());
         assertEquals(3L, datasets.get(0).getId());
     }
@@ -77,7 +77,7 @@ public class TagTest extends UserTest {
     @Test
     public void testGetImages() throws Exception {
         TagAnnotationWrapper tag      = client.getTag(1L);
-        List<ImageWrapper>   images = tag.getImages(client);
+        List<ImageWrapper>   images = tag.getImages();
         assertEquals(3, images.size());
         assertEquals(1L, images.get(0).getId());
         assertEquals(2L, images.get(1).getId());

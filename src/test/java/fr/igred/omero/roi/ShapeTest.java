@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 public class ShapeTest extends BasicTest {
@@ -36,7 +37,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testPoint() {
         final String text  = "Point";
-        PointWrapper point = new PointWrapper(null);
+        PointWrapper point = new PointWrapper();
 
         double[] pointCoordinates = {25, 25};
 
@@ -57,7 +58,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testText() {
         final String value = "Point";
-        TextWrapper  text  = new TextWrapper(null);
+        TextWrapper  text  = new TextWrapper();
 
         double[] textCoordinates = {1, 1};
         text.setCoordinates(textCoordinates);
@@ -80,7 +81,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testRectangle() {
-        RectangleWrapper rectangle = new RectangleWrapper(null);
+        RectangleWrapper rectangle = new RectangleWrapper();
 
         double[] rectangleCoordinates = {2, 2, 5, 5};
         rectangle.setCoordinates(rectangleCoordinates);
@@ -98,7 +99,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testRectangleCZT() {
         final String     text      = "Rectangle";
-        RectangleWrapper rectangle = new RectangleWrapper(null);
+        RectangleWrapper rectangle = new RectangleWrapper();
 
         double[] rectangleCoordinates = {2, 2, 5, 5};
         int      c                    = 1;
@@ -129,7 +130,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testMask() {
-        MaskWrapper mask = new MaskWrapper(null);
+        MaskWrapper mask = new MaskWrapper();
 
         double[] maskCoordinates = {3, 3, 10, 10};
         mask.setCoordinates(maskCoordinates);
@@ -147,7 +148,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testValuesMask() {
         final String text = "Mask";
-        MaskWrapper  mask = new MaskWrapper(null);
+        MaskWrapper  mask = new MaskWrapper();
         mask.setCoordinates(3, 3, 10, 10);
         mask.setText(text);
 
@@ -176,7 +177,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testEllipse() {
         final String   text    = "Ellipse";
-        EllipseWrapper ellipse = new EllipseWrapper(null);
+        EllipseWrapper ellipse = new EllipseWrapper();
 
         Color stroke = Color.BLUE;
         ellipse.setStroke(stroke);
@@ -203,7 +204,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testLine() {
         final String text = "Line";
-        LineWrapper  line = new LineWrapper(null);
+        LineWrapper  line = new LineWrapper();
 
         double[] lineCoordinates = {3, 3, 10, 10};
         line.setCoordinates(lineCoordinates[0],
@@ -225,7 +226,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testPointsLine() {
-        LineWrapper line = new LineWrapper(null);
+        LineWrapper line = new LineWrapper();
 
         double[] lineCoordinates = {3, 3, 10, 10};
         line.setCoordinates(lineCoordinates[0],
@@ -246,7 +247,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testPolyline() {
         final String         text     = "Polyline";
-        PolylineWrapper      polyline = new PolylineWrapper(null);
+        PolylineWrapper      polyline = new PolylineWrapper();
         List<Point2D.Double> points   = new ArrayList<>();
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
@@ -268,7 +269,7 @@ public class ShapeTest extends BasicTest {
     @Test
     public void testPolygon() {
         final String         text    = "Polygon";
-        PolygonWrapper       polygon = new PolygonWrapper(null);
+        PolygonWrapper       polygon = new PolygonWrapper();
         List<Point2D.Double> points  = new ArrayList<>();
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
@@ -290,7 +291,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testPointConstructor() {
-        PointWrapper point1 = new PointWrapper(null, 0, 0);
+        PointWrapper point1 = new PointWrapper(0, 0);
         PointWrapper point2 = new PointWrapper(null, new PointData(25, 25));
 
         double[] pointCoordinates = {25, 25};
@@ -309,7 +310,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testTextConstructor() {
-        TextWrapper text1 = new TextWrapper(null, "Text1", 0, 0);
+        TextWrapper text1 = new TextWrapper("Text1", 0, 0);
         TextWrapper text2 = new TextWrapper(null, new TextData("Text1", 25, 25));
 
         double[] textCoordinates = {25, 25};
@@ -329,7 +330,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testLineConstructor() {
-        LineWrapper line1 = new LineWrapper(null, 0, 0, 0, 0);
+        LineWrapper line1 = new LineWrapper(0, 0, 0, 0);
         LineWrapper line2 = new LineWrapper(null, new LineData(25, 25, 50, 50));
 
         double[] lineCoordinates = {25, 25, 50, 50};
@@ -348,7 +349,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testRectangleConstructor() {
-        RectangleWrapper r1 = new RectangleWrapper(null, 0, 0, 0, 0);
+        RectangleWrapper r1 = new RectangleWrapper(0, 0, 0, 0);
         RectangleWrapper r2 = new RectangleWrapper(null, new RectangleData(25, 25, 50, 50));
 
         double[] rectangleCoordinates = {25, 25, 50, 50};
@@ -372,7 +373,7 @@ public class ShapeTest extends BasicTest {
             maskValues[i] = (byte) (i >= 12 ? 1 : 0);
         }
 
-        MaskWrapper m1 = new MaskWrapper(null, 10, 10, 5, 5, maskValues);
+        MaskWrapper m1 = new MaskWrapper(10, 10, 5, 5, maskValues);
         MaskWrapper m2 = new MaskWrapper(null, new MaskData(0, 0, 5, 5, maskValues));
         m1.setCoordinates(0, 0, 5, 5);
 
@@ -394,7 +395,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testEllipseConstructor() {
-        EllipseWrapper e1 = new EllipseWrapper(null, 0, 0, 0, 0);
+        EllipseWrapper e1 = new EllipseWrapper(0, 0, 0, 0);
         EllipseWrapper e2 = new EllipseWrapper(null, new EllipseData(25, 25, 50, 50));
 
         double[] ellipseCoordinates = {25, 25, 50, 50};
@@ -422,7 +423,7 @@ public class ShapeTest extends BasicTest {
         points.add(p2);
         points.add(p3);
 
-        PolylineWrapper      polyline = new PolylineWrapper(null, points);
+        PolylineWrapper      polyline = new PolylineWrapper(points);
         List<Point2D.Double> points2  = polyline.getPoints();
 
         assertEquals(points, points2);
@@ -440,7 +441,7 @@ public class ShapeTest extends BasicTest {
         points.add(p2);
         points.add(p3);
 
-        PolygonWrapper       polygon = new PolygonWrapper(null, points);
+        PolygonWrapper       polygon = new PolygonWrapper(points);
         List<Point2D.Double> points2 = polygon.getPoints();
 
         assertEquals(points, points2);
@@ -449,7 +450,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTRectangle() {
-        RectangleWrapper shape     = new RectangleWrapper(null, 25, 26, 27, 28);
+        RectangleWrapper shape     = new RectangleWrapper(25, 26, 27, 28);
         Rectangle2D      awtShape  = new Rectangle2D.Double(25, 26, 27, 28);
         java.awt.Shape   awtShape2 = shape.toAWTShape();
         assertEquals(awtShape, awtShape2);
@@ -463,7 +464,7 @@ public class ShapeTest extends BasicTest {
             maskValues[i] = (byte) (i >= 12 ? 1 : 0);
         }
 
-        MaskWrapper    shape     = new MaskWrapper(null, 25, 26, 27, 28, maskValues);
+        MaskWrapper    shape     = new MaskWrapper(25, 26, 27, 28, maskValues);
         Rectangle2D    awtShape  = new Rectangle2D.Double(25, 26, 27, 28);
         java.awt.Shape awtShape2 = shape.toAWTShape();
         assertEquals(awtShape, awtShape2);
@@ -472,7 +473,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTEllipse() {
-        EllipseWrapper shape     = new EllipseWrapper(null, 28, 27, 26, 25);
+        EllipseWrapper shape     = new EllipseWrapper(28, 27, 26, 25);
         Ellipse2D      awtShape  = new Ellipse2D.Double(2, 2, 52, 50);
         java.awt.Shape awtShape2 = shape.toAWTShape();
         assertEquals(awtShape, awtShape2);
@@ -481,7 +482,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTLine() {
-        LineWrapper shape     = new LineWrapper(null, 0, 1, 2, 3);
+        LineWrapper shape     = new LineWrapper(0, 1, 2, 3);
         Line2D      awtShape  = new Line2D.Double(0, 1, 2, 3);
         Line2D      awtShape2 = (Line2D) shape.toAWTShape();
         assertEquals(awtShape.getP1(), awtShape2.getP1());
@@ -500,7 +501,7 @@ public class ShapeTest extends BasicTest {
         points.add(p2);
         points.add(p3);
 
-        PolygonWrapper shape = new PolygonWrapper(null, points);
+        PolygonWrapper shape = new PolygonWrapper(points);
 
         Path2D awtShape = new Path2D.Double();
         awtShape.moveTo(p1.x, p1.y);
@@ -536,7 +537,7 @@ public class ShapeTest extends BasicTest {
         points.add(p2);
         points.add(p3);
 
-        PolylineWrapper shape = new PolylineWrapper(null, points);
+        PolylineWrapper shape = new PolylineWrapper(points);
 
         Path2D awtShape = new Path2D.Double();
         awtShape.moveTo(p1.x, p1.y);
@@ -563,7 +564,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTPoint() {
-        PointWrapper shape = new PointWrapper(null, 1, 2);
+        PointWrapper shape = new PointWrapper(1, 2);
 
         Path2D awtShape = new Path2D.Double();
         awtShape.moveTo(1, 2);
@@ -587,7 +588,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTText() {
-        TextWrapper shape = new TextWrapper(null, "Text", 1, 2);
+        TextWrapper shape = new TextWrapper("Text", 1, 2);
 
         Path2D awtShape = new Path2D.Double();
         awtShape.moveTo(1, 2);
@@ -611,7 +612,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAffineTransform() {
-        RectangleWrapper shape = new RectangleWrapper(null, 1, 2, 3, 4);
+        RectangleWrapper shape = new RectangleWrapper(1, 2, 3, 4);
         shape.setTransform(1, 2, 3, 4, 5, 6);
 
         AffineTransform transform = new AffineTransform(1, 2, 3, 4, 5, 6);
@@ -621,7 +622,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testNoAffineTransform() {
-        RectangleWrapper shape = new RectangleWrapper(null, 1, 2, 3, 4);
+        RectangleWrapper shape = new RectangleWrapper(1, 2, 3, 4);
 
         java.awt.Shape awtShape = new Rectangle2D.Double(1, 2, 3, 4);
         assertEquals(awtShape, shape.createTransformedAWTShape());
@@ -630,8 +631,8 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testBoundingBox() {
-        RectangleWrapper shape = new RectangleWrapper(null, 1, 2, 3, 4);
-        RectangleWrapper box   = new RectangleWrapper(null, -6, 1, 4, 3);
+        RectangleWrapper shape = new RectangleWrapper(1, 2, 3, 4);
+        RectangleWrapper box   = new RectangleWrapper(-6, 1, 4, 3);
 
         AffineTransform transform = new AffineTransform();
         transform.rotate(Math.PI / 2);
@@ -650,14 +651,25 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testBoundingBox2() {
-        EllipseWrapper   shape = new EllipseWrapper(null, 50, 50, 20, 40);
-        RectangleWrapper box   = new RectangleWrapper(null, 30, 10, 40, 80);
+        EllipseWrapper   shape = new EllipseWrapper(50, 50, 20, 40);
+        RectangleWrapper box   = new RectangleWrapper(30, 10, 40, 80);
 
         double[] coordinates1 = box.getCoordinates();
         double[] coordinates2 = shape.getBoundingBox().getCoordinates();
 
         for (int i = 0; i < 4; i++) {
             assertEquals(coordinates1[i], coordinates2[i], 0.01);
+        }
+    }
+
+
+    @Test
+    public void testNullSaveAndUpdate() {
+        RectangleWrapper rectangle = new RectangleWrapper();
+        try {
+            rectangle.saveAndUpdate();
+        } catch (Exception e) {
+            fail();
         }
     }
 

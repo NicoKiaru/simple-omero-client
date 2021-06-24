@@ -260,7 +260,6 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project with a certain from OMERO.
      *
-     * @param client The client handling the connection.
      * @param name   Name searched.
      *
      * @return ImageWrapper list.
@@ -268,7 +267,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public List<ImageWrapper> getImages(Client client, String name)
+    public List<ImageWrapper> getImages(String name)
     throws ServiceException, AccessException {
         Collection<DatasetWrapper> datasets = getDatasets();
 

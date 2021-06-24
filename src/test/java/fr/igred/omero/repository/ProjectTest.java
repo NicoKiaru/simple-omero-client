@@ -56,13 +56,13 @@ public class ProjectTest extends UserTest {
 
         project.addTag(tag);
 
-        List<TagAnnotationWrapper> tags = project.getTags(client);
+        List<TagAnnotationWrapper> tags = project.getTags();
 
         assertEquals(1, tags.size());
 
         client.delete(tag);
 
-        tags = project.getTags(client);
+        tags = project.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -92,12 +92,12 @@ public class ProjectTest extends UserTest {
 
         project.addTag(tag.getId());
 
-        List<TagAnnotationWrapper> tags = project.getTags(client);
+        List<TagAnnotationWrapper> tags = project.getTags();
         assertEquals(1, tags.size());
 
         client.delete(tag);
 
-        tags = project.getTags(client);
+        tags = project.getTags();
         assertEquals(0, tags.size());
     }
 
@@ -113,7 +113,7 @@ public class ProjectTest extends UserTest {
 
         project.addTags(tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
 
-        List<TagAnnotationWrapper> tags = project.getTags(client);
+        List<TagAnnotationWrapper> tags = project.getTags();
 
         assertEquals(4, tags.size());
 
@@ -122,7 +122,7 @@ public class ProjectTest extends UserTest {
         client.delete(tag3);
         client.delete(tag4);
 
-        tags = project.getTags(client);
+        tags = project.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -139,7 +139,7 @@ public class ProjectTest extends UserTest {
 
         project.addTags(tag1, tag2, tag3, tag4);
 
-        List<TagAnnotationWrapper> tags = project.getTags(client);
+        List<TagAnnotationWrapper> tags = project.getTags();
 
         assertEquals(4, tags.size());
 
@@ -148,7 +148,7 @@ public class ProjectTest extends UserTest {
         client.delete(tag3);
         client.delete(tag4);
 
-        tags = project.getTags(client);
+        tags = project.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -168,7 +168,7 @@ public class ProjectTest extends UserTest {
     public void testGetImagesByNameInProject() throws Exception {
         ProjectWrapper project = client.getProject(1L);
 
-        List<ImageWrapper> images = project.getImages(client, "image1.fake");
+        List<ImageWrapper> images = project.getImages("image1.fake");
 
         assertEquals(2, images.size());
     }

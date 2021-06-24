@@ -116,10 +116,12 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      */
     @SuppressWarnings("unchecked")
     public void saveAndUpdate() throws ExecutionException, ServiceException, AccessException {
-        try {
-            data = (T) client.getDm().saveAndReturnObject(client.getCtx(), data);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot save and update object.");
+        if (client != null) {
+            try {
+                data = (T) client.getDm().saveAndReturnObject(client.getCtx(), data);
+            } catch (DSOutOfServiceException | DSAccessException e) {
+                handleServiceOrAccess(e, "Cannot save and update object.");
+            }
         }
     }
 

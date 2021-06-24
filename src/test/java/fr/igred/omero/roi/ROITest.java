@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 public class ROITest extends UserTest {
@@ -39,7 +40,7 @@ public class ROITest extends UserTest {
         roiWrapper.setImage(image);
 
         for (int i = 0; i < 4; i++) {
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
@@ -72,7 +73,7 @@ public class ROITest extends UserTest {
         List<GenericShapeWrapper<?>> shapes = new ArrayList<>(4);
 
         for (int i = 0; i < 4; i++) {
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
@@ -106,7 +107,7 @@ public class ROITest extends UserTest {
 
         List<GenericShapeWrapper<?>> shapes = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
-            RectangleWrapper rectangle = new RectangleWrapper(client);
+            RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
@@ -126,7 +127,7 @@ public class ROITest extends UserTest {
         int size      = roi.getShapes().size();
         int ROINumber = rois.size();
 
-        RectangleWrapper rectangle = new RectangleWrapper(client);
+        RectangleWrapper rectangle = new RectangleWrapper();
         rectangle.setCoordinates(2, 2, 8, 8);
         rectangle.setZ(2);
         rectangle.setT(2);
@@ -155,23 +156,23 @@ public class ROITest extends UserTest {
     public void testROIAllShapes() throws Exception {
         ImageWrapper image = client.getImage(1L);
 
-        PointWrapper point = new PointWrapper(client, 1, 1);
+        PointWrapper point = new PointWrapper(1, 1);
         point.setCZT(0, 0, 0);
 
-        TextWrapper text = new TextWrapper(client, "Text", 2, 2);
+        TextWrapper text = new TextWrapper("Text", 2, 2);
         text.setCZT(0, 0, 1);
 
-        RectangleWrapper rectangle = new RectangleWrapper(client, 3, 3, 10, 10);
+        RectangleWrapper rectangle = new RectangleWrapper(3, 3, 10, 10);
         rectangle.setCZT(0, 0, 2);
 
-        MaskWrapper mask = new MaskWrapper(client);
+        MaskWrapper mask = new MaskWrapper();
         mask.setCoordinates(4, 4, 11, 11);
         mask.setCZT(1, 0, 0);
 
-        EllipseWrapper ellipse = new EllipseWrapper(client, 5, 5, 4, 4);
+        EllipseWrapper ellipse = new EllipseWrapper(5, 5, 4, 4);
         ellipse.setCZT(1, 0, 1);
 
-        LineWrapper line = new LineWrapper(client, 0, 0, 10, 10);
+        LineWrapper line = new LineWrapper(0, 0, 10, 10);
         line.setCZT(1, 0, 2);
 
         List<Point2D.Double> points2D = new ArrayList<>(3);
@@ -183,10 +184,10 @@ public class ROITest extends UserTest {
         points2D.add(p2);
         points2D.add(p3);
 
-        PolylineWrapper polyline = new PolylineWrapper(client, points2D);
+        PolylineWrapper polyline = new PolylineWrapper(points2D);
         polyline.setCZT(1, 1, 0);
 
-        PolygonWrapper polygon = new PolygonWrapper(client, points2D);
+        PolygonWrapper polygon = new PolygonWrapper(points2D);
         polygon.setCZT(1, 1, 1);
 
         ROIWrapper roiWrapper = new ROIWrapper(client);
@@ -230,6 +231,18 @@ public class ROITest extends UserTest {
         rois = image.getROIs();
 
         assertEquals(0, rois.size());
+    }
+
+
+    @Test
+    public void testSaveEmptyROI() {
+        ROIWrapper roi = new ROIWrapper(null);
+        try {
+            roi.saveROI();
+            roi.saveAndUpdate();
+        } catch (Exception e) {
+            fail();
+        }
     }
 
 }

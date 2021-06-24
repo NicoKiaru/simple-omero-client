@@ -20,6 +20,7 @@ package fr.igred.omero.roi;
 
 import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.ImageWrapper;
@@ -38,6 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -82,6 +84,21 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
      */
     public ROIWrapper(Client client, ROIData data) {
         super(client, data);
+    }
+
+
+    /**
+     * Saves and updates object.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    @Override
+    public void saveAndUpdate() throws ExecutionException, ServiceException, AccessException {
+        if(data.getImage() != null) {
+            super.saveAndUpdate();
+        }
     }
 
 
@@ -241,11 +258,14 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
      * @throws OMEROServerError Server error.
      */
     public void saveROI() throws OMEROServerError, ServiceException {
-        try {
-            Roi roi = (Roi) client.getGateway().getUpdateService(client.getCtx()).saveAndReturnObject(data.asIObject());
-            data = new ROIData(roi);
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Cannot save ROI");
+        if (data.getImage() != null) {
+            try {
+                Roi roi = (Roi) client.getGateway().getUpdateService(client.getCtx())
+                                      .saveAndReturnObject(data.asIObject());
+                data = new ROIData(roi);
+            } catch (DSOutOfServiceException | ServerError e) {
+                handleServiceOrServer(e, "Cannot save ROI");
+            }
         }
     }
 
@@ -320,7 +340,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double x = ijRoi.getBounds().getX();
             double y = ijRoi.getBounds().getY();
 
-            shape = new TextWrapper(client, text, x, y);
+            shape = new TextWrapper(text, x, y);
             shape.setCZT(c, z, t);
             addShape(shape);
         } else if (ijRoi instanceof OvalRoi) {
@@ -329,7 +349,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double w = ijRoi.getBounds().getWidth();
             double h = ijRoi.getBounds().getHeight();
 
-            shape = new EllipseWrapper(client, x + w / 2, y + h / 2, w / 2, h / 2);
+            shape = new EllipseWrapper(x + w / 2, y + h / 2, w / 2, h / 2);
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
             addShape(shape);
@@ -339,7 +359,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double y1 = ((Line) ijRoi).y1d;
             double y2 = ((Line) ijRoi).y2d;
 
-            shape = new LineWrapper(client, x1, y1, x2, y2);
+            shape = new LineWrapper(x1, y1, x2, y2);
             shape.asShapeData().getShapeSettings().setMarkerEnd(ARROW);
             if (((Arrow) ijRoi).getDoubleHeaded()) {
                 shape.asShapeData().getShapeSettings().setMarkerStart(ARROW);
@@ -353,7 +373,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double y1 = ((Line) ijRoi).y1d;
             double y2 = ((Line) ijRoi).y2d;
 
-            shape = new LineWrapper(client, x1, y1, x2, y2);
+            shape = new LineWrapper(x1, y1, x2, y2);
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
             addShape(shape);
@@ -363,7 +383,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
 
             List<PointWrapper> points = new LinkedList<>();
             IntStream.range(0, x.length)
-                     .forEach(i -> points.add(new PointWrapper(client, x[i], y[i])));
+                     .forEach(i -> points.add(new PointWrapper(x[i], y[i])));
             points.forEach(p -> p.setText(ijRoi.getName()));
             points.forEach(p -> p.setCZT(c, z, t));
             points.forEach(this::addShape);
@@ -376,9 +396,9 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             List<Point2D.Double> points = new LinkedList<>();
             IntStream.range(0, x.length).forEach(i -> points.add(new Point2D.Double(x[i], y[i])));
             if (type.equals("Polyline") || type.equals("Freeline") || type.equals("Angle")) {
-                shape = new PolylineWrapper(client, points);
+                shape = new PolylineWrapper(points);
             } else {
-                shape = new PolygonWrapper(client, points);
+                shape = new PolygonWrapper(points);
             }
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);
@@ -395,7 +415,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             double w = ijRoi.getBounds().getWidth();
             double h = ijRoi.getBounds().getHeight();
 
-            shape = new RectangleWrapper(client, x, y, w, h);
+            shape = new RectangleWrapper(x, y, w, h);
 
             shape.setText(ijRoi.getName());
             shape.setCZT(c, z, t);

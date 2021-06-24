@@ -46,25 +46,22 @@ public class LineWrapper extends GenericShapeWrapper<LineData> {
 
     /**
      * Constructor of the RectangleWrapper class using a new empty LineData.
-     *
-     * @param client The client handling the connection.
      */
-    public LineWrapper(Client client) {
-        this(client, new LineData());
+    public LineWrapper() {
+        this(null, new LineData());
     }
 
 
     /**
      * Constructor of the RectangleWrapper class using a new LineData.
      *
-     * @param client The client handling the connection.
-     * @param x1     x1-coordinate of the shape.
-     * @param y1     y1-coordinate of the shape.
-     * @param x2     x2-coordinate of the shape.
-     * @param y2     y2-coordinate of the shape.
+     * @param x1 x1-coordinate of the shape.
+     * @param y1 y1-coordinate of the shape.
+     * @param x2 x2-coordinate of the shape.
+     * @param y2 y2-coordinate of the shape.
      */
-    public LineWrapper(Client client, double x1, double y1, double x2, double y2) {
-        this(client, new LineData(x1, y1, x2, y2));
+    public LineWrapper(double x1, double y1, double x2, double y2) {
+        this(null, new LineData(x1, y1, x2, y2));
     }
 
 
@@ -238,8 +235,8 @@ public class LineWrapper extends GenericShapeWrapper<LineData> {
      */
     @Override
     public Roi toImageJ() {
-        PointWrapper p1 = new PointWrapper(null, getX1(), getY1());
-        PointWrapper p2 = new PointWrapper(null, getX2(), getY2());
+        PointWrapper p1 = new PointWrapper(getX1(), getY1());
+        PointWrapper p2 = new PointWrapper(getX2(), getY2());
 
         AffineTransform transform = toAWTTransform();
         if (transform != null) {

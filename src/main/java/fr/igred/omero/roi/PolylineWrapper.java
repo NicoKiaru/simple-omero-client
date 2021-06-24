@@ -43,21 +43,19 @@ public class PolylineWrapper extends GenericShapeWrapper<PolylineData> {
     /**
      * Constructor of the RectangleWrapper class using a new empty LineData.
      *
-     * @param client The client handling the connection.
      */
-    public PolylineWrapper(Client client) {
-        this(client, new PolylineData());
+    public PolylineWrapper() {
+        this(null, new PolylineData());
     }
 
 
     /**
      * Constructor of the RectangleWrapper class using a new LineData.
      *
-     * @param client The client handling the connection.
      * @param points the points in the polyline.
      */
-    public PolylineWrapper(Client client, List<Point2D.Double> points) {
-        this(client, new PolylineData(points));
+    public PolylineWrapper(List<Point2D.Double> points) {
+        this(null, new PolylineData(points));
     }
 
 

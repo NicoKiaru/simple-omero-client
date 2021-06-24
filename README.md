@@ -19,7 +19,7 @@ The main entry point is the Client class, which can be used to retrieve, save or
 
 ```java
 Client client=new Client();
-client.connect("host", 4064, "username", "password".toCharArray(), groupId);
+client.connect("host", 4064, "username", password, groupId);
 ```
 
 ### Repository objects (projects, datasets, images)
@@ -63,8 +63,8 @@ String value = dataset.getValue("key");
 
 ```java
 TableWrapper table = new TableWrapper(columnCount, "name");
-dataset.addTable(client, table);
-List<TableWrapper> tables = dataset.getTables(client);
+dataset.addTable(table);
+List<TableWrapper> tables = dataset.getTables();
 ```
 
 * #### Files:
@@ -79,7 +79,7 @@ dataset.addFile(file);
 Pixel intensities can be downloaded from images to a Java array or as an ImagePlus:
 
 ```java
-double[][][][][] pixels = image.getPixels().getAllPixels(client);
+double[][][][][] pixels = image.getPixels().getAllPixels();
 ImagePlus imp = image.toImagePlus();
 ```
 
@@ -96,7 +96,7 @@ ROIs can be added to images or retrieved from them:
 
 ```java
 ROIWrapper roi = new ROIWrapper();
-roi.addShape(new RectangleWrapper(client, 0, 0, 5, 5));
+roi.addShape(new RectangleWrapper(0, 0, 5, 5));
 roi.setImage(image);
 image.saveROI(roi);
 List<ROIWrapper> rois = image.getROIs();
@@ -106,10 +106,10 @@ They can also be converted from or to ImageJ Rois:
 
 ```java
 // The property is a string used to create 3D/4D ROIs in OMERO, by grouping shapes sharing the same value
-List<ROIWrapper> omeroRois = ROIWrapper.fromImageJ(ijRois, property);
+List<ROIWrapper> omeroRois = ROIWrapper.fromImageJ(client, ijRois, property);
 
 ROIWrapper roi = new ROIWrapper(client);
-roi.addShape(new RectangleWrapper(client, 0, 0, 5, 5));
+roi.addShape(new RectangleWrapper(0, 0, 5, 5));
 List<Roi> imagejRois = roi.toImageJ();
 ```
 

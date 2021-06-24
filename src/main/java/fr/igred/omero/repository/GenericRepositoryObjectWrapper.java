@@ -164,15 +164,13 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     /**
      * Gets all tag linked to an object in OMERO, if possible.
      *
-     * @param client The client handling the connection.
-     *
      * @return Collection of TagAnnotationWrapper each containing a tag linked to the object.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<TagAnnotationWrapper> getTags(Client client)
+    public List<TagAnnotationWrapper> getTags()
     throws ServiceException, AccessException, ExecutionException {
         List<Class<? extends AnnotationData>> types = new ArrayList<>();
         types.add(TagAnnotationData.class);

@@ -214,7 +214,7 @@ public class ImageTest extends UserTest {
     public void testGetImageTag() throws Exception {
         ImageWrapper image = client.getImage(1L);
 
-        List<TagAnnotationWrapper> tags = image.getTags(client);
+        List<TagAnnotationWrapper> tags = image.getTags();
         assertEquals(2, tags.size());
     }
 
@@ -235,7 +235,7 @@ public class ImageTest extends UserTest {
     public void testGetRawData() throws Exception {
         ImageWrapper     image  = client.getImage(1L);
         PixelsWrapper    pixels = image.getPixels();
-        double[][][][][] value  = pixels.getAllPixels(client);
+        double[][][][][] value  = pixels.getAllPixels();
 
         assertEquals(pixels.getSizeX(), value[0][0][0][0].length);
         assertEquals(pixels.getSizeY(), value[0][0][0].length);
@@ -249,7 +249,7 @@ public class ImageTest extends UserTest {
     public void testGetRawData2() throws Exception {
         ImageWrapper  image  = client.getImage(1L);
         PixelsWrapper pixels = image.getPixels();
-        byte[][][][]  value  = pixels.getRawPixels(client, 1);
+        byte[][][][]  value  = pixels.getRawPixels(1);
 
         int sizeX = pixels.getSizeX();
         int sizeY = pixels.getSizeY();
@@ -275,7 +275,7 @@ public class ImageTest extends UserTest {
         int[] zBound = {0, 2};
         int[] tBound = {0, 2};
 
-        double[][][][][] value = pixels.getAllPixels(client, xBound, yBound, cBound, zBound, tBound);
+        double[][][][][] value = pixels.getAllPixels(xBound, yBound, cBound, zBound, tBound);
 
         assertEquals(3, value[0][0][0][0].length);
         assertEquals(3, value[0][0][0].length);
@@ -296,7 +296,7 @@ public class ImageTest extends UserTest {
         int[] zBound = {0, 2};
         int[] tBound = {0, 2};
 
-        double[][][][][] value = pixels.getAllPixels(client, xBound, yBound, cBound, zBound, tBound);
+        double[][][][][] value = pixels.getAllPixels(xBound, yBound, cBound, zBound, tBound);
         assertNotEquals(xBound[1] - xBound[0] + 1, value[0][0][0][0].length);
     }
 
@@ -312,7 +312,7 @@ public class ImageTest extends UserTest {
         int[] zBound = {0, 2};
         int[] tBound = {0, 2};
         try {
-            double[][][][][] value = pixels.getAllPixels(client, xBound, yBound, cBound, zBound, tBound);
+            double[][][][][] value = pixels.getAllPixels(xBound, yBound, cBound, zBound, tBound);
             assertNotEquals(3, value[0][0][0][0].length);
         } catch (Exception e) {
             assertTrue(true);
@@ -424,13 +424,13 @@ public class ImageTest extends UserTest {
 
         image.addTag(tag);
 
-        List<TagAnnotationWrapper> tags = image.getTags(client);
+        List<TagAnnotationWrapper> tags = image.getTags();
 
         assertEquals(1, tags.size());
 
         client.delete(tag);
 
-        tags = image.getTags(client);
+        tags = image.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -461,13 +461,13 @@ public class ImageTest extends UserTest {
 
         image.addTag(tag.getId());
 
-        List<TagAnnotationWrapper> tags = image.getTags(client);
+        List<TagAnnotationWrapper> tags = image.getTags();
 
         assertEquals(1, tags.size());
 
         client.delete(tag);
 
-        tags = image.getTags(client);
+        tags = image.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -484,7 +484,7 @@ public class ImageTest extends UserTest {
 
         image.addTags(tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
 
-        List<TagAnnotationWrapper> tags = image.getTags(client);
+        List<TagAnnotationWrapper> tags = image.getTags();
 
         assertEquals(4, tags.size());
 
@@ -493,7 +493,7 @@ public class ImageTest extends UserTest {
         client.delete(tag3);
         client.delete(tag4);
 
-        tags = image.getTags(client);
+        tags = image.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -510,7 +510,7 @@ public class ImageTest extends UserTest {
 
         image.addTags(tag1, tag2, tag3, tag4);
 
-        List<TagAnnotationWrapper> tags = image.getTags(client);
+        List<TagAnnotationWrapper> tags = image.getTags();
 
         assertEquals(4, tags.size());
 
@@ -519,7 +519,7 @@ public class ImageTest extends UserTest {
         client.delete(tag3);
         client.delete(tag4);
 
-        tags = image.getTags(client);
+        tags = image.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -623,10 +623,10 @@ public class ImageTest extends UserTest {
     public void testGetCropFromROI() throws Exception {
         ImageWrapper image = client.getImage(1L);
 
-        RectangleWrapper rectangle = new RectangleWrapper(client, 30, 30, 20, 20);
+        RectangleWrapper rectangle = new RectangleWrapper(30, 30, 20, 20);
         rectangle.setCZT(0, 1, 2);
 
-        EllipseWrapper ellipse = new EllipseWrapper(client, 50, 50, 20, 40);
+        EllipseWrapper ellipse = new EllipseWrapper(50, 50, 20, 40);
         ellipse.setCZT(1, 0, 1);
 
         ROIWrapper roiWrapper = new ROIWrapper(client);

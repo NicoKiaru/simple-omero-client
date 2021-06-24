@@ -238,9 +238,10 @@ public class Client {
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     * @throws AccessException    Cannot access data.
      */
     public void connect(String hostname, int port, String username, char[] password, Long groupID)
-    throws ServiceException, ExecutionException {
+    throws ServiceException, ExecutionException, AccessException {
         LoginCredentials cred = createCred(hostname, port, username, password);
 
         cred.setGroupID(groupID);
@@ -263,9 +264,10 @@ public class Client {
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     * @throws AccessException    Cannot access data.
      */
     public void connect(String hostname, int port, String username, char[] password)
-    throws ServiceException, ExecutionException {
+    throws ServiceException, ExecutionException, AccessException {
         LoginCredentials cred = createCred(hostname, port, username, password);
 
         createConfig(hostname, port, username, password);
@@ -325,18 +327,21 @@ public class Client {
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     * @throws AccessException    Cannot access data.
      */
-    public void connect(LoginCredentials cred) throws ServiceException, ExecutionException {
+    public void connect(LoginCredentials cred) throws ServiceException, ExecutionException, AccessException {
         disconnect();
 
+        ExperimenterData experimenter;
         try {
-            this.user = new ExperimenterWrapper(this, gateway.connect(cred));
+            experimenter = gateway.connect(cred);
         } catch (DSOutOfServiceException oos) {
             throw new ServiceException(oos, oos.getConnectionStatus());
         }
-        this.ctx = new SecurityContext(user.getGroupId());
-        this.ctx.setExperimenter(this.user.asExperimenterData());
+        this.ctx = new SecurityContext(experimenter.getGroupId());
+        this.ctx.setExperimenter(experimenter);
         this.browse = gateway.getFacility(BrowseFacility.class);
+        this.user = getUser(experimenter.getUserName());
     }
 
 

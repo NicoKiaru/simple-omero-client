@@ -42,22 +42,19 @@ public class PointWrapper extends GenericShapeWrapper<PointData> {
     /**
      * Constructor of the PointWrapper class using a new empty PointData.
      *
-     * @param client The client handling the connection.
      */
-    public PointWrapper(Client client) {
-        this(client, new PointData());
+    public PointWrapper() {
+        this(null, new PointData());
     }
 
 
     /**
      * Constructor of the PointWrapper class using a new empty ShapeData.
-     *
-     * @param client The client handling the connection.
-     * @param x      x-coordinate of the shape.
+     *  @param x      x-coordinate of the shape.
      * @param y      y-coordinate of the shape.
      */
-    public PointWrapper(Client client, double x, double y) {
-        this(client, new PointData(x, y));
+    public PointWrapper(double x, double y) {
+        this(null, new PointData(x, y));
     }
 
 

@@ -27,7 +27,10 @@ import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
 import omero.gateway.model.TagAnnotationData;
 import omero.gateway.util.PojoMapper;
+import omero.model.DatasetAnnotationLink;
 import omero.model.IObject;
+import omero.model.ImageAnnotationLink;
+import omero.model.ProjectAnnotationLink;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,17 +108,15 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     /**
      * Gets all projects with this tag from OMERO.
      *
-     * @param client The client handling the connection.
-     *
      * @return ProjectWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<ProjectWrapper> getProjects(Client client)
+    public List<ProjectWrapper> getProjects()
     throws ServiceException, AccessException, OMEROServerError {
-        List<IObject> os = getLinks(client, "ProjectAnnotationLink");
+        List<IObject> os = getLinks(client, ProjectAnnotationLink.class.getSimpleName());
 
         List<ProjectWrapper> selected = new ArrayList<>(os.size());
         for (IObject o : os) {
@@ -129,17 +130,15 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     /**
      * Gets all datasets with this tag from OMERO.
      *
-     * @param client The client handling the connection.
-     *
      * @return DatasetWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<DatasetWrapper> getDatasets(Client client)
+    public List<DatasetWrapper> getDatasets()
     throws ServiceException, AccessException, OMEROServerError {
-        List<IObject> os = getLinks(client, "DatasetAnnotationLink");
+        List<IObject> os = getLinks(client, DatasetAnnotationLink.class.getSimpleName());
 
         List<DatasetWrapper> selected = new ArrayList<>(os.size());
         for (IObject o : os) {
@@ -153,17 +152,15 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     /**
      * Gets all images with this tag from OMERO.
      *
-     * @param client The client handling the connection.
-     *
      * @return ImageWrapper list.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      * @throws OMEROServerError Server error.
      */
-    public List<ImageWrapper> getImages(Client client)
+    public List<ImageWrapper> getImages()
     throws ServiceException, AccessException, OMEROServerError {
-        List<IObject> os = getLinks(client, "ImageAnnotationLink");
+        List<IObject> os = getLinks(client, ImageAnnotationLink.class.getSimpleName());
 
         List<ImageWrapper> selected = new ArrayList<>(os.size());
         for (IObject o : os) {

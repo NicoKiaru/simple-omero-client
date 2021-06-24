@@ -91,7 +91,6 @@ public class AccessExceptionTest extends BasicTest {
     @Test
     public void testAddTagToImageWrongUser() throws Exception {
         boolean exception = false;
-        client.disconnect();
         client.connect("omero", 4064, "root", "omero".toCharArray(), 3L);
         assertEquals(0L, client.getId());
 
@@ -195,27 +194,30 @@ public class AccessExceptionTest extends BasicTest {
     @Test(expected = AccessException.class)
     public void testSudoFailGetImageTag() throws Exception {
         ImageWrapper image = client.getImage(1L);
-        image.getTags(sudo);
+        ImageWrapper wrong = new ImageWrapper(sudo, image.asImageData());
+        wrong.getTags();
     }
 
 
     @Test(expected = AccessException.class)
     public void testSudoFailGetKVPairs() throws Exception {
-        ImageWrapper image = new ImageWrapper(sudo, client.getImage(1L).asImageData());
-        image.getKeyValuePairs();
+        ImageWrapper image = client.getImage(1L);
+        ImageWrapper wrong = new ImageWrapper(sudo, image.asImageData());
+        wrong.getKeyValuePairs();
     }
 
 
     @Test(expected = AccessException.class)
     public void testSudoFailAddKVPair() throws Exception {
-        ImageWrapper image = new ImageWrapper(sudo, client.getImage(1L).asImageData());
+        ImageWrapper image = client.getImage(1L);
+        ImageWrapper wrong = new ImageWrapper(sudo, image.asImageData());
 
         List<NamedValue> result1 = new ArrayList<>();
         result1.add(new NamedValue("Test result1", "Value Test"));
         result1.add(new NamedValue("Test2 result1", "Value Test2"));
 
         MapAnnotationWrapper mapAnnotation1 = new MapAnnotationWrapper(sudo, result1);
-        image.addMapAnnotation(mapAnnotation1);
+        wrong.addMapAnnotation(mapAnnotation1);
     }
 
 

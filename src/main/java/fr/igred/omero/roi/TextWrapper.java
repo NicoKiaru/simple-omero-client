@@ -42,23 +42,20 @@ public class TextWrapper extends GenericShapeWrapper<TextData> {
     /**
      * Constructor of the TextWrapper class using a new empty ShapeData.
      *
-     * @param client The client handling the connection.
      */
-    public TextWrapper(Client client) {
-        this(client, new TextData());
+    public TextWrapper() {
+        this(null, new TextData());
     }
 
 
     /**
      * Creates a new instance of the TextWrapper, sets the centre and major, minor axes.
-     *
-     * @param client The client handling the connection.
-     * @param text   Object text.
+     *  @param text   Object text.
      * @param x      x-coordinate of the shape.
      * @param y      y-coordinate of the shape.
      */
-    public TextWrapper(Client client, String text, double x, double y) {
-        this(client, new TextData(text, x, y));
+    public TextWrapper(String text, double x, double y) {
+        this(null, new TextData(text, x, y));
     }
 
 

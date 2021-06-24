@@ -286,7 +286,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
         double width  = rectangle.getWidth();
         double height = rectangle.getHeight();
 
-        RectangleWrapper boundingBox = new RectangleWrapper(client, x, y, width, height);
+        RectangleWrapper boundingBox = new RectangleWrapper(x, y, width, height);
         boundingBox.setCZT(getC(), getZ(), getT());
         boundingBox.setText(getText() + " (Bounding Box)");
         boundingBox.setStroke(getStroke());

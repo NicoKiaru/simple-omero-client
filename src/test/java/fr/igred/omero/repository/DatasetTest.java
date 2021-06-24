@@ -101,7 +101,7 @@ public class DatasetTest extends UserTest {
 
         DatasetWrapper newDataset = client.getDataset(id);
 
-        newDataset.addImages(client, images);
+        newDataset.addImages(images);
 
         assertEquals(images.size(), newDataset.getImages().size());
 
@@ -131,13 +131,13 @@ public class DatasetTest extends UserTest {
 
         dataset.addTag(tag);
 
-        List<TagAnnotationWrapper> tags = dataset.getTags(client);
+        List<TagAnnotationWrapper> tags = dataset.getTags();
 
         assertEquals(1, tags.size());
 
         client.delete(tag);
 
-        tags = dataset.getTags(client);
+        tags = dataset.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -168,13 +168,13 @@ public class DatasetTest extends UserTest {
 
         dataset.addTag(tag.getId());
 
-        List<TagAnnotationWrapper> tags = dataset.getTags(client);
+        List<TagAnnotationWrapper> tags = dataset.getTags();
 
         assertEquals(1, tags.size());
 
         client.delete(tag);
 
-        tags = dataset.getTags(client);
+        tags = dataset.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -191,7 +191,7 @@ public class DatasetTest extends UserTest {
 
         dataset.addTags(tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
 
-        List<TagAnnotationWrapper> tags = dataset.getTags(client);
+        List<TagAnnotationWrapper> tags = dataset.getTags();
 
         assertEquals(4, tags.size());
 
@@ -200,7 +200,7 @@ public class DatasetTest extends UserTest {
         client.delete(tag3);
         client.delete(tag4);
 
-        tags = dataset.getTags(client);
+        tags = dataset.getTags();
 
         assertEquals(0, tags.size());
     }
@@ -217,7 +217,7 @@ public class DatasetTest extends UserTest {
 
         dataset.addTags(tag1, tag2, tag3, tag4);
 
-        List<TagAnnotationWrapper> tags = dataset.getTags(client);
+        List<TagAnnotationWrapper> tags = dataset.getTags();
 
         assertEquals(4, tags.size());
 
@@ -226,7 +226,7 @@ public class DatasetTest extends UserTest {
         client.delete(tag3);
         client.delete(tag4);
 
-        tags = dataset.getTags(client);
+        tags = dataset.getTags();
 
         assertEquals(0, tags.size());
     }

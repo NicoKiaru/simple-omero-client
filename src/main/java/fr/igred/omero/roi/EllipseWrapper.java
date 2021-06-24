@@ -43,25 +43,22 @@ public class EllipseWrapper extends GenericShapeWrapper<EllipseData> {
 
     /**
      * Constructor of the EllipseWrapper class using a new empty EllipseData.
-     *
-     * @param client The client handling the connection.
      */
-    public EllipseWrapper(Client client) {
-        this(client, new EllipseData());
+    public EllipseWrapper() {
+        this(null, new EllipseData());
     }
 
 
     /**
      * Constructor of the EllipseWrapper class using a new EllipseData.
      *
-     * @param client  The client handling the connection.
      * @param x       The x-coordinate of the center of the ellipse.
      * @param y       The y-coordinate of the center of the ellipse.
      * @param radiusX The radius along the X-axis.
      * @param radiusY The radius along the Y-axis.
      */
-    public EllipseWrapper(Client client, double x, double y, double radiusX, double radiusY) {
-        this(client, new EllipseData(x, y, radiusX, radiusY));
+    public EllipseWrapper(double x, double y, double radiusX, double radiusY) {
+        this(null, new EllipseData(x, y, radiusX, radiusY));
     }
 
 
@@ -255,16 +252,16 @@ public class EllipseWrapper extends GenericShapeWrapper<EllipseData> {
             double ratio;
 
             if (ry <= rx) {
-                PointWrapper p1 = new PointWrapper(null, x - rx, y);
-                PointWrapper p2 = new PointWrapper(null, x + rx, y);
+                PointWrapper p1 = new PointWrapper(x - rx, y);
+                PointWrapper p2 = new PointWrapper(x + rx, y);
                 p1.setTransform(toAWTTransform());
                 p2.setTransform(toAWTTransform());
                 shape1 = p1.createTransformedAWTShape().getBounds2D();
                 shape2 = p2.createTransformedAWTShape().getBounds2D();
                 ratio = ry / rx;
             } else {
-                PointWrapper p1 = new PointWrapper(null, x, y - rx);
-                PointWrapper p2 = new PointWrapper(null, x, y + ry);
+                PointWrapper p1 = new PointWrapper(x, y - rx);
+                PointWrapper p2 = new PointWrapper(x, y + ry);
                 p1.setTransform(toAWTTransform());
                 p2.setTransform(toAWTTransform());
                 shape1 = p1.createTransformedAWTShape().getBounds2D();

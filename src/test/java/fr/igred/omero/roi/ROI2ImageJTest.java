@@ -103,39 +103,39 @@ public class ROI2ImageJTest extends BasicTest {
         AffineTransform transform = new AffineTransform();
         transform.rotate(Math.PI / 4);
 
-        PointWrapper point = new PointWrapper(null, 1, 1);
+        PointWrapper point = new PointWrapper(1, 1);
         point.setCZT(0, 0, 0);
 
-        TextWrapper text = new TextWrapper(null, "Text", 2, 2);
+        TextWrapper text = new TextWrapper("Text", 2, 2);
         text.setCZT(0, 0, 1);
 
-        RectangleWrapper rectangle = new RectangleWrapper(null, 3, 3, 10, 10);
+        RectangleWrapper rectangle = new RectangleWrapper(3, 3, 10, 10);
         rectangle.setCZT(0, 0, 2);
 
-        RectangleWrapper rectangle2 = new RectangleWrapper(null, 3, 3, 10, 10);
+        RectangleWrapper rectangle2 = new RectangleWrapper(3, 3, 10, 10);
         rectangle.setCZT(0, 0, 2);
         rectangle.setTransform(transform);
 
-        MaskWrapper mask = new MaskWrapper(null);
+        MaskWrapper mask = new MaskWrapper();
         mask.setCoordinates(4, 4, 11, 11);
         mask.setCZT(1, 0, 0);
 
-        EllipseWrapper ellipse = new EllipseWrapper(null, 5, 5, 4, 4);
+        EllipseWrapper ellipse = new EllipseWrapper(5, 5, 4, 4);
         ellipse.setCZT(1, 0, 1);
 
-        EllipseWrapper ellipse2 = new EllipseWrapper(null, 5, 5, 4, 4);
+        EllipseWrapper ellipse2 = new EllipseWrapper(5, 5, 4, 4);
         ellipse.setCZT(1, 0, 1);
         ellipse.setTransform(transform);
 
-        LineWrapper line = new LineWrapper(null, 0, 0, 10, 10);
+        LineWrapper line = new LineWrapper(0, 0, 10, 10);
         line.setCZT(1, 0, 2);
         line.asShapeData().getShapeSettings().setMarkerStart(LineWrapper.ARROW);
 
-        LineWrapper line2 = new LineWrapper(null, 0, 0, 10, 10);
+        LineWrapper line2 = new LineWrapper(0, 0, 10, 10);
         line.setCZT(1, 0, 2);
         line.setTransform(transform);
 
-        LineWrapper line3 = new LineWrapper(null, 2, 2, 3, 4);
+        LineWrapper line3 = new LineWrapper(2, 2, 3, 4);
         line.setCZT(1, 0, 2);
         line.asShapeData().getShapeSettings().setMarkerStart(LineWrapper.ARROW);
         line.asShapeData().getShapeSettings().setMarkerEnd(LineWrapper.ARROW);
@@ -149,10 +149,10 @@ public class ROI2ImageJTest extends BasicTest {
         points2D.add(p2);
         points2D.add(p3);
 
-        PolylineWrapper polyline = new PolylineWrapper(null, points2D);
+        PolylineWrapper polyline = new PolylineWrapper(points2D);
         polyline.setCZT(1, 1, 0);
 
-        PolygonWrapper polygon = new PolygonWrapper(null, points2D);
+        PolygonWrapper polygon = new PolygonWrapper(points2D);
         polygon.setCZT(1, 1, 1);
 
         ROIWrapper roiWrapper = new ROIWrapper(null);
@@ -180,7 +180,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertEllipse() {
-        EllipseWrapper ellipse = new EllipseWrapper(null, 3, 3, 10, 10);
+        EllipseWrapper ellipse = new EllipseWrapper(3, 3, 10, 10);
         ellipse.setCZT(0, 0, 2);
 
         OvalRoi ijEllipse = (OvalRoi) ellipse.toImageJ();
@@ -205,7 +205,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertRectangle() {
-        RectangleWrapper rectangle = new RectangleWrapper(null, 3, 3, 10, 10);
+        RectangleWrapper rectangle = new RectangleWrapper(3, 3, 10, 10);
         rectangle.setCZT(0, 0, 2);
 
         Roi ijRectangle = rectangle.toImageJ();
@@ -229,7 +229,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertArrow() {
-        LineWrapper arrow = new LineWrapper(null, 3, 3, 10, 10);
+        LineWrapper arrow = new LineWrapper(3, 3, 10, 10);
         arrow.setCZT(0, 0, 2);
         arrow.asShapeData().getShapeSettings().setMarkerStart(LineWrapper.ARROW);
 
@@ -259,7 +259,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertLine() {
-        LineWrapper line = new LineWrapper(null, 3, 3, 10, 10);
+        LineWrapper line = new LineWrapper(3, 3, 10, 10);
         line.setCZT(0, 0, 2);
 
         Line ijLine = (Line) line.toImageJ();
@@ -286,7 +286,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertMask() {
-        MaskWrapper mask = new MaskWrapper(null);
+        MaskWrapper mask = new MaskWrapper();
         mask.setCoordinates(3, 3, 10, 10);
         mask.setCZT(0, 0, 2);
 
@@ -311,7 +311,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertPoint() {
-        PointWrapper point = new PointWrapper(null);
+        PointWrapper point = new PointWrapper();
         point.setCoordinates(3, 3);
         point.setCZT(0, 0, 2);
 
@@ -335,7 +335,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertText() {
-        TextWrapper text = new TextWrapper(null);
+        TextWrapper text = new TextWrapper();
         text.setCoordinates(3, 3);
         text.setText("Text");
         text.setCZT(0, 0, 2);
@@ -371,7 +371,7 @@ public class ROI2ImageJTest extends BasicTest {
         points2D.add(p2);
         points2D.add(p3);
 
-        PolygonWrapper polygon = new PolygonWrapper(null, points2D);
+        PolygonWrapper polygon = new PolygonWrapper(points2D);
         polygon.setCZT(0, 0, 2);
 
         Roi ijPolygon = polygon.toImageJ();
@@ -401,7 +401,7 @@ public class ROI2ImageJTest extends BasicTest {
         points2D.add(p2);
         points2D.add(p3);
 
-        PolylineWrapper polyline = new PolylineWrapper(null, points2D);
+        PolylineWrapper polyline = new PolylineWrapper(points2D);
         polyline.setCZT(0, 0, 2);
 
         Roi ijPolyline = polyline.toImageJ();
