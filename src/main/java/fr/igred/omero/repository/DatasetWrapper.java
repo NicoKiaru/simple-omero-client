@@ -384,7 +384,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         link.setParent(new DatasetI(data.getId(), false));
 
         client.save(link);
-        refresh(client);
+        refresh();
     }
 
 
@@ -393,10 +393,13 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @param paths Paths to the image on your computer.
      *
+     * @return The list of newly imported images.
+     *
      * @throws Exception        OMEROMetadataStoreClient creation failed.
      * @throws OMEROServerError Server error.
      */
-    public void importImages(String... paths) throws Exception {
+    public List<ImageWrapper> importImages(String... paths) throws Exception {
+        List<ImageWrapper> oldImages = getImages();
         ImportConfig clientConfig = client.getConfig();
 
         // Copy client config to ensure thread safety
@@ -430,19 +433,21 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         library.importCandidates(config, candidates);
 
         store.logout();
-        refresh(client);
+        refresh();
+
+        List<ImageWrapper> newImages = getImages();
+        newImages.removeAll(oldImages);
+        return newImages;
     }
 
 
     /**
      * Refreshes the wrapped project.
      *
-     * @param client The client handling the connection.
-     *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws AccessException  Cannot access data.
      */
-    public void refresh(Client client) throws ServiceException, AccessException {
+    public void refresh() throws ServiceException, AccessException {
         try {
             data = client.getBrowseFacility()
                          .getDatasets(client.getCtx(), Collections.singletonList(this.getId()))
