@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -34,6 +34,7 @@ import ome.formats.importer.ImportConfig;
 import omero.LockTimeout;
 import omero.ServerError;
 import omero.gateway.Gateway;
+import omero.gateway.JoinSessionCredentials;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
@@ -191,12 +192,22 @@ public class Client {
 
 
     /**
-     * Gets the importation config for the user.
+     * Gets a copy of the importation config for the user.
      *
      * @return config.
      */
     public ImportConfig getConfig() {
-        return config;
+        ImportConfig copy = new ImportConfig();
+        copy.email.set(this.config.email.get());
+        copy.sendFiles.set(this.config.sendFiles.get());
+        copy.sendReport.set(this.config.sendReport.get());
+        copy.contOnError.set(this.config.contOnError.get());
+        copy.debug.set(this.config.debug.get());
+        copy.hostname.set(this.config.hostname.get());
+        copy.port.set(this.config.port.get());
+        copy.username.set(this.config.username.get());
+        copy.password.set(this.config.password.get());
+        return copy;
     }
 
 
@@ -220,8 +231,37 @@ public class Client {
     }
 
 
+    /**
+     * Get the ID of the current session
+     *
+     * @return See above
+     *
+     * @throws DSOutOfServiceException If the connection is broken, or not logged in
+     */
+    public String getSessionId() throws DSOutOfServiceException {
+        return gateway.getSessionId(user.asExperimenterData());
+    }
+
+
     public Gateway getGateway() {
         return gateway;
+    }
+
+
+    /**
+     * Connects to OMERO using a session ID.
+     *
+     * @param hostname  Name of the host.
+     * @param port      Port used by OMERO.
+     * @param sessionId The session ID.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    public void connect(String hostname, int port, String sessionId)
+    throws ServiceException, ExecutionException, AccessException {
+        LoginCredentials l = new JoinSessionCredentials(sessionId, hostname, port);
+        connect(l);
     }
 
 
@@ -627,17 +667,7 @@ public class Client {
      */
     public List<ImageWrapper> getImagesTagged(TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError {
-        List<IObject> os = findByQuery("select link.parent " +
-                                       "from ImageAnnotationLink link " +
-                                       "where link.child = " +
-                                       tag.getId());
-
-        List<ImageWrapper> selected = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            selected.add(getImage(o.getId().getValue()));
-        }
-
-        return selected;
+        return tag.getImages();
     }
 
 
@@ -654,17 +684,7 @@ public class Client {
      */
     public List<ImageWrapper> getImagesTagged(Long tagId)
     throws ServiceException, AccessException, OMEROServerError {
-        List<IObject> os = findByQuery("select link.parent " +
-                                       "from ImageAnnotationLink link " +
-                                       "where link.child = " +
-                                       tagId);
-
-        List<ImageWrapper> selected = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            selected.add(getImage(o.getId().getValue()));
-        }
-
-        return selected;
+        return getTag(tagId).getImages();
     }
 
 

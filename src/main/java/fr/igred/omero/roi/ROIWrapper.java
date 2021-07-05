@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -51,6 +51,9 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
  * <p> Implements function using the ROIData contained
  */
 public class ROIWrapper extends GenericObjectWrapper<ROIData> {
+
+    public static final String IJ_PROPERTY = "ROI";
+
 
     /**
      * Constructor of the ROIWrapper class.
@@ -107,12 +110,12 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
      *
      * @param client   The client handling the connection.
      * @param ijRois   A list of ImageJ ROIs.
-     * @param property The property where 4D ROI ID is stored, defaults to "ROI".
+     * @param property The property where 4D ROI ID is stored, defaults to {@value IJ_PROPERTY}.
      *
      * @return The converted list of OMERO ROIs.
      */
     public static List<ROIWrapper> fromImageJ(Client client, List<ij.gui.Roi> ijRois, String property) {
-        if (property == null || property.equals("")) property = "ROI";
+        if (property == null || property.equals("")) property = IJ_PROPERTY;
 
         Map<Long, ROIWrapper> rois4D = new TreeMap<>();
 
@@ -314,7 +317,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
             } else {
                 roi.setName(getId() + "-" + shape.getId());
             }
-            roi.setProperty("ROI", String.valueOf(getId()));
+            roi.setProperty(IJ_PROPERTY, String.valueOf(getId()));
             rois.add(roi);
         }
         return rois;

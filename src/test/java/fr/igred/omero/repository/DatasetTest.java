@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -107,6 +107,7 @@ public class DatasetTest extends UserTest {
 
         client.delete(newDataset);
 
+        dataset.refresh();
         List<ImageWrapper> newImages = dataset.getImages();
 
         assertEquals(images.size(), newImages.size());

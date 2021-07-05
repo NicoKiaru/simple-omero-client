@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -219,7 +219,7 @@ public class ProjectTest extends UserTest {
     public void testGetImagesPairKeyValueInProject() throws Exception {
         ProjectWrapper project = client.getProject(1L);
 
-        List<ImageWrapper> images = project.getImagesPairKeyValue(client, "testKey1", "testValue1");
+        List<ImageWrapper> images = project.getImagesPairKeyValue("testKey1", "testValue1");
 
         assertEquals(2, images.size());
     }

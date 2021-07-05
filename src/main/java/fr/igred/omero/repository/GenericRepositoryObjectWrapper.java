@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -273,11 +273,10 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     public String getValue(String key)
     throws ServiceException, AccessException, NoSuchElementException, ExecutionException {
         Map<String, String> keyValuePairs = getKeyValuePairs();
-        String value = keyValuePairs.get(key);
-        if(value != null) {
+        String              value         = keyValuePairs.get(key);
+        if (value != null) {
             return value;
-        }
-        else {
+        } else {
             throw new NoSuchElementException("Key value pair " + key + " not found");
         }
     }
@@ -319,6 +318,14 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
         TableData tableData = table.createTable();
         try {
             tableData = client.getTablesFacility().addTable(client.getCtx(), data, table.getName(), tableData);
+
+            Collection<FileAnnotationData> tables = client.getTablesFacility()
+                                                          .getAvailableTables(client.getCtx(), data);
+            final long fileId = tableData.getOriginalFileId();
+
+            long id = tables.stream().filter(v -> v.getFileID() == fileId)
+                            .mapToLong(DataObject::getId).max().orElse(-1L);
+            table.setId(id);
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot add table to " + toString());
         }

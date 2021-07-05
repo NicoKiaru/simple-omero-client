@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -27,7 +27,6 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ProjectData;
-import omero.gateway.util.PojoMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -209,11 +208,10 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      */
     private DatasetWrapper addDataset(DatasetData datasetData)
     throws ServiceException, AccessException, ExecutionException {
-        DatasetWrapper newDataset;
         datasetData.setProjects(Collections.singleton(data));
-        DatasetData dataset = (DatasetData) PojoMapper.asDataObject(client.save(datasetData.asIObject()));
+        DatasetWrapper newDataset = new DatasetWrapper(client, datasetData);
+        newDataset.saveAndUpdate();
         refresh();
-        newDataset = new DatasetWrapper(client, dataset);
         return newDataset;
     }
 
@@ -375,7 +373,6 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Gets all images in the project with a certain key value pair from OMERO.
      *
-     * @param client The client handling the connection.
      * @param key    Name of the key researched.
      * @param value  Value associated with the key.
      *
@@ -385,7 +382,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesPairKeyValue(Client client, String key, String value)
+    public List<ImageWrapper> getImagesPairKeyValue(String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {

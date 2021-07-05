@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 GReD
+ *  Copyright (C) 2020-2021 GReD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -35,6 +35,19 @@ public class ConnectionTest extends BasicTest {
         Client testRoot = new Client();
         testRoot.disconnect();
         assertTrue(true);
+    }
+
+
+    @Test
+    public void testSessionConnect() throws Exception {
+        Client client1 = new Client();
+        client1.connect("omero", 4064, "testUser", "password".toCharArray());
+        String sessionId = client1.getSessionId();
+        Client client2   = new Client();
+        client2.connect("omero", 4064, sessionId);
+        assertEquals(client1.getUser().getId(), client2.getUser().getId());
+        client1.disconnect();
+        client2.disconnect();
     }
 
 
