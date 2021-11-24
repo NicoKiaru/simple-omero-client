@@ -21,6 +21,7 @@ import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -192,6 +193,31 @@ public class ClientTest extends UserTest {
         client.switchGroup(4L);
         long groupId = client.getCurrentGroupId();
         assertEquals(4L, groupId);
+    }
+
+
+    @Test
+    public void testSwitchGroupAndImport() throws Exception {
+        String path = "./8bit-unsigned&pixelType=uint8&sizeZ=3&sizeC=5&sizeT=7&sizeX=256&sizeY=256.fake";
+
+        File f = new File(path);
+        if (!f.createNewFile())
+            System.err.println("\"" + f.getCanonicalPath() + "\" could not be created.");
+
+        client.switchGroup(4L);
+
+        DatasetWrapper dataset = new DatasetWrapper(client, "test", "");
+        dataset.saveAndUpdate();
+
+        List<Long> ids = dataset.importImage(f.getAbsolutePath());
+
+        if (!f.delete())
+            System.err.println("\"" + f.getCanonicalPath() + "\" could not be deleted.");
+
+        assertEquals(1, ids.size());
+
+        client.delete(client.getImage(ids.get(0)));
+        client.delete(dataset);
     }
 
 }

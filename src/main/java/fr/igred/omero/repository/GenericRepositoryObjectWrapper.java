@@ -20,6 +20,7 @@ package fr.igred.omero.repository;
 
 import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.annotations.FileAnnotationWrapper;
 import fr.igred.omero.annotations.MapAnnotationWrapper;
 import fr.igred.omero.annotations.TableWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
@@ -105,7 +106,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
         try {
             client.getDm().attachAnnotation(client.getCtx(), tagData, data);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot add tag " + tagData.getTagValue() + " to " + toString());
+            handleServiceOrAccess(e, "Cannot add tag " + tagData.getTagValue() + " to " + this);
         }
     }
 
@@ -179,7 +180,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
         try {
             annotations = client.getMetadata().getAnnotations(client.getCtx(), data, types, null);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get tags for " + toString());
+            handleServiceOrAccess(e, "Cannot get tags for " + this);
         }
 
         List<TagAnnotationWrapper> tags = new ArrayList<>();
@@ -240,7 +241,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
         try {
             annotations = client.getMetadata().getAnnotations(client.getCtx(), data, types, userIds);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get k/v pairs for " + toString());
+            handleServiceOrAccess(e, "Cannot get k/v pairs for " + this);
         }
 
         if (annotations != null) {
@@ -299,7 +300,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
                                             mapAnnotation.asMapAnnotationData(),
                                             this.data);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot add k/v pairs to " + toString());
+            handleServiceOrAccess(e, "Cannot add k/v pairs to " + this);
         }
     }
 
@@ -327,7 +328,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
                             .mapToLong(DataObject::getId).max().orElse(-1L);
             table.setId(id);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot add table to " + toString());
+            handleServiceOrAccess(e, "Cannot add table to " + this);
         }
         table.setFileId(tableData.getOriginalFileId());
     }
@@ -350,7 +351,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
         try {
             table = client.getTablesFacility().getTable(client.getCtx(), fileId);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get table from " + toString());
+            handleServiceOrAccess(e, "Cannot get table from " + this);
         }
         return new TableWrapper(Objects.requireNonNull(table));
     }
@@ -371,7 +372,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
         try {
             tables = client.getTablesFacility().getAvailableTables(client.getCtx(), data);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get tables from " + toString());
+            handleServiceOrAccess(e, "Cannot get tables from " + this);
         }
 
         List<TableWrapper> tablesWrapper = new ArrayList<>(tables.size());
@@ -402,6 +403,43 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
                                          "",
                                          file.getName(),
                                          data).get().getId();
+    }
+
+
+    /**
+     * Returns the file annotations
+     *
+     * @param client The client handling the connection.
+     *
+     * @return The list of tile annotations.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    public List<FileAnnotationWrapper> getFileAnnotations(Client client)
+    throws ExecutionException, ServiceException, AccessException {
+        List<Class<? extends AnnotationData>> types = new ArrayList<>();
+        types.add(FileAnnotationData.class);
+
+        List<FileAnnotationWrapper> fileAnnotations = new ArrayList<>();
+
+        List<AnnotationData> annotations = new ArrayList<>();
+
+        try {
+            annotations = client.getMetadata().getAnnotations(client.getCtx(), data, types, null);
+        } catch (DSOutOfServiceException | DSAccessException e) {
+            handleServiceOrAccess(e, "Cannot retrieve file annotations from " + this);
+        }
+
+        for (AnnotationData annotation : annotations) {
+            if (annotation instanceof FileAnnotationData) {
+                FileAnnotationWrapper file = new FileAnnotationWrapper(client, (FileAnnotationData) annotation);
+                fileAnnotations.add(file);
+            }
+        }
+
+        return fileAnnotations;
     }
 
 }

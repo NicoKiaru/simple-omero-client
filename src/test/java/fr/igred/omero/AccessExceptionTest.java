@@ -91,10 +91,17 @@ public class AccessExceptionTest extends BasicTest {
     @Test
     public void testAddTagToImageWrongUser() throws Exception {
         boolean exception = false;
+        client.disconnect();
         client.connect("omero", 4064, "root", "omero".toCharArray(), 3L);
         assertEquals(0L, client.getId());
 
         ImageWrapper image = client.getImage(3L);
+        assertFalse(image.canLink());
+        assertFalse(image.canAnnotate());
+        assertTrue(image.canEdit());
+        assertTrue(image.canDelete());
+        assertTrue(image.canChgrp());
+        assertTrue(image.canChown());
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "image tag", "tag attached to an image");
 
@@ -129,9 +136,9 @@ public class AccessExceptionTest extends BasicTest {
 
     @Test(expected = AccessException.class)
     public void testSudoFailDeleteProject() throws Exception {
-        ProjectI projectI = new ProjectI(1L, false);
-        ProjectData projectData = new ProjectData(projectI);
-        ProjectWrapper project = new ProjectWrapper(client, projectData);
+        ProjectI       projectI    = new ProjectI(1L, false);
+        ProjectData    projectData = new ProjectData(projectI);
+        ProjectWrapper project     = new ProjectWrapper(client, projectData);
         sudo.delete(project);
     }
 

@@ -25,6 +25,7 @@ import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.PixelsWrapper.Bounds;
 import fr.igred.omero.repository.PixelsWrapper.Coordinates;
 import fr.igred.omero.roi.ROIWrapper;
+import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -166,7 +167,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
                                     .iterator().next();
             roi.setData(roiData);
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot link ROI to " + toString());
+            handleServiceOrAccess(e, "Cannot link ROI to " + this);
         }
     }
 
@@ -187,7 +188,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
         try {
             roiResults = client.getRoiFacility().loadROIs(client.getCtx(), data.getId());
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get ROIs from " + toString());
+            handleServiceOrAccess(e, "Cannot get ROIs from " + this);
         }
         ROIResult r = roiResults.iterator().next();
 
@@ -219,7 +220,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
         try {
             folders = roiFacility.getROIFolders(client.getCtx(), this.data.getId());
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get folders for " + toString());
+            handleServiceOrAccess(e, "Cannot get folders for " + this);
         }
 
         List<FolderWrapper> roiFolders = new ArrayList<>(folders.size());
@@ -389,6 +390,9 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
             imp.setC(c + 1);
             imp.setLut(luts[c]);
         }
+        if (imp.isComposite()) {
+            ((CompositeImage) imp).setLuts(luts);
+        }
         if (createdRawDataFacility) {
             pixels.destroyRawDataFacility();
         }
@@ -437,7 +441,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
         try {
             channels = client.getMetadata().getChannelData(client.getCtx(), getId());
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get the channel name for " + toString());
+            handleServiceOrAccess(e, "Cannot get the channel name for " + this);
         }
 
         for (ChannelData channel : channels) {

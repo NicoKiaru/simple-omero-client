@@ -19,6 +19,7 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.UserTest;
+import fr.igred.omero.annotations.FileAnnotationWrapper;
 import fr.igred.omero.annotations.MapAnnotationWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.roi.EllipseWrapper;
@@ -550,24 +551,50 @@ public class ImageTest extends UserTest {
     public void testAddFileImage() throws Exception {
         ImageWrapper image = client.getImage(1L);
 
-        File file = new File("./test.txt");
+        File file = new File("/tmp/test.txt");
         if (!file.createNewFile())
             System.err.println("\"" + file.getCanonicalPath() + "\" could not be created.");
 
         byte[] array = new byte[2 * 262144 + 20];
         new Random().nextBytes(array);
         String generatedString = new String(array, StandardCharsets.UTF_8);
-        try (PrintStream out = new PrintStream(new FileOutputStream("./test.txt"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
             out.print(generatedString);
         }
 
-        Long id = image.addFile(file);
+        long id = image.addFile(file);
+
+        List<FileAnnotationWrapper> files = image.getFileAnnotations(client);
+        for (FileAnnotationWrapper f : files) {
+            if (f.getId() == id) {
+                assertEquals(file.getName(), f.getFileName());
+                assertEquals("txt", f.getFileFormat());
+                assertEquals("text/plain", f.getOriginalMimetype());
+                assertEquals("text/plain", f.getServerFileMimetype());
+                assertEquals("Plain Text Document", f.getFileKind());
+                assertEquals("/tmp/", f.getContentAsString());
+                assertEquals("/tmp/", f.getFilePath());
+                assertFalse(f.isMovieFile());
+
+                File uploadedFile = f.getFile(client, "./uploaded.txt");
+
+                List<String> expectedLines = Files.readAllLines(file.toPath());
+                List<String> lines         = Files.readAllLines(uploadedFile.toPath());
+                assertEquals(expectedLines.size(), lines.size());
+                for (int i = 0; i < expectedLines.size(); i++) {
+                    assertEquals(expectedLines.get(i), lines.get(i));
+                }
+
+                if (!uploadedFile.delete())
+                    System.err.println("\"" + uploadedFile.getCanonicalPath() + "\" could not be deleted.");
+            }
+        }
+
+        client.deleteFile(id);
         if (!file.delete())
             System.err.println("\"" + file.getCanonicalPath() + "\" could not be deleted.");
 
-        client.deleteFile(id);
-
-        assertNotEquals(0L, id.longValue());
+        assertNotEquals(0L, id);
     }
 
 
@@ -636,7 +663,7 @@ public class ImageTest extends UserTest {
         ImageWrapper image = client.getImage(1L);
 
         RectangleWrapper rectangle = new RectangleWrapper(30, 30, 20, 20);
-        rectangle.setCZT(0, 1, 2);
+        rectangle.setCZT(1, 1, 2);
 
         EllipseWrapper ellipse = new EllipseWrapper(50, 50, 20, 40);
         ellipse.setCZT(1, 0, 1);
@@ -650,7 +677,7 @@ public class ImageTest extends UserTest {
 
         int[] xBound = {30, 69};
         int[] yBound = {10, 89};
-        int[] cBound = {0, 1};
+        int[] cBound = {1, 1};
         int[] zBound = {0, 1};
         int[] tBound = {1, 2};
 
@@ -681,8 +708,8 @@ public class ImageTest extends UserTest {
 
     @Test
     public void testDownload() throws Exception {
-        ImageWrapper  image     = client.getImage(1L);
-        List<File> files = image.download(".");
+        ImageWrapper image = client.getImage(1L);
+        List<File>   files = image.download(".");
         assertEquals(2, files.size());
         assertTrue(files.get(0).exists());
         Files.deleteIfExists(files.get(0).toPath());
