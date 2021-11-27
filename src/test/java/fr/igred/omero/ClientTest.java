@@ -34,7 +34,7 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testProjectBasic() throws Exception {
-        ProjectWrapper project = client.getProject(1L);
+        ProjectWrapper project = client.getProjects(1L).iterator().next();
         assertEquals(1L, project.getId());
         assertEquals("TestProject", project.getName());
         assertEquals("description", project.getDescription());
@@ -45,7 +45,7 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testGetSingleProject() throws Exception {
-        String name = client.getProject(1L).getName();
+        String name = client.getProjects(1L).iterator().next().getName();
         assertEquals("TestProject", name);
     }
 
@@ -74,14 +74,14 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testCreateAndDeleteProject() throws Exception {
-        ProjectWrapper project = new ProjectWrapper(client, "Foo project", "");
+        ProjectWrapper project = ProjectWrapper.create(client, "Foo project", "");
 
         long newId = project.getId();
-        assertEquals("Foo project", client.getProject(newId).getName());
+        assertEquals("Foo project", client.getProjects(newId).get(0).getName());
 
-        client.delete(client.getProject(newId));
+        client.delete(client.getProjects(newId).get(0));
         try {
-            client.getProject(newId);
+            client.getProjects(newId).iterator().next();
             fail();
         } catch (Exception e) {
             assertTrue(true);
@@ -91,7 +91,7 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testGetSingleDataset() throws Exception {
-        assertEquals("TestDataset", client.getDataset(1L).getName());
+        assertEquals("TestDataset", client.getDatasets(1L).get(0).getName());
     }
 
 
@@ -125,7 +125,7 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testGetImage() throws Exception {
-        ImageWrapper image = client.getImage(1L);
+        ImageWrapper image = client.getImages(1L).get(0);
         assertEquals("image1.fake", image.getName());
     }
 
@@ -153,14 +153,14 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testGetImagesKey() throws Exception {
-        List<ImageWrapper> images = client.getImagesKey("testKey1");
+        List<ImageWrapper> images = client.getImagesWithKey("testKey1");
         assertEquals(3, images.size());
     }
 
 
     @Test
     public void testGetImagesKeyValue() throws Exception {
-        List<ImageWrapper> images = client.getImagesPairKeyValue("testKey1", "testValue1");
+        List<ImageWrapper> images = client.getImages("testKey1", "testValue1");
         assertEquals(2, images.size());
     }
 
@@ -170,7 +170,7 @@ public class ClientTest extends UserTest {
         String key = "testKey2";
 
         /* Load the image with the key */
-        List<ImageWrapper> images = client.getImagesKey(key);
+        List<ImageWrapper> images = client.getImagesWithKey(key);
 
         List<ImageWrapper> imagesCond = new ArrayList<>();
 
@@ -216,7 +216,7 @@ public class ClientTest extends UserTest {
 
         assertEquals(1, ids.size());
 
-        client.delete(client.getImage(ids.get(0)));
+        client.delete(client.getImages(ids.get(0)).get(0));
         client.delete(dataset);
     }
 

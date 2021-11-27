@@ -215,7 +215,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addPairKeyValue(Client client, String key, String value)
+    public void addKeyValuePair(Client client, String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         List<NamedValue> result = new ArrayList<>();
         result.add(new NamedValue(key, value));

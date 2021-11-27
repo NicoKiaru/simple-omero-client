@@ -20,7 +20,7 @@ public class SudoTest extends BasicTest {
         Client root = new Client();
         root.connect("omero", 4064, "root", "omero".toCharArray(), 3L);
 
-        Client test = root.sudoGetUser("testUser");
+        Client test = root.sudo("testUser");
         assertEquals(2L, test.getId());
         TagAnnotationWrapper tag = new TagAnnotationWrapper(test, "Tag", "This is a tag");
 
@@ -30,7 +30,7 @@ public class SudoTest extends BasicTest {
             image.addTag(test, tag);
         }
 
-        List<ImageWrapper> tagged = test.getImagesTagged(tag);
+        List<ImageWrapper> tagged = test.getImages(tag);
 
         int differences = 0;
         for (int i = 0; i < images.size(); i++) {
@@ -59,7 +59,7 @@ public class SudoTest extends BasicTest {
         client4.connect("omero", 4064, "testUser4", "password4".toCharArray(), 6L);
         assertEquals(5L, client4.getId());
 
-        Client client3 = client4.sudoGetUser("testUser3");
+        Client client3 = client4.sudo("testUser3");
         assertEquals(4L, client3.getId());
         client3.switchGroup(6L);
 

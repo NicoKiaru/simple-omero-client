@@ -109,7 +109,7 @@ public class ExceptionTest extends BasicTest {
         Client  client    = new Client();
         try {
             client.connect("omero", 4064, "testUser", "password".toCharArray());
-            client.getProject(333L);
+            client.getProjects(333L).iterator().next();
         } catch (NoSuchElementException e) {
             exception = true;
         }
@@ -126,7 +126,7 @@ public class ExceptionTest extends BasicTest {
         assertEquals(2L, client.getId());
 
         try {
-            client.getImage(200L);
+            client.getImages(200L).iterator().next();
         } catch (NoSuchElementException e) {
             exception = true;
         }
@@ -143,7 +143,7 @@ public class ExceptionTest extends BasicTest {
         assertEquals(2L, client.getId());
 
         try {
-            client.getImage(-5L);
+            client.getImages(-5L).iterator().next();
         } catch (NoSuchElementException e) {
             exception = true;
         }

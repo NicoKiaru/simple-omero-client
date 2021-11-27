@@ -32,6 +32,7 @@ import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
 import ome.formats.OMEROMetadataStoreClient;
 import omero.LockTimeout;
+import omero.RLong;
 import omero.ServerError;
 import omero.gateway.Gateway;
 import omero.gateway.JoinSessionCredentials;
@@ -48,6 +49,7 @@ import omero.model.TagAnnotation;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static fr.igred.omero.exception.ExceptionHandler.*;
 
@@ -284,9 +286,7 @@ public class Client {
     public void connect(String hostname, int port, String username, char[] password, Long groupID)
     throws ServiceException {
         LoginCredentials cred = createCred(hostname, port, username, password);
-
         cred.setGroupID(groupID);
-
         connect(cred);
     }
 
@@ -306,7 +306,6 @@ public class Client {
     public void connect(String hostname, int port, String username, char[] password)
     throws ServiceException {
         LoginCredentials cred = createCred(hostname, port, username, password);
-
         connect(cred);
     }
 
@@ -369,27 +368,23 @@ public class Client {
     /**
      * Gets the project with the specified id from OMERO.
      *
-     * @param id Id of the project.
+     * @param ids Projects IDs
      *
      * @return ProjectWrapper containing the project.
      *
-     * @throws ServiceException       Cannot connect to OMERO.
-     * @throws AccessException        Cannot access data.
-     * @throws NoSuchElementException No element with such id.
-     * @throws ExecutionException     A Facility can't be retrieved or instantiated.
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public ProjectWrapper getProject(Long id)
+    public List<ProjectWrapper> getProjects(Long... ids)
     throws ServiceException, AccessException, NoSuchElementException, ExecutionException {
         Collection<ProjectData> projects = new ArrayList<>();
         try {
-            projects = getBrowseFacility().getProjects(ctx, Collections.singletonList(id));
+            projects = getBrowseFacility().getProjects(ctx, Arrays.asList(ids));
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get project with ID: " + id);
+            handleServiceOrAccess(e, "Cannot get projects with IDs: " + Arrays.toString(ids));
         }
-        if (projects.isEmpty()) {
-            throw new NoSuchElementException(String.format("Project %d doesn't exist in this context", id));
-        }
-        return new ProjectWrapper(projects.iterator().next());
+        return projects.stream().map(ProjectWrapper::new).collect(Collectors.toList());
     }
 
 
@@ -450,7 +445,7 @@ public class Client {
     /**
      * Gets the dataset with the specified id from OMERO.
      *
-     * @param id Id of the Dataset.
+     * @param ids Datasets IDs.
      *
      * @return ProjectWrapper containing the project.
      *
@@ -459,18 +454,15 @@ public class Client {
      * @throws NoSuchElementException No element with such id.
      * @throws ExecutionException     A Facility can't be retrieved or instantiated.
      */
-    public DatasetWrapper getDataset(Long id)
+    public List<DatasetWrapper> getDatasets(Long... ids)
     throws ServiceException, AccessException, NoSuchElementException, ExecutionException {
         Collection<DatasetData> datasets = new ArrayList<>();
         try {
-            datasets = getBrowseFacility().getDatasets(ctx, Collections.singletonList(id));
+            datasets = getBrowseFacility().getDatasets(ctx, Arrays.asList(ids));
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get dataset with ID: " + id);
+            handleServiceOrAccess(e, "Cannot get dataset with ID: " + Arrays.toString(ids));
         }
-        if (datasets.isEmpty()) {
-            throw new NoSuchElementException(String.format("Dataset %d doesn't exist in this context", id));
-        }
-        return new DatasetWrapper(datasets.iterator().next());
+        return datasets.stream().map(DatasetWrapper::new).collect(Collectors.toList());
     }
 
 
@@ -486,12 +478,9 @@ public class Client {
      */
     public List<DatasetWrapper> getDatasets()
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
-        List<IObject> os = findByQuery("select d from Dataset d");
-
-        List<DatasetWrapper> datasets = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            datasets.add(getDataset(o.getId().getValue()));
-        }
+        List<IObject>        os       = findByQuery("select d from Dataset d");
+        Long[]               ids      = os.stream().map(IObject::getId).map(RLong::getValue).toArray(Long[]::new);
+        List<DatasetWrapper> datasets = getDatasets(ids);
         datasets.sort(new SortById<>());
         return datasets;
     }
@@ -533,22 +522,14 @@ public class Client {
      * @return ImageWrapper list sorted.
      */
     private List<ImageWrapper> toImageWrappers(Collection<ImageData> images) {
-        List<ImageWrapper> imageWrappers = new ArrayList<>(images.size());
-
-        for (ImageData image : images) {
-            imageWrappers.add(new ImageWrapper(image));
-        }
-
-        imageWrappers.sort(new SortById<>());
-
-        return imageWrappers;
+        return images.stream().map(ImageWrapper::new).sorted(new SortById<>()).collect(Collectors.toList());
     }
 
 
     /**
      * Returns an ImageWrapper that contains the image with the specified id from OMERO.
      *
-     * @param id Id of the image.
+     * @param ids Images IDs.
      *
      * @return ImageWrapper containing the image.
      *
@@ -557,18 +538,15 @@ public class Client {
      * @throws NoSuchElementException No element with such id.
      * @throws ExecutionException     A Facility can't be retrieved or instantiated.
      */
-    public ImageWrapper getImage(Long id)
+    public List<ImageWrapper> getImages(Long... ids)
     throws ServiceException, AccessException, NoSuchElementException, ExecutionException {
-        ImageData image = null;
+        Collection<ImageData> images = new ArrayList<>(0);
         try {
-            image = getBrowseFacility().getImage(ctx, id);
+            images = getBrowseFacility().getImages(ctx, Arrays.asList(ids));
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get image with ID: " + id);
+            handleServiceOrAccess(e, "Cannot get image with ID: " + Arrays.toString(ids));
         }
-        if (image == null) {
-            throw new NoSuchElementException(String.format("Image %d doesn't exist in this context", id));
-        }
-        return new ImageWrapper(image);
+        return toImageWrappers(images);
     }
 
 
@@ -647,7 +625,7 @@ public class Client {
      * @throws OMEROServerError   Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesTagged(TagAnnotationWrapper tag)
+    public List<ImageWrapper> getImages(TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
         return tag.getImages(this);
     }
@@ -682,7 +660,7 @@ public class Client {
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesKey(String key)
+    public List<ImageWrapper> getImagesWithKey(String key)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> selected = new ArrayList<>();
         List<ImageWrapper> images   = getImages();
@@ -710,7 +688,7 @@ public class Client {
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesPairKeyValue(String key, String value)
+    public List<ImageWrapper> getImages(String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> selected = new ArrayList<>();
         List<ImageWrapper> images   = getImages();
@@ -737,7 +715,7 @@ public class Client {
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public Client sudoGetUser(String username) throws ServiceException, AccessException, ExecutionException {
+    public Client sudo(String username) throws ServiceException, AccessException, ExecutionException {
         Client c = new Client();
 
         ExperimenterWrapper sudoUser = getUser(username);
@@ -782,14 +760,11 @@ public class Client {
             handleServiceOrServer(e, "Cannot get tags");
         }
 
-        List<TagAnnotationWrapper> tags = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            TagAnnotationData tag = new TagAnnotationData((TagAnnotation) o);
-            tags.add(new TagAnnotationWrapper(tag));
-        }
-
-        tags.sort(new SortById<>());
-        return tags;
+        return os.stream()
+                 .map(TagAnnotation.class::cast)
+                 .map(TagAnnotationData::new)
+                 .map(TagAnnotationWrapper::new)
+                 .sorted(new SortById<>()).collect(Collectors.toList());
     }
 
 

@@ -236,7 +236,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws OMEROServerError   Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesTagged(Client client, TagAnnotationWrapper tag)
+    public List<ImageWrapper> getImages(Client client, TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
         List<ImageWrapper> selected = new ArrayList<>();
         List<IObject> os = client.findByQuery("select link.parent " +
@@ -250,7 +250,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                                               data.getId() + ")");
 
         for (IObject o : os) {
-            selected.add(client.getImage(o.getId().getValue()));
+            selected.add(client.getImages(o.getId().getValue()).get(0));
         }
 
         return selected;
@@ -284,7 +284,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                                               data.getId() + ")");
 
         for (IObject o : os) {
-            selected.add(client.getImage(o.getId().getValue()));
+            selected.add(client.getImages(o.getId().getValue()).get(0));
         }
 
         return selected;
@@ -303,7 +303,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesKey(Client client, String key)
+    public List<ImageWrapper> getImagesWithKey(Client client, String key)
     throws ServiceException, AccessException, ExecutionException {
         Collection<ImageData> selected = new ArrayList<>();
         Collection<ImageData> images   = new ArrayList<>();
@@ -341,7 +341,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesPairKeyValue(Client client, String key, String value)
+    public List<ImageWrapper> getImages(Client client, String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         Collection<ImageData> selected = new ArrayList<>();
         Collection<ImageData> images   = new ArrayList<>();

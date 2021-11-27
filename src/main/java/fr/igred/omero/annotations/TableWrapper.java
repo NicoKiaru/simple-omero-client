@@ -159,7 +159,7 @@ public class TableWrapper {
         List<ROIWrapper> rois = new ArrayList<>();
 
         if (imageId != null) {
-            image = client.getImage(imageId);
+            image = client.getImages(imageId).get(0);
             rois = image.getROIs(client);
             offset++;
             renameImageColumn(rt);
@@ -397,7 +397,7 @@ public class TableWrapper {
 
         int offset = 0;
         if (imageId != null) {
-            image = client.getImage(imageId);
+            image = client.getImages(imageId).get(0);
             rois = image.getROIs(client);
             offset++;
             renameImageColumn(rt);

@@ -38,7 +38,7 @@ public class TableTest extends UserTest {
 
     @Test
     public void testCreateTable() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
 
@@ -81,7 +81,7 @@ public class TableTest extends UserTest {
     @Test
     public void testErrorTableFull() throws Exception {
         boolean        exception = false;
-        DatasetWrapper dataset   = client.getDataset(1L);
+        DatasetWrapper dataset   = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
 
@@ -125,7 +125,7 @@ public class TableTest extends UserTest {
     public void testErrorTableUninitialized() throws Exception {
         boolean exception = false;
 
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
 
@@ -148,7 +148,7 @@ public class TableTest extends UserTest {
     public void testErrorTableNotEnoughArgs() throws Exception {
         boolean exception = false;
 
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
 
@@ -173,7 +173,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithROIsFromIJResults1() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -231,7 +231,7 @@ public class TableTest extends UserTest {
         long   imageId  = 1L;
         String property = "Cell";
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -290,7 +290,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithROIsFromIJResults3() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -345,7 +345,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithROIsFromIJResults4() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -400,7 +400,7 @@ public class TableTest extends UserTest {
     public void testCreateTableFromIJResults() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         List<Roi> ijRois = new ArrayList<>();
 
@@ -436,7 +436,7 @@ public class TableTest extends UserTest {
     public void testAddRowsFromIJResults() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         List<Roi> ijRois = new ArrayList<>();
 
@@ -484,7 +484,7 @@ public class TableTest extends UserTest {
     public void testAddRowsWithROIsFromIJResults() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -552,7 +552,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithLocalROIFromIJResults1() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -620,7 +620,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithLocalROIFromIJResults2() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi = new ROIWrapper();
 
@@ -686,7 +686,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithROINamesFromIJResults1() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi1 = new ROIWrapper();
         ROIWrapper roi2 = new ROIWrapper();
@@ -759,7 +759,7 @@ public class TableTest extends UserTest {
     public void testCreateTableWithROINamesFromIJResults2() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         ROIWrapper roi1 = new ROIWrapper();
         ROIWrapper roi2 = new ROIWrapper();
@@ -833,7 +833,7 @@ public class TableTest extends UserTest {
         boolean error   = false;
         long    imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         List<Roi> ijRois = new ArrayList<>();
 
@@ -863,7 +863,7 @@ public class TableTest extends UserTest {
     public void testAddRowsFromIJResultsInverted() throws Exception {
         long imageId = 1L;
 
-        ImageWrapper image = client.getImage(imageId);
+        ImageWrapper image = client.getImages(imageId).get(0);
 
         List<Roi> ijRois = new ArrayList<>();
 

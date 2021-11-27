@@ -25,10 +25,10 @@ import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.DatasetWrapper;
 import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
+import omero.RLong;
 import omero.gateway.model.TagAnnotationData;
 import omero.model.IObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -115,13 +115,8 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     public List<ProjectWrapper> getProjects(Client client)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
         List<IObject> os = getLinks(client, "ProjectAnnotationLink");
-
-        List<ProjectWrapper> selected = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            selected.add(client.getProject(o.getId().getValue()));
-        }
-
-        return selected;
+        Long[] ids = os.stream().map(IObject::getId).map(RLong::getValue).sorted().toArray(Long[]::new);
+        return client.getProjects(ids);
     }
 
 
@@ -140,13 +135,8 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     public List<DatasetWrapper> getDatasets(Client client)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
         List<IObject> os = getLinks(client, "DatasetAnnotationLink");
-
-        List<DatasetWrapper> selected = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            selected.add(client.getDataset(o.getId().getValue()));
-        }
-
-        return selected;
+        Long[] ids = os.stream().map(IObject::getId).map(RLong::getValue).sorted().toArray(Long[]::new);
+        return client.getDatasets(ids);
     }
 
 
@@ -165,13 +155,8 @@ public class TagAnnotationWrapper extends GenericAnnotationWrapper<TagAnnotation
     public List<ImageWrapper> getImages(Client client)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
         List<IObject> os = getLinks(client, "ImageAnnotationLink");
-
-        List<ImageWrapper> selected = new ArrayList<>(os.size());
-        for (IObject o : os) {
-            selected.add(client.getImage(o.getId().getValue()));
-        }
-
-        return selected;
+        Long[] ids = os.stream().map(IObject::getId).map(RLong::getValue).sorted().toArray(Long[]::new);
+        return client.getImages(ids);
     }
 
 

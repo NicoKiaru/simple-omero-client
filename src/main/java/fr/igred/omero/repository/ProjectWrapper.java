@@ -55,7 +55,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
 
 
     /**
-     * Constructor of the ProjectWrapper class. Creates a new project and save it to OMERO.
+     * Creates a new project and save it to OMERO.
      *
      * @param client      The client handling the connection.
      * @param name        Project name.
@@ -65,12 +65,13 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public ProjectWrapper(Client client, String name, String description)
+    public static ProjectWrapper create(Client client, String name, String description)
     throws ServiceException, AccessException, ExecutionException {
-        super(new ProjectData());
-        data.setName(name);
-        data.setDescription(description);
-        saveAndUpdate(client);
+        ProjectWrapper project = new ProjectWrapper(new ProjectData());
+        project.setName(name);
+        project.setDescription(description);
+        project.saveAndUpdate(client);
+        return project;
     }
 
 
@@ -323,11 +324,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws OMEROServerError   Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesTagged(Client client, TagAnnotationWrapper tag)
+    public List<ImageWrapper> getImages(Client client, TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesTagged(client, tag));
+            images.addAll(dataset.getImages(client, tag));
         }
         images.sort(new SortById<>());
 
@@ -372,11 +373,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesKey(Client client, String key)
+    public List<ImageWrapper> getImagesWithKey(Client client, String key)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesKey(client, key));
+            images.addAll(dataset.getImagesWithKey(client, key));
         }
         images.sort(new SortById<>());
 
@@ -397,11 +398,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImagesPairKeyValue(Client client, String key, String value)
+    public List<ImageWrapper> getImages(Client client, String key, String value)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : getDatasets()) {
-            images.addAll(dataset.getImagesPairKeyValue(client, key, value));
+            images.addAll(dataset.getImages(client, key, value));
         }
         images.sort(new SortById<>());
 

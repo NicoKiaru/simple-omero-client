@@ -56,7 +56,7 @@ public class FolderTest extends UserTest {
 
     @Test
     public void testFolder2() throws Exception {
-        ImageWrapper image = client.getImage(3L);
+        ImageWrapper image = client.getImages(3L).get(0);
 
         FolderWrapper folder = new FolderWrapper(client, "Test");
         folder.setImage(image);
@@ -138,7 +138,7 @@ public class FolderTest extends UserTest {
 
     @Test
     public void testFolder4() throws Exception {
-        ImageWrapper image = client.getImage(3L);
+        ImageWrapper image = client.getImages(3L).get(0);
 
         FolderWrapper folder = new FolderWrapper(client, "Test1");
         folder.setDescription("Test 1");

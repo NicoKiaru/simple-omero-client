@@ -41,11 +41,11 @@ public class DatasetTest extends UserTest {
         boolean exception = false;
         String  name      = "To delete";
 
-        ProjectWrapper project = client.getProject(1L);
+        ProjectWrapper project = client.getProjects(1L).get(0);
 
         Long id = project.addDataset(client, name, "Dataset which will be deleted").getId();
 
-        DatasetWrapper dataset = client.getDataset(id);
+        DatasetWrapper dataset = client.getDatasets(id).get(0);
 
         assertEquals(dataset.getName(), name);
 
@@ -59,7 +59,7 @@ public class DatasetTest extends UserTest {
         client.delete(dataset);
 
         try {
-            client.getDataset(id);
+            client.getDatasets(id).iterator().next();
         } catch (NoSuchElementException e) {
             exception = true;
         }
@@ -71,7 +71,7 @@ public class DatasetTest extends UserTest {
     public void testCreateDatasetAndDeleteIt2() throws Exception {
         boolean exception = false;
 
-        ProjectWrapper project = client.getProject(1L);
+        ProjectWrapper project = client.getProjects(1L).get(0);
 
         String description = "Dataset which will be deleted";
 
@@ -79,14 +79,14 @@ public class DatasetTest extends UserTest {
 
         Long id = project.addDataset(client, dataset).getId();
 
-        dataset = client.getDataset(id);
+        dataset = client.getDatasets(id).get(0);
 
         assertEquals(dataset.getDescription(), description);
 
         client.delete(dataset);
 
         try {
-            client.getDataset(id);
+            client.getDatasets(id).iterator().next();
         } catch (NoSuchElementException e) {
             exception = true;
         }
@@ -96,17 +96,17 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testCopyDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
 
-        ProjectWrapper project = client.getProject(2L);
+        ProjectWrapper project = client.getProjects(2L).get(0);
 
         String name = "Will be deleted";
 
         Long id = project.addDataset(client, name, "Dataset which will be deleted").getId();
 
-        DatasetWrapper newDataset = client.getDataset(id);
+        DatasetWrapper newDataset = client.getDatasets(id).get(0);
 
         newDataset.addImages(client, images);
 
@@ -123,7 +123,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testDatasetBasic() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         assertEquals("TestDataset", dataset.getName());
         assertEquals("description", dataset.getDescription());
@@ -133,7 +133,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testAddTagToDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a dataset");
 
@@ -153,7 +153,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testAddTagToDataset2() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         dataset.addTag(client, "Dataset tag", "tag attached to a dataset");
 
@@ -170,7 +170,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testAddTagIdToDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a dataset");
 
@@ -190,7 +190,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testAddTagsToDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         TagAnnotationWrapper tag1 = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a dataset");
         TagAnnotationWrapper tag2 = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a dataset");
@@ -216,7 +216,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testAddTagsToDataset2() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         TagAnnotationWrapper tag1 = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a dataset");
         TagAnnotationWrapper tag2 = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a dataset");
@@ -242,7 +242,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesInDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
 
@@ -252,7 +252,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesByNameInDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client, "image1.fake");
 
@@ -262,7 +262,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesLikeInDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImagesLike(client, ".fake");
 
@@ -272,7 +272,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesTaggedInDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImagesTagged(client, 1L);
 
@@ -283,9 +283,9 @@ public class DatasetTest extends UserTest {
     @Test
     public void testGetImagesTaggedInDataset2() throws Exception {
         TagAnnotationWrapper tag     = client.getTag(2L);
-        DatasetWrapper       dataset = client.getDataset(1L);
+        DatasetWrapper       dataset = client.getDatasets(1L).get(0);
 
-        List<ImageWrapper> images = dataset.getImagesTagged(client, tag);
+        List<ImageWrapper> images = dataset.getImages(client, tag);
 
         assertEquals(1, images.size());
     }
@@ -293,9 +293,9 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesKeyInDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
-        List<ImageWrapper> images = dataset.getImagesKey(client, "testKey1");
+        List<ImageWrapper> images = dataset.getImagesWithKey(client, "testKey1");
 
         assertEquals(3, images.size());
     }
@@ -303,9 +303,9 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesPairKeyValueInDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
-        List<ImageWrapper> images = dataset.getImagesPairKeyValue(client, "testKey1", "testValue1");
+        List<ImageWrapper> images = dataset.getImages(client, "testKey1", "testValue1");
 
         assertEquals(2, images.size());
     }
@@ -313,7 +313,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testGetImagesFromDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         List<ImageWrapper> images = dataset.getImages(client);
         assertEquals(3, images.size());
@@ -322,7 +322,7 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testAddFileDataset() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         File file = new File("./test.txt");
         if (!file.createNewFile())
@@ -347,34 +347,34 @@ public class DatasetTest extends UserTest {
 
     @Test
     public void testSetName() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         String name  = dataset.getName();
         String name2 = "NewName";
         dataset.setName(name2);
         dataset.saveAndUpdate(client);
-        assertEquals(name2, client.getDataset(1L).getName());
+        assertEquals(name2, client.getDatasets(1L).get(0).getName());
 
         dataset.setName(name);
         dataset.saveAndUpdate(client);
-        assertEquals(name, client.getDataset(1L).getName());
+        assertEquals(name, client.getDatasets(1L).get(0).getName());
     }
 
 
     @Test
     public void testSetDescription() throws Exception {
-        DatasetWrapper dataset = client.getDataset(1L);
+        DatasetWrapper dataset = client.getDatasets(1L).get(0);
 
         String description = dataset.getDescription();
 
         String description2 = "NewName";
         dataset.setDescription(description2);
         dataset.saveAndUpdate(client);
-        assertEquals(description2, client.getDataset(1L).getDescription());
+        assertEquals(description2, client.getDatasets(1L).get(0).getDescription());
 
         dataset.setDescription(description);
         dataset.saveAndUpdate(client);
-        assertEquals(description, client.getDataset(1L).getDescription());
+        assertEquals(description, client.getDatasets(1L).get(0).getDescription());
     }
 
 }
