@@ -60,12 +60,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.*;
+import static fr.igred.omero.exception.ExceptionHandler.handleException;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
 import static omero.rtypes.rint;
 
 
@@ -99,9 +103,9 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
     /**
      * Sets the name of the image.
      *
-     * @param name The name of the image. Mustn't be <code>null</code>.
+     * @param name The name of the image. Mustn't be {@code null}.
      *
-     * @throws IllegalArgumentException If the name is <code>null</code>.
+     * @throws IllegalArgumentException If the name is {@code null}.
      */
     public void setName(String name) {
         data.setName(name);
@@ -185,8 +189,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      */
     public List<ROIWrapper> getROIs(Client client)
     throws ServiceException, AccessException, ExecutionException {
-        List<ROIWrapper> roiWrappers = new ArrayList<>();
-        List<ROIResult>  roiResults  = new ArrayList<>();
+        List<ROIResult> roiResults = new ArrayList<>(0);
         try {
             roiResults = client.getRoiFacility().loadROIs(client.getCtx(), data.getId());
         } catch (DSOutOfServiceException | DSAccessException e) {
@@ -196,6 +199,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
 
         Collection<ROIData> rois = r.getROIs();
 
+        List<ROIWrapper> roiWrappers = new ArrayList<>(rois.size());
         for (ROIData roi : rois) {
             ROIWrapper temp = new ROIWrapper(roi);
             roiWrappers.add(temp);
@@ -220,7 +224,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
     throws ServiceException, AccessException, ExecutionException {
         ROIFacility roiFacility = client.getRoiFacility();
 
-        Collection<FolderData> folders = new ArrayList<>();
+        Collection<FolderData> folders = new ArrayList<>(0);
         try {
             folders = roiFacility.getROIFolders(client.getCtx(), this.data.getId());
         } catch (DSOutOfServiceException | DSAccessException e) {
@@ -447,18 +451,16 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      */
     public List<ChannelWrapper> getChannels(Client client)
     throws ServiceException, AccessException, ExecutionException {
-        List<ChannelData>    channels = new ArrayList<>();
-        List<ChannelWrapper> result   = new ArrayList<>();
+        List<ChannelData> channels = new ArrayList<>(0);
         try {
             channels = client.getMetadata().getChannelData(client.getCtx(), getId());
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get the channel name for " + this);
         }
-
-        for (ChannelData channel : channels) {
-            result.add(channel.getIndex(), new ChannelWrapper(channel));
-        }
-        return result;
+        return channels.stream()
+                       .sorted(Comparator.comparing(ChannelData::getIndex))
+                       .map(ChannelWrapper::new)
+                       .collect(Collectors.toList());
     }
 
 
@@ -598,7 +600,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
         } catch (DSAccessException | DSOutOfServiceException | ExecutionException e) {
             handleException(e, "Could not download image " + getId() + ": " + e.getMessage());
         }
-        return new ArrayList<>();
+        return new ArrayList<>(0);
     }
 
 }

@@ -33,6 +33,7 @@ import ome.formats.importer.ImportLibrary;
 import ome.formats.importer.OMEROWrapper;
 import ome.formats.importer.cli.ErrorHandler;
 import ome.formats.importer.cli.LoggingImportMonitor;
+import omero.RLong;
 import omero.ServerError;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -101,9 +103,9 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     /**
      * Sets the name of the dataset.
      *
-     * @param name The name of the dataset. Mustn't be <code>null</code>.
+     * @param name The name of the dataset. Mustn't be {@code null}.
      *
-     * @throws IllegalArgumentException If the name is <code>null</code>.
+     * @throws IllegalArgumentException If the name is {@code null}.
      */
     public void setName(String name) {
         data.setName(name);
@@ -145,15 +147,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @return ImageWrapper list sorted.
      */
-    private List<ImageWrapper> toImageWrappers(Collection<ImageData> images) {
-        List<ImageWrapper> imageWrappers = new ArrayList<>(images.size());
-
-        for (ImageData image : images) {
-            imageWrappers.add(new ImageWrapper(image));
-        }
-        imageWrappers.sort(new SortById<>());
-
-        return imageWrappers;
+    private static List<ImageWrapper> toImageWrappers(Collection<ImageData> images) {
+        return images.stream()
+                     .map(ImageWrapper::new)
+                     .sorted(Comparator.comparing(ImageWrapper::getId))
+                     .collect(Collectors.toList());
     }
 
 
@@ -169,7 +167,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImages(Client client) throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>();
+        Collection<ImageData> images = new ArrayList<>(0);
         try {
             images = client.getBrowseFacility()
                            .getImagesForDatasets(client.getCtx(),
@@ -238,7 +236,6 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImages(Client client, TagAnnotationWrapper tag)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
-        List<ImageWrapper> selected = new ArrayList<>();
         List<IObject> os = client.findByQuery("select link.parent " +
                                               "from ImageAnnotationLink link " +
                                               "where link.child = " +
@@ -248,12 +245,8 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                                               "from DatasetImageLink link2 " +
                                               "where link2.parent = " +
                                               data.getId() + ")");
-
-        for (IObject o : os) {
-            selected.add(client.getImages(o.getId().getValue()).get(0));
-        }
-
-        return selected;
+        Long[] ids = os.stream().map(IObject::getId).map(RLong::getValue).toArray(Long[]::new);
+        return client.getImages(ids);
     }
 
 
@@ -272,7 +265,6 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImagesTagged(Client client, Long tagId)
     throws ServiceException, AccessException, OMEROServerError, ExecutionException {
-        List<ImageWrapper> selected = new ArrayList<>();
         List<IObject> os = client.findByQuery("select link.parent " +
                                               "from ImageAnnotationLink link " +
                                               "where link.child = " +
@@ -282,12 +274,8 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                                               "from DatasetImageLink link2 " +
                                               "where link2.parent = " +
                                               data.getId() + ")");
-
-        for (IObject o : os) {
-            selected.add(client.getImages(o.getId().getValue()).get(0));
-        }
-
-        return selected;
+        Long[] ids = os.stream().map(IObject::getId).map(RLong::getValue).toArray(Long[]::new);
+        return client.getImages(ids);
     }
 
 
@@ -305,8 +293,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImagesWithKey(Client client, String key)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> selected = new ArrayList<>();
-        Collection<ImageData> images   = new ArrayList<>();
+        Collection<ImageData> images   = new ArrayList<>(0);
         try {
             images = client.getBrowseFacility()
                            .getImagesForDatasets(client.getCtx(),
@@ -315,6 +302,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
             handleServiceOrAccess(e, "Cannot get images with key \"" + key + "\" from " + this);
         }
 
+        Collection<ImageData> selected = new ArrayList<>(images.size());
         for (ImageData image : images) {
             ImageWrapper imageWrapper = new ImageWrapper(image);
 
@@ -343,8 +331,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImages(Client client, String key, String value)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> selected = new ArrayList<>();
-        Collection<ImageData> images   = new ArrayList<>();
+        Collection<ImageData> images   = new ArrayList<>(0);
         try {
             images = client.getBrowseFacility()
                            .getImagesForDatasets(client.getCtx(),
@@ -353,6 +340,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
             handleServiceOrAccess(e, "Cannot get images with k/v pair from " + this);
         }
 
+        Collection<ImageData> selected = new ArrayList<>(images.size());
         for (ImageData image : images) {
             ImageWrapper imageWrapper = new ImageWrapper(image);
 
@@ -376,7 +364,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addImages(Client client, List<ImageWrapper> images)
+    public void addImages(Client client, Iterable<ImageWrapper> images)
     throws ServiceException, AccessException, ExecutionException {
         for (ImageWrapper image : images) {
             addImage(client, image);
@@ -471,7 +459,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         config.username.set(client.getUser().getUserName());
         config.email.set(client.getUser().getEmail());
 
-        List<Pixels> pixels = new ArrayList<>(1);
+        Collection<Pixels> pixels = new ArrayList<>(1);
 
         OMEROMetadataStoreClient store = client.getImportStore();
         try (OMEROWrapper reader = new OMEROWrapper(config)) {

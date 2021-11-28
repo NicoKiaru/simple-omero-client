@@ -24,9 +24,9 @@ import fr.igred.omero.meta.ExperimenterWrapper;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DataObject;
+import omero.model.IObject;
 
 import java.sql.Timestamp;
-import java.util.Comparator;
 import java.util.concurrent.ExecutionException;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
@@ -49,6 +49,16 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      */
     protected GenericObjectWrapper(T object) {
         this.data = object;
+    }
+
+
+    /**
+     * Returns the contained DataObject as IObject.
+     *
+     * @return See above.
+     */
+    IObject asIObject() {
+        return data.asIObject();
     }
 
 
@@ -99,7 +109,7 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      */
     @Override
     public String toString() {
-        return String.format("%s (id=%d)", getClass().getSimpleName(), getId());
+        return String.format("%s (id=%d)", getClass().getSimpleName(), data.getId());
     }
 
 
@@ -123,8 +133,7 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Returns <code>true</code> if the object can be annotated
-     * <code>false</code> otherwise, depending on permissions level.
+     * Returns {@code true} if the object can be annotated {@code false} otherwise, depending on permissions level.
      *
      * @return See above.
      */
@@ -134,8 +143,8 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Returns <code>true</code> if the object can be edited by the user currently logged in <code>false</code>
-     * otherwise, depending on permissions level.
+     * Returns {@code true} if the object can be edited by the user currently logged in {@code false} otherwise,
+     * depending on permissions level.
      *
      * @return See above.
      */
@@ -145,10 +154,8 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Returns <code>true</code> if the object can be linked e.g. image add to dataset, by the user currently logged
-     * in,
-     * <code>false</code> otherwise, depending on
-     * permissions level.
+     * Returns {@code true} if the object can be linked e.g. image add to dataset, by the user currently logged in,
+     * {@code false} otherwise, depending on permissions level.
      *
      * @return See above.
      */
@@ -158,8 +165,8 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Returns <code>true</code> if the object can be deleted by the user currently logged in,
-     * <code>false</code> otherwise, depending on permissions level.
+     * Returns {@code true} if the object can be deleted by the user currently logged in, {@code false} otherwise,
+     * depending on permissions level.
      *
      * @return See above.
      */
@@ -169,8 +176,8 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Returns <code>true</code> if the object can be moved by the user currently logged in,
-     * <code>false</code> otherwise, depending on permissions level.
+     * Returns {@code true} if the object can be moved by the user currently logged in, {@code false} otherwise,
+     * depending on permissions level.
      *
      * @return See above.
      */
@@ -181,35 +188,13 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Returns <code>true</code> if the object can be given by the user currently logged in,
-     * <code>false</code> otherwise, depending on permissions level.
+     * Returns {@code true} if the object can be given by the user currently logged in, {@code false} otherwise,
+     * depending on permissions level.
      *
      * @return See above.
      */
     public boolean canChown() {
         return data.canChown();
-    }
-
-
-    /**
-     * Class used to sort wrappers.
-     */
-    public static class SortById<U extends GenericObjectWrapper<?>> implements Comparator<U> {
-
-        /**
-         * Compare 2 ObjectWrappers. Compare the id of the ObjectWrappers.
-         *
-         * @param object1 First object to compare.
-         * @param object2 Second object to compare.
-         *
-         * @return <ul><li>-1 if the id of object1 is lower than the id object2.</li>
-         * <li>0  if the ids are the same.</li>
-         * <li>1 if the id of object1 is greater than the id of object2.</li></ul>
-         */
-        public int compare(U object1, U object2) {
-            return Long.compare(object1.getId(), object2.getId());
-        }
-
     }
 
 }

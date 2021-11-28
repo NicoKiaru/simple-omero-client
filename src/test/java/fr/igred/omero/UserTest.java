@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public abstract class UserTest extends BasicTest {
 
-    final protected Client client = new Client();
+    protected final Client client = new Client();
 
 
     @Before
@@ -50,7 +50,7 @@ public abstract class UserTest extends BasicTest {
     public void cleanUp() {
         try {
             client.disconnect();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, ANSI_YELLOW + "Disconnection failed." + ANSI_RESET, e);
         }
     }

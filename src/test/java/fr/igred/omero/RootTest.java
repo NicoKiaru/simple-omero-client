@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public abstract class RootTest extends BasicTest {
 
-    final protected Client client = new Client();
+    protected final Client client = new Client();
 
 
     @Before

@@ -18,7 +18,15 @@
 package fr.igred.omero.roi;
 
 
-import omero.gateway.model.*;
+import omero.gateway.model.EllipseData;
+import omero.gateway.model.LineData;
+import omero.gateway.model.MaskData;
+import omero.gateway.model.PointData;
+import omero.gateway.model.PolygonData;
+import omero.gateway.model.PolylineData;
+import omero.gateway.model.RectangleData;
+import omero.gateway.model.ShapeData;
+import omero.gateway.model.TextData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,25 +58,27 @@ public class ShapeList extends ArrayList<GenericShapeWrapper<?>> {
      * @return {@code true} (as specified by {@link ArrayList#add(Object)})
      */
     public boolean add(ShapeData shape) {
+        boolean added;
         if (shape instanceof PointData) {
-            return super.add(new PointWrapper((PointData) shape));
+            added = add(new PointWrapper((PointData) shape));
         } else if (shape instanceof TextData) {
-            return super.add(new TextWrapper((TextData) shape));
+            added =  add(new TextWrapper((TextData) shape));
         } else if (shape instanceof RectangleData) {
-            return super.add(new RectangleWrapper((RectangleData) shape));
+            added =  add(new RectangleWrapper((RectangleData) shape));
         } else if (shape instanceof MaskData) {
-            return super.add(new MaskWrapper((MaskData) shape));
+            added =  add(new MaskWrapper((MaskData) shape));
         } else if (shape instanceof EllipseData) {
-            return super.add(new EllipseWrapper((EllipseData) shape));
+            added =  add(new EllipseWrapper((EllipseData) shape));
         } else if (shape instanceof LineData) {
-            return super.add(new LineWrapper((LineData) shape));
+            added =  add(new LineWrapper((LineData) shape));
         } else if (shape instanceof PolylineData) {
-            return super.add(new PolylineWrapper((PolylineData) shape));
+            added =  add(new PolylineWrapper((PolylineData) shape));
         } else if (shape instanceof PolygonData) {
-            return super.add(new PolygonWrapper((PolygonData) shape));
+            added =  add(new PolygonWrapper((PolygonData) shape));
         } else {
-            return super.add(new ShapeWrapper(shape));
+            added =  add(new ShapeWrapper(shape));
         }
+        return added;
     }
 
 }

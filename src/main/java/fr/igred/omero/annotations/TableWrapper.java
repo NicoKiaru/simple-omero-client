@@ -33,6 +33,7 @@ import omero.gateway.model.TableDataColumn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -300,8 +301,8 @@ public class TableWrapper {
      * @return An ROIData column.
      */
     private static ROIData[] createROIColumn(ResultsTable results,
-                                             List<ROIWrapper> rois,
-                                             List<Roi> ijRois,
+                                             Collection<ROIWrapper> rois,
+                                             Collection<Roi> ijRois,
                                              String roiProperty) {
         String roiIdProperty = ROIWrapper.ijIDProperty(roiProperty);
 
@@ -596,7 +597,7 @@ public class TableWrapper {
      *
      * @throws IndexOutOfBoundsException Column number is bigger than actual number of column in the table.
      */
-    public void setColumn(int column, String name, Class<?> type) throws IndexOutOfBoundsException {
+    public void setColumn(int column, String name, Class<?> type) {
         if (column < columnCount)
             columns[column] = new TableDataColumn(name, column, type);
         else
@@ -612,7 +613,7 @@ public class TableWrapper {
      * @throws IndexOutOfBoundsException Table is not initialized or already full.
      * @throws IllegalArgumentException  Incorrect argument number.
      */
-    public void addRow(Object... os) throws IndexOutOfBoundsException, IllegalArgumentException {
+    public void addRow(Object... os) {
         if (row < rowCount && os.length == columnCount) {
             for (int i = 0; i < os.length; i++) {
                 Object o = os[i];

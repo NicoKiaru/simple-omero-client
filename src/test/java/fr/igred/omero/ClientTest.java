@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class ClientTest extends UserTest {
@@ -63,7 +65,7 @@ public class ClientTest extends UserTest {
 
         int differences = 0;
         for (ProjectWrapper project : projects) {
-            if (!project.getName().equals("TestProject"))
+            if (!"TestProject".equals(project.getName()))
                 differences++;
         }
 
@@ -108,7 +110,7 @@ public class ClientTest extends UserTest {
 
         int differences = 0;
         for (DatasetWrapper dataset : datasets) {
-            if (!dataset.getName().equals("TestDataset"))
+            if (!"TestDataset".equals(dataset.getName()))
                 differences++;
         }
         assertEquals(2, datasets.size());
@@ -170,9 +172,8 @@ public class ClientTest extends UserTest {
         String key = "testKey2";
 
         /* Load the image with the key */
-        List<ImageWrapper> images = client.getImagesWithKey(key);
-
-        List<ImageWrapper> imagesCond = new ArrayList<>();
+        List<ImageWrapper>       images     = client.getImagesWithKey(key);
+        Collection<ImageWrapper> imagesCond = new ArrayList<>(images.size());
 
         for (ImageWrapper image : images) {
             /* Get the value for the key */

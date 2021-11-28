@@ -66,7 +66,7 @@ public class GroupTest extends RootTest {
 
         List<ExperimenterWrapper> users = group.getExperimenters();
 
-        List<String> usernames = new ArrayList<>();
+        List<String> usernames = new ArrayList<>(2);
         for (ExperimenterWrapper user : users) {
             usernames.add(user.getUserName());
         }

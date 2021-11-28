@@ -23,14 +23,18 @@ import fr.igred.omero.roi.ROIWrapper;
 import fr.igred.omero.roi.RectangleWrapper;
 import ij.gui.Roi;
 import ij.measure.ResultsTable;
+import omero.gateway.model.DataObject;
 import omero.gateway.model.ImageData;
-import omero.gateway.model.ROIData;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class TableTest extends UserTest {
@@ -206,8 +210,8 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(1, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(image.getName(), data[2][0]);
         assertEquals(image.getName(), data[3][0]);
         assertEquals(25.0d, (Double) data[4][0], 0.05);
@@ -265,8 +269,8 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(1, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(image.getName(), data[2][0]);
         assertEquals(image.getName(), data[3][0]);
         assertEquals(image.getName(), data[4][0]);
@@ -322,8 +326,8 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(1, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(image.getName(), data[2][0]);
         assertEquals(25.0d, (Double) data[3][0], 0.05);
         assertEquals("µm^3", data[4][0]);
@@ -377,8 +381,8 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(1, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(label, data[2][0]);
         assertEquals(25.0d, (Double) data[3][0], 0.05);
         assertEquals("µm^3", data[4][0]);
@@ -419,7 +423,7 @@ public class TableTest extends UserTest {
         assertEquals(1, tables.get(0).getRowCount());
 
         Object[][] data = tables.get(0).getData();
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
         assertEquals(image.getName(), data[1][0]);
         assertEquals(25.0d, (Double) data[2][0], 0.05);
         assertEquals("µm^3", data[3][0]);
@@ -463,11 +467,11 @@ public class TableTest extends UserTest {
         assertEquals(2, tables.get(0).getRowCount());
 
         Object[][] data = tables.get(0).getData();
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
         assertEquals(image.getName(), data[1][0]);
         assertEquals(25.0d, (Double) data[2][0], 0.05);
         assertEquals("µm^3", data[3][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
         assertEquals(image.getName(), data[1][1]);
         assertEquals(50, (Double) data[2][1], 0.05);
         assertEquals("m^3", data[3][1]);
@@ -524,13 +528,13 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(2, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(image.getName(), data[2][0]);
         assertEquals(25.0d, (Double) data[3][0], 0.05);
         assertEquals("µm^3", data[4][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][1]).getId());
         assertEquals(image.getName(), data[2][1]);
         assertEquals(50, (Double) data[3][1], 0.05);
         assertEquals("m^3", data[4][1]);
@@ -592,12 +596,12 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(2, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
         assertEquals(image.getName(), data[1][0]);
         assertEquals(local.getName(), data[2][0]);
         assertEquals(25.0d, (Double) data[3][0], 0.05);
         assertEquals("µm^3", data[4][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
         assertEquals(image.getName(), data[1][1]);
         assertEquals(ijRois.get(0).getName(), data[2][1]);
         assertEquals(50, (Double) data[3][1], 0.05);
@@ -660,11 +664,11 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(2, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
         assertEquals(label1, data[1][0]);
         assertEquals(25.0d, (Double) data[2][0], 0.05);
         assertEquals("µm^3", data[3][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
         assertEquals(label2, data[1][1]);
         assertEquals(50, (Double) data[2][1], 0.05);
         assertEquals("m^3", data[3][1]);
@@ -731,13 +735,13 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(2, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(label1, data[2][0]);
         assertEquals(25.0d, (Double) data[3][0], 0.05);
         assertEquals("µm^3", data[4][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
-        assertEquals(rois.get(1).getId(), ((ROIData) data[1][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
+        assertEquals(rois.get(1).getId(), ((DataObject) data[1][1]).getId());
         assertEquals(label2, data[2][1]);
         assertEquals(50, (Double) data[3][1], 0.05);
         assertEquals("m^3", data[4][1]);
@@ -804,13 +808,13 @@ public class TableTest extends UserTest {
 
         Object[][] data = table.getData();
         assertEquals(2, table.getRowCount());
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
-        assertEquals(rois.get(0).getId(), ((ROIData) data[1][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
+        assertEquals(rois.get(0).getId(), ((DataObject) data[1][0]).getId());
         assertEquals(label1, data[2][0]);
         assertEquals(25.0d, (Double) data[3][0], 0.05);
         assertEquals("µm^3", data[4][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
-        assertEquals(rois.get(1).getId(), ((ROIData) data[1][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
+        assertEquals(rois.get(1).getId(), ((DataObject) data[1][1]).getId());
         assertEquals(label2, data[2][1]);
         assertEquals(50, (Double) data[3][1], 0.05);
         assertEquals("m^3", data[4][1]);
@@ -890,11 +894,11 @@ public class TableTest extends UserTest {
         assertEquals(2, tables.get(0).getRowCount());
 
         Object[][] data = tables.get(0).getData();
-        assertEquals(image.getId(), ((ImageData) data[0][0]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][0]).getId());
         assertEquals(image.getName(), data[1][0]);
         assertEquals(25.0d, (Double) data[2][0], 0.05);
         assertEquals("µm^3", data[3][0]);
-        assertEquals(image.getId(), ((ImageData) data[0][1]).getId());
+        assertEquals(image.getId(), ((DataObject) data[0][1]).getId());
         assertEquals(image.getName(), data[1][1]);
         assertEquals(Double.NaN, (Double) data[2][1], 0.05);
         assertEquals("50", data[3][1]);

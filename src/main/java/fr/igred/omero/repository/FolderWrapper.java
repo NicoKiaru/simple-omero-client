@@ -118,9 +118,9 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Sets the name of the folder.
      *
-     * @param name The name of the folder. Mustn't be <code>null</code>.
+     * @param name The name of the folder. Mustn't be {@code null}.
      *
-     * @throws IllegalArgumentException If the name is <code>null</code>.
+     * @throws IllegalArgumentException If the name is {@code null}.
      */
     public void setName(String name) {
         data.setName(name);
@@ -206,7 +206,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     throws ServiceException, AccessException, ExecutionException {
         ROIFacility roiFac = client.getRoiFacility();
 
-        Collection<ROIResult> roiResults = new ArrayList<>();
+        Collection<ROIResult> roiResults = new ArrayList<>(0);
         try {
             roiResults = roiFac.loadROIsForFolder(client.getCtx(), imageId, data.getId());
         } catch (DSOutOfServiceException | DSAccessException e) {

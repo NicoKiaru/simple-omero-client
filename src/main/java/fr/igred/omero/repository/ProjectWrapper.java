@@ -31,6 +31,7 @@ import omero.gateway.model.ProjectData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -88,9 +89,9 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
     /**
      * Sets the name of the project.
      *
-     * @param name The name of the project. Mustn't be <code>null</code>.
+     * @param name The name of the project. Mustn't be {@code null}.
      *
-     * @throws IllegalArgumentException If the name is <code>null</code>.
+     * @throws IllegalArgumentException If the name is {@code null}.
      */
     public void setName(String name) {
         data.setName(name);
@@ -137,7 +138,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetData dataset : datasets) {
             wrappers.add(new DatasetWrapper(dataset));
         }
-        wrappers.sort(new SortById<>());
+        wrappers.sort(Comparator.comparing(DatasetWrapper::getId));
 
         return wrappers;
     }
@@ -224,8 +225,8 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      *
      * @return ImageWrapper list.
      */
-    private List<ImageWrapper> purge(List<ImageWrapper> images) {
-        List<ImageWrapper> purged = new ArrayList<>();
+    private static List<ImageWrapper> purge(Collection<ImageWrapper> images) {
+        List<ImageWrapper> purged = new ArrayList<>(images.size());
 
         for (ImageWrapper image : images) {
             if (purged.isEmpty() || purged.get(purged.size() - 1).getId() != image.getId()) {
@@ -255,7 +256,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : datasets) {
             images.addAll(dataset.getImages(client));
         }
-        images.sort(new SortById<>());
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(images);
     }
@@ -281,7 +282,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : datasets) {
             imageWrappers.addAll(dataset.getImages(client, name));
         }
-        imageWrappers.sort(new SortById<>());
+        imageWrappers.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(imageWrappers);
     }
@@ -305,7 +306,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : getDatasets()) {
             images.addAll(dataset.getImagesLike(client, motif));
         }
-        images.sort(new SortById<>());
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(images);
     }
@@ -330,7 +331,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : getDatasets()) {
             images.addAll(dataset.getImages(client, tag));
         }
-        images.sort(new SortById<>());
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(images);
     }
@@ -355,7 +356,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : getDatasets()) {
             images.addAll(dataset.getImagesTagged(client, tagId));
         }
-        images.sort(new SortById<>());
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(images);
     }
@@ -379,7 +380,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : getDatasets()) {
             images.addAll(dataset.getImagesWithKey(client, key));
         }
-        images.sort(new SortById<>());
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(images);
     }
@@ -404,7 +405,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         for (DatasetWrapper dataset : getDatasets()) {
             images.addAll(dataset.getImages(client, key, value));
         }
-        images.sort(new SortById<>());
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
         return purge(images);
     }
