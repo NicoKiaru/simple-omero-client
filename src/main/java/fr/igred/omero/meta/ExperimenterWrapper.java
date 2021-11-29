@@ -21,9 +21,7 @@ package fr.igred.omero.meta;
 import fr.igred.omero.GenericObjectWrapper;
 import omero.gateway.model.ExperimenterData;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> {
@@ -142,11 +140,7 @@ public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> 
      * @return See above.
      */
     public List<GroupWrapper> getGroups() {
-        return data.getGroups()
-                   .stream()
-                   .map(GroupWrapper::new)
-                   .sorted(Comparator.comparing(GroupWrapper::getName))
-                   .collect(Collectors.toList());
+        return wrap(data.getGroups(), GroupWrapper::new);
     }
 
 

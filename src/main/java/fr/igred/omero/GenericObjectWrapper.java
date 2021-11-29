@@ -27,7 +27,12 @@ import omero.gateway.model.DataObject;
 import omero.model.IObject;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
 
@@ -49,6 +54,25 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      */
     protected GenericObjectWrapper(T object) {
         this.data = object;
+    }
+
+
+    /**
+     * Converts a DataObject list to a GenericObjectWrapper list, sorted by IDs.
+     *
+     * @param objects The DataObject list.
+     * @param mapper  The method used to map objects.
+     * @param <U>     The type of input (extends DataObject)
+     * @param <V>     The type of output (extends {@link GenericObjectWrapper<U>})
+     *
+     * @return See above.
+     */
+    protected static <U extends DataObject, V extends GenericObjectWrapper<U>> List<V>
+    wrap(Collection<U> objects, Function<? super U, ? extends V> mapper) {
+        return objects.stream()
+                      .map(mapper)
+                      .sorted(Comparator.comparing(V::getId))
+                      .collect(Collectors.toList());
     }
 
 

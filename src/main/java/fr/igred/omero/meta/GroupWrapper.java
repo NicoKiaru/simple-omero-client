@@ -19,13 +19,9 @@ package fr.igred.omero.meta;
 
 
 import fr.igred.omero.GenericObjectWrapper;
-import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.GroupData;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class GroupWrapper extends GenericObjectWrapper<GroupData> {
@@ -56,22 +52,6 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
      */
     public GroupWrapper(GroupData group) {
         super(group);
-    }
-
-
-    /**
-     * Wraps a list of users.
-     *
-     * @param users A collection of {@link ExperimenterData}.
-     *
-     * @return A list of {@link ExperimenterWrapper}.
-     */
-    private static List<ExperimenterWrapper> wrapUsers(Collection<? extends ExperimenterData> users) {
-        return users.stream()
-                    .map(ExperimenterWrapper::new)
-                    .sorted(Comparator.comparing(ExperimenterWrapper::getLastName)
-                                      .thenComparing(ExperimenterWrapper::getFirstName))
-                    .collect(Collectors.toList());
     }
 
 
@@ -133,7 +113,7 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
      * @return See above.
      */
     public List<ExperimenterWrapper> getLeaders() {
-        return wrapUsers(data.getLeaders());
+        return wrap(data.getLeaders(), ExperimenterWrapper::new);
     }
 
 
@@ -143,7 +123,7 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
      * @return See above.
      */
     public List<ExperimenterWrapper> getExperimenters() {
-        return wrapUsers(data.getExperimenters());
+        return wrap(data.getExperimenters(), ExperimenterWrapper::new);
     }
 
 
@@ -153,7 +133,7 @@ public class GroupWrapper extends GenericObjectWrapper<GroupData> {
      * @return See above.
      */
     public List<ExperimenterWrapper> getMembersOnly() {
-        return wrapUsers(data.getMembersOnly());
+        return wrap(data.getMembersOnly(), ExperimenterWrapper::new);
     }
 
 

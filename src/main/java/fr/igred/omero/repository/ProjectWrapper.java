@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
 
@@ -150,11 +149,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @return Collection of DatasetWrapper.
      */
     public List<DatasetWrapper> getDatasets() {
-        return data.getDatasets()
-                   .stream()
-                   .map(DatasetWrapper::new)
-                   .sorted(Comparator.comparing(DatasetWrapper::getId))
-                   .collect(Collectors.toList());
+        return wrap(data.getDatasets(), DatasetWrapper::new);
     }
 
 

@@ -49,7 +49,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -141,21 +140,6 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
 
 
     /**
-     * Transforms a collection of ImageData in a list of ImageWrapper sorted by the ImageData id.
-     *
-     * @param images ImageData Collection.
-     *
-     * @return ImageWrapper list sorted.
-     */
-    private static List<ImageWrapper> toImageWrappers(Collection<? extends ImageData> images) {
-        return images.stream()
-                     .map(ImageWrapper::new)
-                     .sorted(Comparator.comparing(ImageWrapper::getId))
-                     .collect(Collectors.toList());
-    }
-
-
-    /**
      * Gets all images in the dataset available from OMERO.
      *
      * @param client The client handling the connection.
@@ -175,8 +159,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get images from " + this);
         }
-
-        return toImageWrappers(images);
+        return wrap(images, ImageWrapper::new);
     }
 
 
@@ -293,7 +276,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImagesWithKey(Client client, String key)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images   = new ArrayList<>(0);
+        Collection<ImageData> images = new ArrayList<>(0);
         try {
             images = client.getBrowseFacility()
                            .getImagesForDatasets(client.getCtx(),
@@ -302,17 +285,16 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
             handleServiceOrAccess(e, "Cannot get images with key \"" + key + "\" from " + this);
         }
 
-        Collection<ImageData> selected = new ArrayList<>(images.size());
+        List<ImageWrapper> selected = new ArrayList<>(images.size());
         for (ImageData image : images) {
             ImageWrapper imageWrapper = new ImageWrapper(image);
 
             Map<String, String> pairsKeyValue = imageWrapper.getKeyValuePairs(client);
             if (pairsKeyValue.get(key) != null) {
-                selected.add(image);
+                selected.add(imageWrapper);
             }
         }
-
-        return toImageWrappers(selected);
+        return selected;
     }
 
 
@@ -331,7 +313,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImages(Client client, String key, String value)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images   = new ArrayList<>(0);
+        Collection<ImageData> images = new ArrayList<>(0);
         try {
             images = client.getBrowseFacility()
                            .getImagesForDatasets(client.getCtx(),
@@ -340,17 +322,17 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
             handleServiceOrAccess(e, "Cannot get images with key-value pair from " + this);
         }
 
-        Collection<ImageData> selected = new ArrayList<>(images.size());
+        List<ImageWrapper> selected = new ArrayList<>(images.size());
         for (ImageData image : images) {
             ImageWrapper imageWrapper = new ImageWrapper(image);
 
             Map<String, String> pairsKeyValue = imageWrapper.getKeyValuePairs(client);
             if (pairsKeyValue.get(key) != null && pairsKeyValue.get(key).equals(value)) {
-                selected.add(image);
+                selected.add(imageWrapper);
             }
         }
 
-        return toImageWrappers(selected);
+        return selected;
     }
 
 

@@ -399,11 +399,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get projects");
         }
-
-        return projects.stream()
-                       .map(ProjectWrapper::new)
-                       .sorted(Comparator.comparing(ProjectWrapper::getId))
-                       .collect(Collectors.toList());
+        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new);
     }
 
 
@@ -425,11 +421,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get projects with name: " + name);
         }
-
-        return projects.stream()
-                       .map(ProjectWrapper::new)
-                       .sorted(Comparator.comparing(ProjectWrapper::getId))
-                       .collect(Collectors.toList());
+        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new);
     }
 
 
@@ -494,25 +486,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get datasets with name: " + name);
         }
-        return datasets.stream()
-                       .map(DatasetWrapper::new)
-                       .sorted(Comparator.comparing(DatasetWrapper::getId))
-                       .collect(Collectors.toList());
-    }
-
-
-    /**
-     * Transforms a collection of ImageData in a list of ImageWrapper sorted by the ImageData id.
-     *
-     * @param images ImageData Collection.
-     *
-     * @return ImageWrapper list sorted.
-     */
-    private static List<ImageWrapper> toImageWrappers(Collection<? extends ImageData> images) {
-        return images.stream()
-                     .map(ImageWrapper::new)
-                     .sorted(Comparator.comparing(ImageWrapper::getId))
-                     .collect(Collectors.toList());
+        return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new);
     }
 
 
@@ -535,7 +509,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get image with ID: " + Arrays.toString(ids));
         }
-        return toImageWrappers(images);
+        return GenericObjectWrapper.wrap(images, ImageWrapper::new);
     }
 
 
@@ -555,8 +529,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get images");
         }
-
-        return toImageWrappers(images);
+        return GenericObjectWrapper.wrap(images, ImageWrapper::new);
     }
 
 
@@ -579,7 +552,7 @@ public class Client {
             handleServiceOrAccess(e, "Cannot get images with name: " + name);
         }
         images.removeIf(image -> !image.getName().equals(name));
-        return toImageWrappers(images);
+        return GenericObjectWrapper.wrap(images, ImageWrapper::new);
     }
 
 
