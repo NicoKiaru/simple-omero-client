@@ -33,8 +33,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
 
@@ -73,6 +73,24 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         project.setDescription(description);
         project.saveAndUpdate(client);
         return project;
+    }
+
+
+    /**
+     * Gets all images in the dataset available from OMERO.
+     *
+     * @return ImageWrapper list.
+     */
+    private static List<ImageWrapper> purge(Collection<? extends ImageWrapper> images) {
+        List<ImageWrapper> purged = new ArrayList<>(images.size());
+
+        for (ImageWrapper image : images) {
+            if (purged.isEmpty() || purged.get(purged.size() - 1).getId() != image.getId()) {
+                purged.add(image);
+            }
+        }
+
+        return purged;
     }
 
 
@@ -132,15 +150,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @return Collection of DatasetWrapper.
      */
     public List<DatasetWrapper> getDatasets() {
-        Set<DatasetData> datasets = data.getDatasets();
-
-        List<DatasetWrapper> wrappers = new ArrayList<>(datasets.size());
-        for (DatasetData dataset : datasets) {
-            wrappers.add(new DatasetWrapper(dataset));
-        }
-        wrappers.sort(Comparator.comparing(DatasetWrapper::getId));
-
-        return wrappers;
+        return data.getDatasets()
+                   .stream()
+                   .map(DatasetWrapper::new)
+                   .sorted(Comparator.comparing(DatasetWrapper::getId))
+                   .collect(Collectors.toList());
     }
 
 
@@ -217,24 +231,6 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
         newDataset.saveAndUpdate(client);
         refresh(client);
         return newDataset;
-    }
-
-
-    /**
-     * Gets all images in the dataset available from OMERO.
-     *
-     * @return ImageWrapper list.
-     */
-    private static List<ImageWrapper> purge(Collection<ImageWrapper> images) {
-        List<ImageWrapper> purged = new ArrayList<>(images.size());
-
-        for (ImageWrapper image : images) {
-            if (purged.isEmpty() || purged.get(purged.size() - 1).getId() != image.getId()) {
-                purged.add(image);
-            }
-        }
-
-        return purged;
     }
 
 

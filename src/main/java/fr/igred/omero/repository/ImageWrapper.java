@@ -314,7 +314,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
     throws ServiceException, AccessException, ExecutionException {
         PixelsWrapper pixels = this.getPixels();
 
-        boolean createdRawDataFacility = pixels.createRawDataFacility(client);
+        boolean createdRDF = pixels.createRawDataFacility(client);
 
         Bounds bounds = pixels.getBounds(xBound, yBound, cBound, zBound, tBound);
 
@@ -405,7 +405,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
         if (imp.isComposite()) {
             ((CompositeImage) imp).setLuts(luts);
         }
-        if (createdRawDataFacility) {
+        if (createdRDF) {
             pixels.destroyRawDataFacility();
         }
         return imp;

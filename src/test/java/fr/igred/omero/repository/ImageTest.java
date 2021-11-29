@@ -40,9 +40,11 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -117,11 +119,11 @@ public class ImageTest extends UserTest {
 
         ImageWrapper image = images.get(0);
 
-        List<NamedValue> result1 = new ArrayList<>();
+        List<NamedValue> result1 = new ArrayList<>(2);
         result1.add(new NamedValue("Test result1", "Value Test"));
         result1.add(new NamedValue("Test2 result1", "Value Test2"));
 
-        List<NamedValue> result2 = new ArrayList<>();
+        Collection<NamedValue> result2 = new ArrayList<>(2);
         result2.add(new NamedValue("Test result2", "Value Test"));
         result2.add(new NamedValue("Test2 result2", "Value Test2"));
 
@@ -164,7 +166,7 @@ public class ImageTest extends UserTest {
 
         ImageWrapper image = images.get(0);
 
-        List<NamedValue> result = new ArrayList<>();
+        List<NamedValue> result = new ArrayList<>(2);
         result.add(new NamedValue("Test result1", "Value Test"));
         result.add(new NamedValue("Test2 result1", "Value Test2"));
 
@@ -607,22 +609,19 @@ public class ImageTest extends UserTest {
 
     @Test
     public void testGetCreated() throws Exception {
-        Date created = new Date(client.getImages(1L).get(0).getCreated().getTime());
-        Date now     = new Date(System.currentTimeMillis());
+        LocalDate created = client.getImages(1L).get(0).getCreated().toLocalDateTime().toLocalDate();
+        LocalDate now     = LocalDate.now();
 
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-
-        assertEquals(fmt.format(now), fmt.format(created));
+        assertEquals(now, created);
     }
 
 
     @Test
     public void testGetAcquisitionDate() throws Exception {
-        Date acquired = new Date(client.getImages(1L).get(0).getAcquisitionDate().getTime());
+        LocalDateTime     acq = client.getImages(1L).get(0).getAcquisitionDate().toLocalDateTime();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-
-        assertEquals("2020-04-01_20-04-01", fmt.format(acquired));
+        assertEquals("2020-04-01_20-04-01", dtf.format(acq));
     }
 
 

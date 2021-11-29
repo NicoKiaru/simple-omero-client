@@ -45,7 +45,7 @@ public class ShapeList extends ArrayList<GenericShapeWrapper<?>> {
      *
      * @return List of elements of
      */
-    public <T extends GenericShapeWrapper<?>> List<T> getElementsOf(Class<T> clazz) {
+    public <T extends GenericShapeWrapper<?>> List<T> getElementsOf(Class<? extends T> clazz) {
         return stream().filter(clazz::isInstance).map(clazz::cast).collect(Collectors.toList());
     }
 
@@ -62,21 +62,21 @@ public class ShapeList extends ArrayList<GenericShapeWrapper<?>> {
         if (shape instanceof PointData) {
             added = add(new PointWrapper((PointData) shape));
         } else if (shape instanceof TextData) {
-            added =  add(new TextWrapper((TextData) shape));
+            added = add(new TextWrapper((TextData) shape));
         } else if (shape instanceof RectangleData) {
-            added =  add(new RectangleWrapper((RectangleData) shape));
+            added = add(new RectangleWrapper((RectangleData) shape));
         } else if (shape instanceof MaskData) {
-            added =  add(new MaskWrapper((MaskData) shape));
+            added = add(new MaskWrapper((MaskData) shape));
         } else if (shape instanceof EllipseData) {
-            added =  add(new EllipseWrapper((EllipseData) shape));
+            added = add(new EllipseWrapper((EllipseData) shape));
         } else if (shape instanceof LineData) {
-            added =  add(new LineWrapper((LineData) shape));
+            added = add(new LineWrapper((LineData) shape));
         } else if (shape instanceof PolylineData) {
-            added =  add(new PolylineWrapper((PolylineData) shape));
+            added = add(new PolylineWrapper((PolylineData) shape));
         } else if (shape instanceof PolygonData) {
-            added =  add(new PolygonWrapper((PolygonData) shape));
+            added = add(new PolygonWrapper((PolygonData) shape));
         } else {
-            added =  add(new ShapeWrapper(shape));
+            added = add(new ShapeWrapper(shape));
         }
         return added;
     }

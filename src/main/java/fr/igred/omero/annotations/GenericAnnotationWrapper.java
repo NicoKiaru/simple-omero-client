@@ -35,10 +35,10 @@ public abstract class GenericAnnotationWrapper<T extends AnnotationData> extends
     /**
      * Constructor of the GenericAnnotationWrapper class.
      *
-     * @param annotation Annotation to be contained.
+     * @param object Annotation to be contained.
      */
-    protected GenericAnnotationWrapper(T annotation) {
-        super(annotation);
+    protected GenericAnnotationWrapper(T object) {
+        super(object);
     }
 
 

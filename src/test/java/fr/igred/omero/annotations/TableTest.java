@@ -406,7 +406,7 @@ public class TableTest extends UserTest {
 
         ImageWrapper image = client.getImages(imageId).get(0);
 
-        List<Roi> ijRois = new ArrayList<>();
+        List<Roi> ijRois = new ArrayList<>(0);
 
         ResultsTable results = new ResultsTable();
         results.incrementCounter();
@@ -442,7 +442,7 @@ public class TableTest extends UserTest {
 
         ImageWrapper image = client.getImages(imageId).get(0);
 
-        List<Roi> ijRois = new ArrayList<>();
+        List<Roi> ijRois = new ArrayList<>(0);
 
         ResultsTable results1 = new ResultsTable();
         results1.incrementCounter();
@@ -839,7 +839,7 @@ public class TableTest extends UserTest {
 
         ImageWrapper image = client.getImages(imageId).get(0);
 
-        List<Roi> ijRois = new ArrayList<>();
+        List<Roi> ijRois = new ArrayList<>(0);
 
         ResultsTable results1 = new ResultsTable();
         results1.incrementCounter();
@@ -869,7 +869,7 @@ public class TableTest extends UserTest {
 
         ImageWrapper image = client.getImages(imageId).get(0);
 
-        List<Roi> ijRois = new ArrayList<>();
+        List<Roi> ijRois = new ArrayList<>(0);
 
         ResultsTable results1 = new ResultsTable();
         results1.incrementCounter();

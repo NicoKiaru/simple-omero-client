@@ -258,7 +258,7 @@ public class ShapeTest extends BasicTest {
     public void testPolyline() {
         final String         text     = "Polyline";
         PolylineWrapper      polyline = new PolylineWrapper();
-        List<Point2D.Double> points   = new ArrayList<>();
+        List<Point2D.Double> points   = new ArrayList<>(3);
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
         Point2D.Double p2 = new Point2D.Double(3, 0);
@@ -280,7 +280,7 @@ public class ShapeTest extends BasicTest {
     public void testPolygon() {
         final String         text    = "Polygon";
         PolygonWrapper       polygon = new PolygonWrapper();
-        List<Point2D.Double> points  = new ArrayList<>();
+        List<Point2D.Double> points  = new ArrayList<>(3);
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
         Point2D.Double p2 = new Point2D.Double(3, 0);
@@ -424,7 +424,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testPolylineConstructor() {
-        List<Point2D.Double> points = new ArrayList<>();
+        List<Point2D.Double> points = new ArrayList<>(3);
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
         Point2D.Double p2 = new Point2D.Double(3, 0);
@@ -442,7 +442,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testPolygonConstructor() {
-        List<Point2D.Double> points = new ArrayList<>();
+        List<Point2D.Double> points = new ArrayList<>(3);
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
         Point2D.Double p2 = new Point2D.Double(3, 0);
@@ -502,7 +502,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTPolygon() {
-        List<Point2D.Double> points = new ArrayList<>();
+        List<Point2D.Double> points = new ArrayList<>(3);
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
         Point2D.Double p2 = new Point2D.Double(3, 0);
@@ -538,7 +538,7 @@ public class ShapeTest extends BasicTest {
 
     @Test
     public void testAWTPolyline() {
-        List<Point2D.Double> points = new ArrayList<>();
+        List<Point2D.Double> points = new ArrayList<>(3);
 
         Point2D.Double p1 = new Point2D.Double(0, 0);
         Point2D.Double p2 = new Point2D.Double(3, 0);

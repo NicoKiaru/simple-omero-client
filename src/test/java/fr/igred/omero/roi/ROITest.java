@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -104,7 +105,7 @@ public class ROITest extends UserTest {
     public void testRoiAddShapeAndDeleteIt() throws Exception {
         ImageWrapper image = client.getImages(1L).get(0);
 
-        List<GenericShapeWrapper<?>> shapes = new ArrayList<>(4);
+        Collection<GenericShapeWrapper<?>> shapes = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
@@ -124,7 +125,7 @@ public class ROITest extends UserTest {
 
         roi = rois.get(0);
         int size      = roi.getShapes().size();
-        int ROINumber = rois.size();
+        int roiNumber = rois.size();
 
         RectangleWrapper rectangle = new RectangleWrapper();
         rectangle.setCoordinates(2, 2, 8, 8);
@@ -138,7 +139,7 @@ public class ROITest extends UserTest {
         rois = image.getROIs(client);
         roi = rois.get(0);
         assertEquals(size + 1, roi.getShapes().size());
-        assertEquals(ROINumber, rois.size());
+        assertEquals(roiNumber, rois.size());
 
         roi.deleteShape(roi.getShapes().size() - 1);
         roi.saveROI(client);
@@ -147,7 +148,7 @@ public class ROITest extends UserTest {
         roi = rois.get(0);
 
         assertEquals(size, roi.getShapes().size());
-        assertEquals(ROINumber, rois.size());
+        assertEquals(roiNumber, rois.size());
     }
 
 

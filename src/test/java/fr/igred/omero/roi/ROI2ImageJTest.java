@@ -34,6 +34,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -80,12 +81,12 @@ public class ROI2ImageJTest extends BasicTest {
         pointRoi.setProperty("TEST", "24");
         rois.add(pointRoi);
 
-        PolygonRoi polylineRoi = new PolygonRoi(x2, y2, PolygonRoi.POLYLINE);
+        PolygonRoi polylineRoi = new PolygonRoi(x2, y2, Roi.POLYLINE);
         polylineRoi.setPosition(1, 1, 2);
         polylineRoi.setProperty("ROI", "23");
         rois.add(polylineRoi);
 
-        PolygonRoi polygonRoi = new PolygonRoi(x2, y2, PolygonRoi.POLYGON);
+        PolygonRoi polygonRoi = new PolygonRoi(x2, y2, Roi.POLYGON);
         polygonRoi.setPosition(1, 1, 1);
         polygonRoi.setProperty("ROI", "23");
         rois.add(polygonRoi);
@@ -177,7 +178,7 @@ public class ROI2ImageJTest extends BasicTest {
         roiWrapper.addShape(polyline);
         roiWrapper.addShape(polygon);
 
-        List<ROIWrapper> rois = new ArrayList<>();
+        Collection<ROIWrapper> rois = new ArrayList<>();
         rois.add(roiWrapper);
 
         List<Roi> ijRois = ROIWrapper.toImageJ(rois);
@@ -188,7 +189,7 @@ public class ROI2ImageJTest extends BasicTest {
 
     @Test
     public void convertEllipse() {
-        EllipseWrapper ellipse = new EllipseWrapper(3, 3, 10, 10);
+        EllipseWrapper ellipse = new EllipseWrapper(3, 4, 10, 8);
         ellipse.setCZT(0, 0, 2);
 
         OvalRoi ijEllipse = (OvalRoi) ellipse.toImageJ();

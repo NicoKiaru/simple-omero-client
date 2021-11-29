@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import static org.junit.Assert.assertEquals;
@@ -42,17 +43,18 @@ import static org.junit.Assert.assertTrue;
 
 public class AccessExceptionTest extends BasicTest {
 
+    private final PrintStream empty = new PrintStream(new OutputStream() {
+        public void write(int b) {
+            //DO NOTHING
+        }
+    });
     private final PrintStream error = System.err;
     protected     Client      client;
     protected     Client      sudo;
 
 
     void hideErrors() {
-        System.setErr(new PrintStream(new OutputStream() {
-            public void write(int b) {
-                //DO NOTHING
-            }
-        }));
+        System.setErr(empty);
     }
 
 
@@ -70,7 +72,8 @@ public class AccessExceptionTest extends BasicTest {
             assertEquals("Wrong user", 2L, client.getId());
             assertEquals("Wrong group", 3L, client.getCurrentGroupId());
             sudo = client.sudo("testUser2");
-        } catch (Exception e) {
+        } catch (AccessException | ServiceException | ExecutionException | RuntimeException e) {
+            sudo = null;
             failed = true;
             logger.log(Level.SEVERE, ANSI_RED + "Connection failed." + ANSI_RESET, e);
         }
@@ -84,7 +87,7 @@ public class AccessExceptionTest extends BasicTest {
         showErrors();
         try {
             client.disconnect();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, ANSI_YELLOW + "Disconnection failed." + ANSI_RESET, e);
         }
     }
@@ -218,7 +221,7 @@ public class AccessExceptionTest extends BasicTest {
     public void testSudoFailAddKVPair() throws Exception {
         ImageWrapper image = client.getImages(1L).get(0);
 
-        List<NamedValue> result1 = new ArrayList<>();
+        List<NamedValue> result1 = new ArrayList<>(2);
         result1.add(new NamedValue("Test result1", "Value Test"));
         result1.add(new NamedValue("Test2 result1", "Value Test2"));
 

@@ -50,7 +50,7 @@ public class DatasetTest extends UserTest {
 
         DatasetWrapper dataset = client.getDatasets(id).get(0);
 
-        assertEquals(dataset.getName(), name);
+        assertEquals(name, dataset.getName());
 
         assertTrue(dataset.canLink());
         assertTrue(dataset.canAnnotate());
@@ -84,7 +84,7 @@ public class DatasetTest extends UserTest {
 
         dataset = client.getDatasets(id).get(0);
 
-        assertEquals(dataset.getDescription(), description);
+        assertEquals(description, dataset.getDescription());
 
         client.delete(dataset);
 

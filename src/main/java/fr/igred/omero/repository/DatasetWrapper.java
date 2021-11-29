@@ -147,7 +147,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @return ImageWrapper list sorted.
      */
-    private static List<ImageWrapper> toImageWrappers(Collection<ImageData> images) {
+    private static List<ImageWrapper> toImageWrappers(Collection<? extends ImageData> images) {
         return images.stream()
                      .map(ImageWrapper::new)
                      .sorted(Comparator.comparing(ImageWrapper::getId))
@@ -337,7 +337,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                            .getImagesForDatasets(client.getCtx(),
                                                  Collections.singletonList(data.getId()));
         } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get images with k/v pair from " + this);
+            handleServiceOrAccess(e, "Cannot get images with key-value pair from " + this);
         }
 
         Collection<ImageData> selected = new ArrayList<>(images.size());
@@ -364,7 +364,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void addImages(Client client, Iterable<ImageWrapper> images)
+    public void addImages(Client client, Iterable<? extends ImageWrapper> images)
     throws ServiceException, AccessException, ExecutionException {
         for (ImageWrapper image : images) {
             addImage(client, image);

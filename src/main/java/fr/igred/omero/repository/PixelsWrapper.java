@@ -209,8 +209,8 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
                                          int[] zBound,
                                          int[] tBound)
     throws AccessException, ExecutionException {
-        boolean createdRawDataFacility = createRawDataFacility(client);
-        Bounds  lim                    = getBounds(xBound, yBound, cBound, zBound, tBound);
+        boolean rdf = createRawDataFacility(client);
+        Bounds  lim = getBounds(xBound, yBound, cBound, zBound, tBound);
 
         double[][][][][] tab = new double[lim.size.t][lim.size.z][lim.size.c][][];
 
@@ -223,7 +223,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
             }
         }
 
-        if (createdRawDataFacility) {
+        if (rdf) {
             destroyRawDataFacility();
         }
         return tab;
@@ -245,7 +245,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
      */
     double[][] getTile(Client client, Coordinates start, int width, int height)
     throws AccessException, ExecutionException {
-        boolean createdRawDataFacility = createRawDataFacility(client);
+        boolean rdf = createRawDataFacility(client);
         Plane2D p;
 
         double[][] tile = new double[height][width];
@@ -262,7 +262,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
                 copy(tile, p, pos, sizeX, sizeY);
             }
         }
-        if (createdRawDataFacility) {
+        if (rdf) {
             destroyRawDataFacility();
         }
         return tile;
@@ -278,7 +278,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
      * @param width  Width of the plane.
      * @param height Height of the plane.
      */
-    private void copy(double[][] tab, Plane2D p, Coordinates start, int width, int height) {
+    private static void copy(double[][] tab, Plane2D p, Coordinates start, int width, int height) {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 tab[start.y + y][start.x + x] = p.getPixelValue(x, y);
@@ -327,9 +327,8 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
                                      int[] tBound,
                                      int bpp)
     throws ExecutionException, AccessException {
-        boolean createdRawDataFacility = createRawDataFacility(client);
-
-        Bounds lim = getBounds(xBound, yBound, cBound, zBound, tBound);
+        boolean rdf = createRawDataFacility(client);
+        Bounds  lim = getBounds(xBound, yBound, cBound, zBound, tBound);
 
         byte[][][][] bytes = new byte[lim.size.t][lim.size.z][lim.size.c][];
 
@@ -341,7 +340,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
                 }
             }
         }
-        if (createdRawDataFacility) {
+        if (rdf) {
             destroyRawDataFacility();
         }
         return bytes;
@@ -364,7 +363,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
      */
     byte[] getRawTile(Client client, Coordinates start, int width, int height, int bpp)
     throws AccessException, ExecutionException {
-        boolean createdRawDataFacility = createRawDataFacility(client);
+        boolean rdf = createRawDataFacility(client);
         Plane2D p;
 
         byte[] tile = new byte[height * width * bpp];
@@ -381,7 +380,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
                 copy(tile, p, pos, sizeX, sizeY, width, bpp);
             }
         }
-        if (createdRawDataFacility) {
+        if (rdf) {
             destroyRawDataFacility();
         }
         return tile;
@@ -399,7 +398,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
      * @param trueWidth Width of the image.
      * @param bpp       Bytes per pixels of the image.
      */
-    private void copy(byte[] bytes, Plane2D p, Coordinates start, int width, int height, int trueWidth, int bpp) {
+    private static void copy(byte[] bytes, Plane2D p, Coordinates start, int width, int height, int trueWidth, int bpp) {
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 for (int i = 0; i < bpp; i++)
@@ -416,7 +415,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
      *
      * @return New array with valid bounds.
      */
-    private int[] checkBounds(int[] bounds, int imageSize) {
+    private static int[] checkBounds(int[] bounds, int imageSize) {
         int[] newBounds = {0, imageSize - 1};
         if (bounds != null && bounds.length > 1) {
             newBounds[0] = Math.max(newBounds[0], bounds[0]);

@@ -508,7 +508,7 @@ public class Client {
      *
      * @return ImageWrapper list sorted.
      */
-    private List<ImageWrapper> toImageWrappers(Collection<? extends ImageData> images) {
+    private static List<ImageWrapper> toImageWrappers(Collection<? extends ImageData> images) {
         return images.stream()
                      .map(ImageWrapper::new)
                      .sorted(Comparator.comparing(ImageWrapper::getId))

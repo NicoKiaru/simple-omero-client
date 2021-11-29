@@ -49,7 +49,7 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
 public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
     /** Id of the associated image */
-    Long imageId;
+    private Long imageId = null;
 
 
     /**
