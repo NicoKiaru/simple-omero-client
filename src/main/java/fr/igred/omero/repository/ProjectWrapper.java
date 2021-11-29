@@ -149,7 +149,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @return Collection of DatasetWrapper.
      */
     public List<DatasetWrapper> getDatasets() {
-        return wrap(data.getDatasets(), DatasetWrapper::new);
+        return wrap(data.getDatasets(), DatasetWrapper::new, DatasetWrapper::getId);
     }
 
 

@@ -159,7 +159,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get images from " + this);
         }
-        return wrap(images, ImageWrapper::new);
+        return wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -198,7 +198,8 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
     public List<ImageWrapper> getImagesLike(Client client, String motif)
     throws ServiceException, AccessException, ExecutionException {
         List<ImageWrapper> images = getImages(client);
-        final String       regexp = ".*" + motif + ".*";
+
+        String regexp = ".*" + motif + ".*";
         images.removeIf(image -> !image.getName().matches(regexp));
         return images;
     }

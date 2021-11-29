@@ -548,7 +548,7 @@ public class ImageTest extends UserTest {
 
     @Test
     public void testImageOrder() throws Exception {
-        List<ImageWrapper> images = client.getImages();
+        List<ImageWrapper> images = client.getUserImages();
         for (int i = 1; i < images.size(); i++) {
             assertTrue(images.get(i - 1).getId() <= images.get(i).getId());
         }

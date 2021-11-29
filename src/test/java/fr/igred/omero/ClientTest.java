@@ -120,7 +120,7 @@ public class ClientTest extends UserTest {
 
     @Test
     public void testGetImages() throws Exception {
-        List<ImageWrapper> images = client.getImages();
+        List<ImageWrapper> images = client.getUserImages();
         assertEquals(4, images.size());
     }
 

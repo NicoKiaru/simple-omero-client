@@ -26,7 +26,7 @@ public class SudoTest extends BasicTest {
         assertEquals(2L, test.getId());
         TagAnnotationWrapper tag = new TagAnnotationWrapper(test, "Tag", "This is a tag");
 
-        List<ImageWrapper> images = test.getImages();
+        List<ImageWrapper> images = test.getUserImages();
 
         for (ImageWrapper image : images) {
             image.addTag(test, tag);

@@ -140,7 +140,7 @@ public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> 
      * @return See above.
      */
     public List<GroupWrapper> getGroups() {
-        return wrap(data.getGroups(), GroupWrapper::new);
+        return wrap(data.getGroups(), GroupWrapper::new, GroupWrapper::getName);
     }
 
 

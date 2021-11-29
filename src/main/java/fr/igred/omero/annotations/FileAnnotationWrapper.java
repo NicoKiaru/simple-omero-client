@@ -74,7 +74,7 @@ public class FileAnnotationWrapper extends GenericAnnotationWrapper<FileAnnotati
 
 
     public File getFile(Client client, String path) throws IOException, ServiceException, OMEROServerError {
-        int inc = 262144;
+        final int inc = 262144;
 
         File file = new File(path);
 

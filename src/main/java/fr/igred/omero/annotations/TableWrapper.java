@@ -439,7 +439,7 @@ public class TableWrapper {
             throw new IllegalArgumentException("Number of columns mismatch");
         }
 
-        final int n = rt.size();
+        int n = rt.size();
         setRowCount(rowCount + n);
 
         if (offset > 0) Arrays.fill(data[0], row, row + n, image.asImageData());
@@ -588,14 +588,16 @@ public class TableWrapper {
      * @param rowCount New rowCount.
      */
     public void setRowCount(int rowCount) {
-        Object[][] temp = new Object[columnCount][rowCount];
-        if (data != null) {
-            row = Math.min(rowCount, row);
-            for (int j = 0; j < columnCount; j++)
-                System.arraycopy(data[j], 0, temp[j], 0, row);
+        if(rowCount != this.rowCount) {
+            Object[][] temp = new Object[columnCount][rowCount];
+            if (data != null) {
+                row = Math.min(rowCount, row);
+                for (int j = 0; j < columnCount; j++)
+                    System.arraycopy(data[j], 0, temp[j], 0, row);
+            }
+            this.rowCount = rowCount;
+            data = temp;
         }
-        this.rowCount = rowCount;
-        data = temp;
     }
 
 

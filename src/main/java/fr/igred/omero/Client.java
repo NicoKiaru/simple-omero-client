@@ -93,6 +93,8 @@ public class Client {
      */
     public Client() {
         gateway = new Gateway(new SimpleLogger());
+        user = null;
+        ctx = null;
     }
 
 
@@ -399,7 +401,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get projects");
         }
-        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new);
+        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
 
@@ -421,7 +423,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get projects with name: " + name);
         }
-        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new);
+        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
 
@@ -444,7 +446,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get dataset with ID: " + Arrays.toString(ids));
         }
-        return datasets.stream().map(DatasetWrapper::new).collect(Collectors.toList());
+        return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
     }
 
 
@@ -486,7 +488,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get datasets with name: " + name);
         }
-        return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new);
+        return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
     }
 
 
@@ -509,7 +511,7 @@ public class Client {
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get image with ID: " + Arrays.toString(ids));
         }
-        return GenericObjectWrapper.wrap(images, ImageWrapper::new);
+        return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -522,14 +524,14 @@ public class Client {
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public List<ImageWrapper> getImages() throws ServiceException, AccessException, ExecutionException {
+    public List<ImageWrapper> getUserImages() throws ServiceException, AccessException, ExecutionException {
         Collection<ImageData> images = new ArrayList<>(0);
         try {
             images = getBrowseFacility().getUserImages(ctx);
         } catch (DSOutOfServiceException | DSAccessException e) {
             handleServiceOrAccess(e, "Cannot get images");
         }
-        return GenericObjectWrapper.wrap(images, ImageWrapper::new);
+        return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -552,7 +554,7 @@ public class Client {
             handleServiceOrAccess(e, "Cannot get images with name: " + name);
         }
         images.removeIf(image -> !image.getName().equals(name));
-        return GenericObjectWrapper.wrap(images, ImageWrapper::new);
+        return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -568,8 +570,8 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImagesLike(String motif) throws ServiceException, AccessException, ExecutionException {
-        List<ImageWrapper> images = getImages();
-        final String       regexp = ".*" + motif + ".*";
+        List<ImageWrapper> images = getUserImages();
+        String             regexp = ".*" + motif + ".*";
         images.removeIf(image -> !image.getName().matches(regexp));
         return images;
     }
@@ -624,7 +626,7 @@ public class Client {
      */
     public List<ImageWrapper> getImagesWithKey(String key)
     throws ServiceException, AccessException, ExecutionException {
-        List<ImageWrapper> images   = getImages();
+        List<ImageWrapper> images   = getUserImages();
         List<ImageWrapper> selected = new ArrayList<>(images.size());
         for (ImageWrapper image : images) {
             Map<String, String> pairsKeyValue = image.getKeyValuePairs(this);
@@ -651,7 +653,7 @@ public class Client {
      */
     public List<ImageWrapper> getImages(String key, String value)
     throws ServiceException, AccessException, ExecutionException {
-        List<ImageWrapper> images   = getImages();
+        List<ImageWrapper> images   = getUserImages();
         List<ImageWrapper> selected = new ArrayList<>(images.size());
         for (ImageWrapper image : images) {
             Map<String, String> pairsKeyValue = image.getKeyValuePairs(this);
@@ -677,7 +679,7 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public Client sudo(String username) throws ServiceException, AccessException, ExecutionException {
-        final Client c = new Client();
+        Client c = new Client();
 
         c.gateway = this.gateway;
         c.user = getUser(username);
@@ -696,7 +698,7 @@ public class Client {
      * @param groupId The group ID.
      */
     public void switchGroup(long groupId) {
-        final boolean sudo = ctx.isSudo();
+        boolean sudo = ctx.isSudo();
         ctx = new SecurityContext(groupId);
         ctx.setExperimenter(user.asExperimenterData());
         if (sudo) ctx.sudo();
@@ -764,7 +766,7 @@ public class Client {
             handleServiceOrServer(e, "Cannot get tag ID: " + id);
         }
 
-        final TagAnnotationData tag = new TagAnnotationData((TagAnnotation) Objects.requireNonNull(o));
+        TagAnnotationData tag = new TagAnnotationData((TagAnnotation) Objects.requireNonNull(o));
         tag.setNameSpace(tag.getContentAsString());
 
         return new TagAnnotationWrapper(tag);
@@ -806,8 +808,9 @@ public class Client {
      */
     void delete(IObject object)
     throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+        final long wait = 500L;
         try {
-            getDm().delete(ctx, object).loop(10, 500);
+            getDm().delete(ctx, object).loop(10, wait);
         } catch (DSOutOfServiceException | DSAccessException | LockTimeout e) {
             handleException(e, "Cannot delete object");
         }

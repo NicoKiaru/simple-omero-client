@@ -169,7 +169,7 @@ public class AccessExceptionTest extends BasicTest {
 
     @Test(expected = AccessException.class)
     public void testSudoFailGetImages() throws Exception {
-        sudo.getImages();
+        sudo.getUserImages();
     }
 
 
