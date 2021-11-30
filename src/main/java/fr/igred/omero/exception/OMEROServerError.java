@@ -39,7 +39,7 @@ public class OMEROServerError extends ServerError {
      * @param cause The exception that caused this one to be risen.
      */
     public OMEROServerError(Throwable cause) {
-        super(null, null, "A server error occurred", cause);
+        this("A server error occurred", cause);
     }
 
 }

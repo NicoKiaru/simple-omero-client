@@ -45,7 +45,7 @@ public class ServiceException extends DSOutOfServiceException {
      * @param connectionStatus The status of the connection to the server.
      */
     public ServiceException(Throwable cause, ConnectionStatus connectionStatus) {
-        super("Cannot connect to OMERO", cause, connectionStatus);
+        this("Cannot connect to OMERO", cause, connectionStatus);
     }
 
 }

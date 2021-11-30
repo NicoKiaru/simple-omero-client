@@ -151,4 +151,25 @@ public class ExceptionTest extends BasicTest {
         assertTrue(exception);
     }
 
+
+    @Test(expected = AccessException.class)
+    public void testExceptionHandler1() throws Exception {
+        Throwable t = new DSAccessException("Test", null);
+        throw new AccessException(t);
+    }
+
+
+    @Test(expected = OMEROServerError.class)
+    public void testExceptionHandler2() throws Exception {
+        Throwable t = new ServerError(null);
+        throw new OMEROServerError(t);
+    }
+
+
+    @Test(expected = ServiceException.class)
+    public void testExceptionHandler4() throws Exception {
+        DSOutOfServiceException e = new DSOutOfServiceException(null);
+        throw new ServiceException("Great", e, e.getConnectionStatus());
+    }
+
 }

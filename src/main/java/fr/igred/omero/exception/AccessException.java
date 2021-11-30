@@ -39,7 +39,7 @@ public class AccessException extends DSAccessException {
      * @param cause The exception that caused this one to be risen.
      */
     public AccessException(Throwable cause) {
-        super("Cannot access data", cause);
+        this("Cannot access data", cause);
     }
 
 }
