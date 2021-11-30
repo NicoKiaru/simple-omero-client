@@ -576,9 +576,10 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      *
      * @return See above.
      *
-     * @throws OMEROServerError Server error.
-     * @throws ServiceException Cannot connect to OMERO.
-     * @throws AccessException  Cannot access data.
+     * @throws OMEROServerError   Server error.
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<File> download(Client client, String path)
     throws OMEROServerError, ServiceException, AccessException, ExecutionException {
