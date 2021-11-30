@@ -82,17 +82,16 @@ public class DatasetTest extends UserTest {
 
         Long id = project.addDataset(client, dataset).getId();
 
-        dataset = client.getDatasets(id).get(0);
-
-        assertEquals(description, dataset.getDescription());
-
-        client.delete(dataset);
+        DatasetWrapper checkDataset = client.getDatasets(id).get(0);
+        client.delete(checkDataset);
 
         try {
             client.getDatasets(id).iterator().next();
         } catch (NoSuchElementException e) {
             exception = true;
         }
+
+        assertEquals(description, checkDataset.getDescription());
         assertTrue(exception);
     }
 
@@ -143,14 +142,11 @@ public class DatasetTest extends UserTest {
         dataset.addTag(client, tag);
 
         List<TagAnnotationWrapper> tags = dataset.getTags(client);
+        client.delete(tag);
+        List<TagAnnotationWrapper> endTags = dataset.getTags(client);
 
         assertEquals(1, tags.size());
-
-        client.delete(tag);
-
-        tags = dataset.getTags(client);
-
-        assertEquals(0, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 
@@ -161,13 +157,13 @@ public class DatasetTest extends UserTest {
         dataset.addTag(client, "Dataset tag", "tag attached to a dataset");
 
         List<TagAnnotationWrapper> tags = client.getTags("Dataset tag");
+
         assertEquals(1, tags.size());
 
         client.delete(tags.get(0));
+        List<TagAnnotationWrapper> endTags = client.getTags("Dataset tag");
 
-        tags = client.getTags("Dataset tag");
-
-        assertEquals(0, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 
@@ -180,14 +176,11 @@ public class DatasetTest extends UserTest {
         dataset.addTag(client, tag.getId());
 
         List<TagAnnotationWrapper> tags = dataset.getTags(client);
+        client.delete(tag);
+        List<TagAnnotationWrapper> endTags = dataset.getTags(client);
 
         assertEquals(1, tags.size());
-
-        client.delete(tag);
-
-        tags = dataset.getTags(client);
-
-        assertEquals(0, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 
@@ -203,17 +196,14 @@ public class DatasetTest extends UserTest {
         dataset.addTags(client, tag1.getId(), tag2.getId(), tag3.getId(), tag4.getId());
 
         List<TagAnnotationWrapper> tags = dataset.getTags(client);
-
-        assertEquals(4, tags.size());
-
         client.delete(tag1);
         client.delete(tag2);
         client.delete(tag3);
         client.delete(tag4);
+        List<TagAnnotationWrapper> endTags = dataset.getTags(client);
 
-        tags = dataset.getTags(client);
-
-        assertEquals(0, tags.size());
+        assertEquals(4, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 
@@ -229,17 +219,14 @@ public class DatasetTest extends UserTest {
         dataset.addTags(client, tag1, tag2, tag3, tag4);
 
         List<TagAnnotationWrapper> tags = dataset.getTags(client);
-
-        assertEquals(4, tags.size());
-
         client.delete(tag1);
         client.delete(tag2);
         client.delete(tag3);
         client.delete(tag4);
+        List<TagAnnotationWrapper> endTags = dataset.getTags(client);
 
-        tags = dataset.getTags(client);
-
-        assertEquals(0, tags.size());
+        assertEquals(4, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 

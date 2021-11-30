@@ -446,14 +446,11 @@ public class ImageTest extends UserTest {
         image.addTag(client, tag);
 
         List<TagAnnotationWrapper> tags = image.getTags(client);
+        client.delete(tag);
+        List<TagAnnotationWrapper> endTags = image.getTags(client);
 
         assertEquals(1, tags.size());
-
-        client.delete(tag);
-
-        tags = image.getTags(client);
-
-        assertEquals(0, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 
@@ -464,13 +461,11 @@ public class ImageTest extends UserTest {
         image.addTag(client, "image tag", "tag attached to an image");
 
         List<TagAnnotationWrapper> tags = client.getTags("image tag");
-        assertEquals(1, tags.size());
-
         client.delete(tags.get(0));
+        List<TagAnnotationWrapper> endTags = client.getTags("image tag");
 
-        tags = client.getTags("image tag");
-
-        assertEquals(0, tags.size());
+        assertEquals(1, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 
@@ -483,14 +478,11 @@ public class ImageTest extends UserTest {
         image.addTag(client, tag.getId());
 
         List<TagAnnotationWrapper> tags = image.getTags(client);
+        client.delete(tag);
+        List<TagAnnotationWrapper> endTags = image.getTags(client);
 
         assertEquals(1, tags.size());
-
-        client.delete(tag);
-
-        tags = image.getTags(client);
-
-        assertEquals(0, tags.size());
+        assertEquals(0, endTags.size());
     }
 
 

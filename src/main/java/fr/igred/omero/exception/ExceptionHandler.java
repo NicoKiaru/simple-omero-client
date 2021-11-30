@@ -22,6 +22,8 @@ public class ExceptionHandler {
         final U u;
         try {
             u = mapper.apply(value);
+        } catch (InterruptedException ie) {
+            throw ie;
         } catch (DSOutOfServiceException se) {
             throw new ServiceException(error, se, se.getConnectionStatus());
         } catch (DSAccessException ae) {
