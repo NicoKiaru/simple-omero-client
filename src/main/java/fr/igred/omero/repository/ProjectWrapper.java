@@ -23,8 +23,6 @@ import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
-import omero.gateway.exception.DSAccessException;
-import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ProjectData;
 
@@ -35,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 
 
 /**
@@ -412,13 +410,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public void refresh(Client client) throws ServiceException, AccessException, ExecutionException {
-        try {
-            data = client.getBrowseFacility()
-                         .getProjects(client.getCtx(), Collections.singletonList(this.getId()))
-                         .iterator().next();
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot refresh " + this);
-        }
+        data = handleServiceAndAccess(client.getBrowseFacility(),
+                                      bf -> bf.getProjects(client.getCtx(),
+                                                           Collections.singletonList(this.getId()))
+                                              .iterator().next(),
+                                      "Cannot refresh " + this);
     }
 
 }

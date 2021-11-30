@@ -42,7 +42,6 @@ public class ServiceException extends DSOutOfServiceException {
      * Constructs a new exception with the specified cause and a generic message.
      *
      * @param cause            The exception that caused this one to be risen.
-     * @param connectionStatus The status of the connection to the server.
      */
     public ServiceException(Throwable cause, ConnectionStatus connectionStatus) {
         super("Cannot connect to OMERO", cause, connectionStatus);

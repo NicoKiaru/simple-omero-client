@@ -30,14 +30,11 @@ import fr.igred.omero.repository.FolderWrapper;
 import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
 import ome.formats.OMEROMetadataStoreClient;
-import omero.LockTimeout;
 import omero.RLong;
-import omero.ServerError;
 import omero.gateway.Gateway;
 import omero.gateway.JoinSessionCredentials;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
-import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.AdminFacility;
 import omero.gateway.facility.BrowseFacility;
@@ -66,9 +63,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleException;
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
+import static fr.igred.omero.exception.ExceptionHandler.handleAll;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndServer;
 
 
 /**
@@ -201,14 +198,10 @@ public class Client {
      * @throws OMEROServerError Server error.
      */
     public List<IObject> findByQuery(String query) throws ServiceException, OMEROServerError {
-        List<IObject> results = new ArrayList<>(0);
-        try {
-            results = gateway.getQueryService(ctx).findAllByQuery(query, null);
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Query failed: " + query);
-        }
-
-        return results;
+        String error = "Query failed: " + query;
+        return handleServiceAndServer(gateway,
+                                      g -> g.getQueryService(ctx).findAllByQuery(query, null),
+                                      error);
     }
 
 
@@ -375,12 +368,10 @@ public class Client {
      */
     public List<ProjectWrapper> getProjects(Long... ids)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ProjectData> projects = new ArrayList<>(0);
-        try {
-            projects = getBrowseFacility().getProjects(ctx, Arrays.asList(ids));
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get projects with IDs: " + Arrays.toString(ids));
-        }
+        String error = "Cannot get projects with IDs: " + Arrays.toString(ids);
+        Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
+                                                                  bf -> bf.getProjects(ctx, Arrays.asList(ids)),
+                                                                  error);
         return projects.stream().map(ProjectWrapper::new).collect(Collectors.toList());
     }
 
@@ -395,12 +386,9 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ProjectWrapper> getProjects() throws ServiceException, AccessException, ExecutionException {
-        Collection<ProjectData> projects = new ArrayList<>(0);
-        try {
-            projects = getBrowseFacility().getProjects(ctx);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get projects");
-        }
+        Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
+                                                                  bf -> bf.getProjects(ctx),
+                                                                  "Cannot get projects");
         return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
@@ -417,12 +405,10 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ProjectWrapper> getProjects(String name) throws ServiceException, AccessException, ExecutionException {
-        Collection<ProjectData> projects = new ArrayList<>(0);
-        try {
-            projects = getBrowseFacility().getProjects(ctx, name);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get projects with name: " + name);
-        }
+        String error = "Cannot get projects with name: " + name;
+        Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
+                                                                  bf -> bf.getProjects(ctx, name),
+                                                                  error);
         return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
@@ -440,12 +426,10 @@ public class Client {
      */
     public List<DatasetWrapper> getDatasets(Long... ids)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<DatasetData> datasets = new ArrayList<>(0);
-        try {
-            datasets = getBrowseFacility().getDatasets(ctx, Arrays.asList(ids));
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get dataset with ID: " + Arrays.toString(ids));
-        }
+        String error = "Cannot get dataset with ID: " + Arrays.toString(ids);
+        Collection<DatasetData> datasets = handleServiceAndAccess(getBrowseFacility(),
+                                                                  bf -> bf.getDatasets(ctx, Arrays.asList(ids)),
+                                                                  error);
         return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
     }
 
@@ -482,12 +466,10 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<DatasetWrapper> getDatasets(String name) throws ServiceException, AccessException, ExecutionException {
-        Collection<DatasetData> datasets = new ArrayList<>(0);
-        try {
-            datasets = getBrowseFacility().getDatasets(ctx, name);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get datasets with name: " + name);
-        }
+        String error = "Cannot get datasets with name: " + name;
+        Collection<DatasetData> datasets = handleServiceAndAccess(getBrowseFacility(),
+                                                                  bf -> bf.getDatasets(ctx, name),
+                                                                  error);
         return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
     }
 
@@ -505,12 +487,10 @@ public class Client {
      */
     public List<ImageWrapper> getImages(Long... ids)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>(0);
-        try {
-            images = getBrowseFacility().getImages(ctx, Arrays.asList(ids));
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get image with ID: " + Arrays.toString(ids));
-        }
+        String error = "Cannot get image with ID: " + Arrays.toString(ids);
+        Collection<ImageData> images = handleServiceAndAccess(getBrowseFacility(),
+                                                              bf -> bf.getImages(ctx, Arrays.asList(ids)),
+                                                              error);
         return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
@@ -525,12 +505,9 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getUserImages() throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>(0);
-        try {
-            images = getBrowseFacility().getUserImages(ctx);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get images");
-        }
+        Collection<ImageData> images = handleServiceAndAccess(getBrowseFacility(),
+                                                              bf -> bf.getUserImages(ctx),
+                                                              "Cannot get images");
         return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
@@ -547,12 +524,10 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImages(String name) throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>(0);
-        try {
-            images = getBrowseFacility().getImages(ctx, name);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get images with name: " + name);
-        }
+        String error = "Cannot get images with name: " + name;
+        Collection<ImageData> images = handleServiceAndAccess(getBrowseFacility(),
+                                                              bf -> bf.getImages(ctx, name),
+                                                              error);
         images.removeIf(image -> !image.getName().equals(name));
         return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
@@ -714,13 +689,11 @@ public class Client {
      * @throws ServiceException Cannot connect to OMERO.
      */
     public List<TagAnnotationWrapper> getTags() throws OMEROServerError, ServiceException {
-        List<IObject> os = new ArrayList<>(0);
-        try {
-            os = gateway.getQueryService(ctx).findAll(TagAnnotation.class.getSimpleName(), null);
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Cannot get tags");
-        }
-
+        List<IObject> os = handleServiceAndServer(gateway,
+                                                  g -> g.getQueryService(ctx)
+                                                        .findAll(TagAnnotation.class.getSimpleName(),
+                                                                 null),
+                                                  "Cannot get tags");
         return os.stream()
                  .map(TagAnnotation.class::cast)
                  .map(TagAnnotationData::new)
@@ -759,16 +732,13 @@ public class Client {
      * @throws ServiceException Cannot connect to OMERO.
      */
     public TagAnnotationWrapper getTag(Long id) throws OMEROServerError, ServiceException {
-        IObject o = null;
-        try {
-            o = gateway.getQueryService(ctx).find(TagAnnotation.class.getSimpleName(), id);
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Cannot get tag ID: " + id);
-        }
-
+        IObject o = handleServiceAndServer(gateway,
+                                           g -> g.getQueryService(ctx)
+                                                 .find(TagAnnotation.class.getSimpleName(),
+                                                       id),
+                                           "Cannot get tag ID: " + id);
         TagAnnotationData tag = new TagAnnotationData((TagAnnotation) Objects.requireNonNull(o));
         tag.setNameSpace(tag.getContentAsString());
-
         return new TagAnnotationWrapper(tag);
     }
 
@@ -785,13 +755,9 @@ public class Client {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public IObject save(IObject object) throws ServiceException, AccessException, ExecutionException {
-        IObject result = object;
-        try {
-            result = getDm().saveAndReturnObject(ctx, object);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot save object");
-        }
-        return result;
+        return handleServiceAndAccess(getDm(),
+                                      d -> d.saveAndReturnObject(ctx, object),
+                                      "Cannot save object");
     }
 
 
@@ -809,11 +775,9 @@ public class Client {
     void delete(IObject object)
     throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
         final long wait = 500L;
-        try {
-            getDm().delete(ctx, object).loop(10, wait);
-        } catch (DSOutOfServiceException | DSAccessException | LockTimeout e) {
-            handleException(e, "Cannot delete object");
-        }
+        handleAll(getDm(),
+                  d -> d.delete(ctx, object).loop(10, wait),
+                  "Cannot delete object");
     }
 
 
@@ -886,12 +850,9 @@ public class Client {
      */
     public ExperimenterWrapper getUser(String username)
     throws ExecutionException, ServiceException, AccessException {
-        ExperimenterData experimenter = null;
-        try {
-            experimenter = getAdminFacility().lookupExperimenter(ctx, username);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot retrieve user: " + username);
-        }
+        ExperimenterData experimenter = handleServiceAndAccess(getAdminFacility(),
+                                                               a -> a.lookupExperimenter(ctx, username),
+                                                               "Cannot retrieve user: " + username);
         if (experimenter != null) {
             return new ExperimenterWrapper(experimenter);
         } else {
@@ -913,12 +874,9 @@ public class Client {
      */
     public GroupWrapper getGroup(String groupName)
     throws ExecutionException, ServiceException, AccessException {
-        GroupData group = null;
-        try {
-            group = getAdminFacility().lookupGroup(ctx, groupName);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot retrieve group: " + groupName);
-        }
+        GroupData group = handleServiceAndAccess(getAdminFacility(),
+                                                 a -> a.lookupGroup(ctx, groupName),
+                                                 "Cannot retrieve group: " + groupName);
         if (group != null) {
             return new GroupWrapper(group);
         } else {

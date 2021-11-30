@@ -37,7 +37,6 @@ import loci.formats.FormatTools;
 import omero.ServerError;
 import omero.api.RenderingEnginePrx;
 import omero.api.ThumbnailStorePrx;
-import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.ROIFacility;
 import omero.gateway.facility.TransferFacility;
@@ -67,9 +66,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleException;
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
+import static fr.igred.omero.exception.ExceptionHandler.handle;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 import static omero.rtypes.rint;
 
 
@@ -163,16 +161,12 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      */
     public void saveROI(Client client, ROIWrapper roi)
     throws ServiceException, AccessException, ExecutionException {
-        try {
-            ROIData roiData = client.getRoiFacility()
-                                    .saveROIs(client.getCtx(),
-                                              data.getId(),
-                                              Collections.singletonList(roi.asROIData()))
-                                    .iterator().next();
-            roi.setData(roiData);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot link ROI to " + this);
-        }
+        ROIData roiData = handleServiceAndAccess(client.getRoiFacility(),
+                                                 rf -> rf.saveROIs(client.getCtx(),
+                                                                   data.getId(),
+                                                                   Collections.singletonList(roi.asROIData())),
+                                                 "Cannot link ROI to " + this).iterator().next();
+        roi.setData(roiData);
     }
 
 
@@ -189,12 +183,9 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      */
     public List<ROIWrapper> getROIs(Client client)
     throws ServiceException, AccessException, ExecutionException {
-        List<ROIResult> roiResults = new ArrayList<>(0);
-        try {
-            roiResults = client.getRoiFacility().loadROIs(client.getCtx(), data.getId());
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get ROIs from " + this);
-        }
+        List<ROIResult> roiResults = handleServiceAndAccess(client.getRoiFacility(),
+                                                            rf -> rf.loadROIs(client.getCtx(), data.getId()),
+                                                            "Cannot get ROIs from " + this);
         ROIResult r = roiResults.iterator().next();
 
         Collection<ROIData> rois = r.getROIs();
@@ -224,12 +215,10 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
     throws ServiceException, AccessException, ExecutionException {
         ROIFacility roiFacility = client.getRoiFacility();
 
-        Collection<FolderData> folders = new ArrayList<>(0);
-        try {
-            folders = roiFacility.getROIFolders(client.getCtx(), this.data.getId());
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get folders for " + this);
-        }
+        Collection<FolderData> folders = handleServiceAndAccess(roiFacility,
+                                                                rf -> rf.getROIFolders(client.getCtx(),
+                                                                                       this.data.getId()),
+                                                                "Cannot get folders for " + this);
 
         List<FolderWrapper> roiFolders = new ArrayList<>(folders.size());
         for (FolderData folder : folders) {
@@ -451,12 +440,9 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      */
     public List<ChannelWrapper> getChannels(Client client)
     throws ServiceException, AccessException, ExecutionException {
-        List<ChannelData> channels = new ArrayList<>(0);
-        try {
-            channels = client.getMetadata().getChannelData(client.getCtx(), getId());
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get the channel name for " + this);
-        }
+        List<ChannelData> channels = handleServiceAndAccess(client.getMetadata(),
+                                                            m -> m.getChannelData(client.getCtx(), getId()),
+                                                            "Cannot get the channel name for " + this);
         return channels.stream()
                        .sorted(Comparator.comparing(ChannelData::getIndex))
                        .map(ChannelWrapper::new)
@@ -567,8 +553,10 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
             store.setPixelsId(pixels.getId());
             array = store.getThumbnail(rint(width), rint(height));
             store.close();
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Error retrieving thumbnail.");
+        } catch (DSOutOfServiceException se) {
+            throw new ServiceException("Error retrieving thumbnail.", se, se.getConnectionStatus());
+        } catch (ServerError se) {
+            throw new OMEROServerError("Error retrieving thumbnail.", se);
         }
         if (array != null) {
             try (ByteArrayInputStream stream = new ByteArrayInputStream(array)) {
@@ -593,14 +581,11 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      * @throws AccessException  Cannot access data.
      */
     public List<File> download(Client client, String path)
-    throws OMEROServerError, ServiceException, AccessException {
-        try {
-            TransferFacility transfer = client.getGateway().getFacility(TransferFacility.class);
-            return transfer.downloadImage(client.getCtx(), path, getId());
-        } catch (DSAccessException | DSOutOfServiceException | ExecutionException e) {
-            handleException(e, "Could not download image " + getId() + ": " + e.getMessage());
-        }
-        return new ArrayList<>(0);
+    throws OMEROServerError, ServiceException, AccessException, ExecutionException {
+        TransferFacility transfer = client.getGateway().getFacility(TransferFacility.class);
+        return handle(transfer,
+                      t -> t.downloadImage(client.getCtx(), path, getId()),
+                      "Could not download image " + getId());
     }
 
 }

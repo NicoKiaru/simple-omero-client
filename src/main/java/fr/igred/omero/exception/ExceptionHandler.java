@@ -1,20 +1,3 @@
-/*
- *  Copyright (C) 2020-2021 GReD
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
-
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
- * Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
-
 package fr.igred.omero.exception;
 
 
@@ -22,118 +5,123 @@ import omero.ServerError;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 
+import java.util.Objects;
 
-/**
- * Class with methods to handle OMERO exceptions
- */
+
 public class ExceptionHandler {
+
 
     private ExceptionHandler() {
     }
 
 
-    /**
-     * Helper method to convert DSOutOfServiceException to ServiceException.
-     *
-     * @param t       The Exception
-     * @param message Short explanation of the problem.
-     *
-     * @throws ServiceException Cannot connect to OMERO.
-     */
-    private static void handleServiceException(Throwable t, String message)
-    throws ServiceException {
-        if (t instanceof DSOutOfServiceException) {
-            throw new ServiceException(message, t, ((DSOutOfServiceException) t).getConnectionStatus());
+    public static <T, U> U handleAll(T value, AllThrower<? super T, ? extends U> mapper, String error)
+    throws ServiceException, AccessException, OMEROServerError, InterruptedException {
+        Objects.requireNonNull(mapper);
+        Objects.requireNonNull(value);
+        final U u;
+        try {
+            u = mapper.apply(value);
+        } catch (DSOutOfServiceException se) {
+            throw new ServiceException(error, se, se.getConnectionStatus());
+        } catch (DSAccessException ae) {
+            throw new AccessException(error, ae);
+        } catch (ServerError se) {
+            throw new OMEROServerError(error, se);
         }
+        return u;
     }
 
 
-    /**
-     * Helper method to convert ServerError to OMEROServerError.
-     *
-     * @param t       The Exception
-     * @param message Short explanation of the problem.
-     *
-     * @throws OMEROServerError Server error.
-     */
-    private static void handleServerError(Throwable t, String message)
-    throws OMEROServerError {
-        if (t instanceof ServerError) {
-            throw new OMEROServerError(message, t);
-        }
-    }
-
-
-    /**
-     * Helper method to convert DSAccessException to AccessException.
-     *
-     * @param t       The Exception
-     * @param message Short explanation of the problem.
-     *
-     * @throws AccessException Cannot access data.
-     */
-    private static void handleAccessException(Throwable t, String message)
-    throws AccessException {
-        if (t instanceof DSAccessException) {
-            throw new AccessException(message, t);
-        }
-    }
-
-
-    /**
-     * Helper method to convert an exception from:
-     * <ul><li>DSOutOfServiceException to ServiceException</li>
-     * <li>ServerError to OMEROServerError</li></ul>
-     *
-     * @param t       The Exception
-     * @param message Short explanation of the problem.
-     *
-     * @throws ServiceException Cannot connect to OMERO.
-     * @throws OMEROServerError Server error.
-     */
-    public static void handleServiceOrServer(Throwable t, String message)
-    throws ServiceException, OMEROServerError {
-        handleServiceException(t, message);
-        handleServerError(t, message);
-    }
-
-
-    /**
-     * Helper method to convert an exception from:
-     * <ul><li>DSOutOfServiceException to ServiceException</li>
-     * <li>DSAccessException to AccessException</li></ul>
-     *
-     * @param t       The Exception
-     * @param message Short explanation of the problem.
-     *
-     * @throws ServiceException Cannot connect to OMERO.
-     * @throws AccessException  Cannot access data.
-     */
-    public static void handleServiceOrAccess(Throwable t, String message)
-    throws ServiceException, AccessException {
-        handleServiceException(t, message);
-        handleAccessException(t, message);
-    }
-
-
-    /**
-     * Helper method to convert an exception from:
-     * <ul><li>DSAccessException to AccessException</li>
-     * <li>DSOutOfServiceException to ServiceException</li>
-     * <li>ServerError to OMEROServerError</li></ul>
-     *
-     * @param t       The Exception
-     * @param message Short explanation of the problem.
-     *
-     * @throws AccessException  Cannot access data.
-     * @throws OMEROServerError Server error.
-     * @throws ServiceException Cannot connect to OMERO.
-     */
-    public static void handleException(Throwable t, String message)
+    public static <T, U> U handle(T value, MainThrower<? super T, ? extends U> mapper, String error)
     throws ServiceException, AccessException, OMEROServerError {
-        handleAccessException(t, message);
-        handleServerError(t, message);
-        handleServiceException(t, message);
+        Objects.requireNonNull(mapper);
+        Objects.requireNonNull(value);
+        final U u;
+        try {
+            u = mapper.apply(value);
+        } catch (DSOutOfServiceException se) {
+            throw new ServiceException(error, se, se.getConnectionStatus());
+        } catch (DSAccessException ae) {
+            throw new AccessException(error, ae);
+        } catch (ServerError se) {
+            throw new OMEROServerError(error, se);
+        }
+        return u;
+    }
+
+
+    public static <T, U> U handleServiceAndAccess(T value, ServiceOrAccessThrower<? super T, ? extends U> mapper,
+                                                  String error)
+    throws ServiceException, AccessException {
+        Objects.requireNonNull(mapper);
+        Objects.requireNonNull(value);
+        final U u;
+        try {
+            u = mapper.apply(value);
+        } catch (DSOutOfServiceException se) {
+            throw new ServiceException(error, se, se.getConnectionStatus());
+        } catch (DSAccessException ae) {
+            throw new AccessException(error, ae);
+        }
+        return u;
+    }
+
+
+    public static <T, U> U handleServiceAndServer(T value, ServiceOrServerThrower<? super T, ? extends U> mapper,
+                                                  String error)
+    throws ServiceException, OMEROServerError {
+        Objects.requireNonNull(mapper);
+        Objects.requireNonNull(value);
+        final U u;
+        try {
+            u = mapper.apply(value);
+        } catch (DSOutOfServiceException se) {
+            throw new ServiceException(error, se, se.getConnectionStatus());
+        } catch (ServerError se) {
+            throw new OMEROServerError(error, se);
+        }
+        return u;
+    }
+
+
+    @FunctionalInterface
+    public interface AllThrower<T, R> {
+
+        R apply(T t) throws DSOutOfServiceException, DSAccessException, ServerError, InterruptedException;
+
+    }
+
+
+    @FunctionalInterface
+    public interface MainThrower<T, R> {
+
+        R apply(T t) throws DSOutOfServiceException, DSAccessException, ServerError;
+
+    }
+
+
+    @FunctionalInterface
+    public interface ServiceOrAccessThrower<T, R> {
+
+        R apply(T t) throws DSOutOfServiceException, DSAccessException;
+
+    }
+
+
+    @FunctionalInterface
+    public interface ServiceOrServerThrower<T, R> {
+
+        R apply(T t) throws DSOutOfServiceException, ServerError;
+
+    }
+
+
+    @FunctionalInterface
+    public interface ServerOrAccessThrower<T, R> {
+
+        R apply(T t) throws DSAccessException, ServerError;
+
     }
 
 }

@@ -13,8 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
-
 
 public class FileAnnotationWrapper extends GenericAnnotationWrapper<FileAnnotationData> {
 
@@ -89,16 +87,15 @@ public class FileAnnotationWrapper extends GenericAnnotationWrapper<FileAnnotati
                 stream.write(store.read(offset, inc));
             }
             stream.write(store.read(offset, (int) (size - offset)));
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Could not create RawFileService");
+        } catch (DSOutOfServiceException se) {
+            throw new ServiceException("Could not create RawFileService", se, se.getConnectionStatus());
+        } catch (ServerError e) {
+            throw new OMEROServerError("Could not create RawFileService", e);
         }
-
-        if (store != null) {
-            try {
-                store.close();
-            } catch (ServerError e) {
-                throw new OMEROServerError("Could not close RawFileService", e);
-            }
+        try {
+            store.close();
+        } catch (ServerError e) {
+            throw new OMEROServerError("Could not close RawFileService", e);
         }
 
         return file;
