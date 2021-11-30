@@ -128,6 +128,7 @@ public class ROI2ImageJTest extends BasicTest {
         MaskWrapper mask = new MaskWrapper();
         mask.setCoordinates(4, 4, 11, 11);
         mask.setCZT(1, 0, 0);
+        mask.setTransform(transform);
 
         EllipseWrapper ellipse = new EllipseWrapper(5, 5, 4, 4);
         ellipse.setCZT(1, 0, 1);

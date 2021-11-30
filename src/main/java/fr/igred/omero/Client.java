@@ -62,6 +62,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -374,7 +375,7 @@ public class Client {
         Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
                                                                   bf -> bf.getProjects(ctx, Arrays.asList(ids)),
                                                                   error);
-        return projects.stream().map(ProjectWrapper::new).collect(Collectors.toList());
+        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
 
