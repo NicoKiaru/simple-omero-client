@@ -5,124 +5,125 @@ import omero.ServerError;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 
-public class ExceptionHandler {
+public class ExceptionHandler<T> {
+
+    private final Throwable exception;
+    private final T         value;
+    private final String    error;
 
 
-    private ExceptionHandler() {
+    private ExceptionHandler(T value, Throwable t, String error) {
+        this.value = value;
+        this.exception = t;
+        this.error = error;
     }
 
 
-    public static <T, U> U handleAll(T value, AllThrower<? super T, ? extends U> mapper, String error)
-    throws ServiceException, AccessException, OMEROServerError, InterruptedException {
-        Objects.requireNonNull(mapper);
-        Objects.requireNonNull(value);
-        final U u;
-        try {
-            u = mapper.apply(value);
-        } catch (InterruptedException ie) {
-            throw ie;
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (DSAccessException ae) {
-            throw new AccessException(error, ae);
-        } catch (ServerError se) {
-            throw new OMEROServerError(error, se);
-        }
-        return u;
+    public static <A> ExceptionHandler<A> of(A value, String errorMessage) {
+        return new ExceptionHandler<>(Objects.requireNonNull(value), null, errorMessage);
     }
 
 
-    public static <T, U> U handle(T value, MainThrower<? super T, ? extends U> mapper, String error)
-    throws ServiceException, AccessException, OMEROServerError {
-        Objects.requireNonNull(mapper);
-        Objects.requireNonNull(value);
-        final U u;
-        try {
-            u = mapper.apply(value);
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (DSAccessException ae) {
-            throw new AccessException(error, ae);
-        } catch (ServerError se) {
-            throw new OMEROServerError(error, se);
-        }
-        return u;
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> void sneakyThrow(Throwable t) throws E {
+        throw (E) t;
     }
 
 
-    public static <T, U> U handleServiceAndAccess(T value, ServiceOrAccessThrower<? super T, ? extends U> mapper,
+    public static <T, U> U handleServiceAndAccess(T value, ThrowingFunction<? super T, ? extends U> mapper,
                                                   String error)
     throws ServiceException, AccessException {
-        Objects.requireNonNull(mapper);
-        Objects.requireNonNull(value);
-        final U u;
-        try {
-            u = mapper.apply(value);
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (DSAccessException ae) {
-            throw new AccessException(error, ae);
-        }
-        return u;
+        return of(value, error)
+                .map(mapper)
+                .propagate(DSOutOfServiceException.class, ServiceException::new)
+                .propagate(DSAccessException.class, AccessException::new)
+                .get();
     }
 
 
-    public static <T, U> U handleServiceAndServer(T value, ServiceOrServerThrower<? super T, ? extends U> mapper,
+    public static <T, U> U handleServiceAndServer(T value, ThrowingFunction<? super T, ? extends U> mapper,
                                                   String error)
     throws ServiceException, OMEROServerError {
+        return of(value, error)
+                .map(mapper)
+                .propagate(DSOutOfServiceException.class, ServiceException::new)
+                .propagate(ServerError.class, OMEROServerError::new)
+                .get();
+    }
+
+
+    public <U> ExceptionHandler<U> map(ThrowingFunction<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper);
-        Objects.requireNonNull(value);
-        final U u;
+        Throwable throwable = null;
+
+        U u = null;
         try {
             u = mapper.apply(value);
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (ServerError se) {
-            throw new OMEROServerError(error, se);
+        } catch (Throwable t) {
+            throwable = t;
         }
-        return u;
+        return new ExceptionHandler<>(u, throwable, error);
+    }
+
+
+    public ExceptionHandler<T> apply(ThrowingConsumer<? super T> consumer) {
+        Objects.requireNonNull(consumer);
+        Throwable throwable = null;
+        try {
+            consumer.apply(value);
+        } catch (Throwable t) {
+            throwable = t;
+        }
+        return new ExceptionHandler<>(value, throwable, error);
+    }
+
+
+    public <E extends Throwable> ExceptionHandler<T> propagate(Class<E> excType) throws E {
+        if (excType.isInstance(exception))
+            throw excType.cast(exception);
+        return this;
+    }
+
+
+    public <E extends Throwable, F extends Throwable> ExceptionHandler<T>
+    propagate(Class<E> excType, ExceptionWrapper<? super E, ? extends F> translator)
+    throws F {
+        if (excType.isInstance(exception))
+            throw translator.apply(error, excType.cast(exception));
+        return this;
+    }
+
+
+    public T get() {
+        if (exception != null) sneakyThrow(exception);
+        return value;
     }
 
 
     @FunctionalInterface
-    public interface AllThrower<T, R> {
+    public interface ThrowingFunction<T, R> {
 
-        R apply(T t) throws DSOutOfServiceException, DSAccessException, ServerError, InterruptedException;
-
-    }
-
-
-    @FunctionalInterface
-    public interface MainThrower<T, R> {
-
-        R apply(T t) throws DSOutOfServiceException, DSAccessException, ServerError;
+        R apply(T t) throws Throwable;
 
     }
 
 
     @FunctionalInterface
-    public interface ServiceOrAccessThrower<T, R> {
+    public interface ThrowingConsumer<T> {
 
-        R apply(T t) throws DSOutOfServiceException, DSAccessException;
-
-    }
-
-
-    @FunctionalInterface
-    public interface ServiceOrServerThrower<T, R> {
-
-        R apply(T t) throws DSOutOfServiceException, ServerError;
+        void apply(T t) throws Throwable;
 
     }
 
 
     @FunctionalInterface
-    public interface ServerOrAccessThrower<T, R> {
+    public interface ExceptionWrapper<T, E> {
 
-        R apply(T t) throws DSAccessException, ServerError;
+        E apply(String message, T t);
 
     }
 

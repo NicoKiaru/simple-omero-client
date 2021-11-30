@@ -59,11 +59,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      * @param name        Project name.
      * @param description Project description.
      *
+     * @return The project newly created.
+     *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
-     *
-     * @return The project newly created.
      */
     public static ProjectWrapper create(Client client, String name, String description)
     throws ServiceException, AccessException, ExecutionException {

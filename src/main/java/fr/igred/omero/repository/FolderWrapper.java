@@ -20,6 +20,7 @@ package fr.igred.omero.repository;
 
 import fr.igred.omero.Client;
 import fr.igred.omero.exception.AccessException;
+import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.roi.ROIWrapper;
@@ -231,18 +232,16 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      */
     public void unlinkAllROI(Client client) throws ServiceException, AccessException, ExecutionException {
         String error = "Cannot unlink ROIs from " + this;
-        try {
-            List<ROIWrapper> rois = getROIs(client);
-            for (ROIWrapper roi : rois) {
-                client.getRoiFacility().removeRoisFromFolders(client.getCtx(),
-                                                              this.imageId,
-                                                              Collections.singletonList(roi.asROIData()),
-                                                              Collections.singletonList(data));
-            }
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (DSAccessException ae) {
-            throw new AccessException(error, ae);
+        ROIFacility rf = client.getRoiFacility();
+        List<ROIWrapper> rois = getROIs(client);
+        for (ROIWrapper roi : rois) {
+            ExceptionHandler.of(roi, error)
+                            .apply(r -> rf.removeRoisFromFolders(client.getCtx(),
+                                                                 this.imageId,
+                                                                 Collections.singletonList(r.asROIData()),
+                                                                 Collections.singletonList(data)))
+                            .propagate(DSOutOfServiceException.class, ServiceException::new)
+                            .propagate(DSAccessException.class, AccessException::new);
         }
     }
 
@@ -260,16 +259,13 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     public void unlinkROI(Client client, ROIWrapper roi)
     throws ServiceException, AccessException, ExecutionException {
         String error = "Cannot unlink ROIs from " + this;
-        try {
-            client.getRoiFacility().removeRoisFromFolders(client.getCtx(),
-                                                          this.imageId,
-                                                          Collections.singletonList(roi.asROIData()),
-                                                          Collections.singletonList(data));
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (DSAccessException ae) {
-            throw new AccessException(error, ae);
-        }
+        ExceptionHandler.of(client.getRoiFacility(), error)
+                        .apply(rf -> rf.removeRoisFromFolders(client.getCtx(),
+                                                              this.imageId,
+                                                              Collections.singletonList(roi.asROIData()),
+                                                              Collections.singletonList(data)))
+                        .propagate(DSOutOfServiceException.class, ServiceException::new)
+                        .propagate(DSAccessException.class, AccessException::new);
     }
 
 }

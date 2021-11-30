@@ -21,6 +21,7 @@ package fr.igred.omero;
 import fr.igred.omero.annotations.TableWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
+import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.meta.ExperimenterWrapper;
@@ -31,10 +32,12 @@ import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
 import ome.formats.OMEROMetadataStoreClient;
 import omero.RLong;
+import omero.ServerError;
 import omero.gateway.Gateway;
 import omero.gateway.JoinSessionCredentials;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.AdminFacility;
 import omero.gateway.facility.BrowseFacility;
@@ -63,7 +66,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleAll;
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndServer;
 
@@ -775,9 +777,12 @@ public class Client {
     void delete(IObject object)
     throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
         final long wait = 500L;
-        handleAll(getDm(),
-                  d -> d.delete(ctx, object).loop(10, wait),
-                  "Cannot delete object");
+        ExceptionHandler.of(getDm(), "Cannot delete object")
+                        .map(d -> d.delete(ctx, object).loop(10, wait))
+                        .propagate(InterruptedException.class)
+                        .propagate(DSOutOfServiceException.class, ServiceException::new)
+                        .propagate(DSAccessException.class, AccessException::new)
+                        .propagate(ServerError.class, OMEROServerError::new);
     }
 
 

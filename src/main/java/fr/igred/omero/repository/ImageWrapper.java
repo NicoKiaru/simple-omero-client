@@ -20,6 +20,7 @@ package fr.igred.omero.repository;
 
 import fr.igred.omero.Client;
 import fr.igred.omero.exception.AccessException;
+import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.PixelsWrapper.Bounds;
@@ -37,6 +38,7 @@ import loci.formats.FormatTools;
 import omero.ServerError;
 import omero.api.RenderingEnginePrx;
 import omero.api.ThumbnailStorePrx;
+import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.ROIFacility;
 import omero.gateway.facility.TransferFacility;
@@ -66,7 +68,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handle;
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 import static omero.rtypes.rint;
 
@@ -584,9 +585,12 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
     public List<File> download(Client client, String path)
     throws OMEROServerError, ServiceException, AccessException, ExecutionException {
         TransferFacility transfer = client.getGateway().getFacility(TransferFacility.class);
-        return handle(transfer,
-                      t -> t.downloadImage(client.getCtx(), path, getId()),
-                      "Could not download image " + getId());
+        return ExceptionHandler.of(transfer, "Could not download image " + getId())
+                               .map(t -> t.downloadImage(client.getCtx(), path, getId()))
+                               .propagate(DSOutOfServiceException.class, ServiceException::new)
+                               .propagate(ServerError.class, OMEROServerError::new)
+                               .propagate(DSAccessException.class, AccessException::new)
+                               .get();
     }
 
 }
