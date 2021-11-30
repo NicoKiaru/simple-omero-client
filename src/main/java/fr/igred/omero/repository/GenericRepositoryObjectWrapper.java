@@ -85,7 +85,6 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
     throws ServiceException, AccessException, ExecutionException {
         TagAnnotationData tagData = new TagAnnotationData(name);
         tagData.setTagDescription(description);
-
         addTag(client, tagData);
     }
 
@@ -118,14 +117,10 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      */
     protected void addTag(Client client, TagAnnotationData tagData)
     throws ServiceException, AccessException, ExecutionException {
-        String error = "Cannot add tag " + tagData.getTagValue() + " to " + this;
-        try {
-            client.getDm().attachAnnotation(client.getCtx(), tagData, data);
-        } catch (DSOutOfServiceException se) {
-            throw new ServiceException(error, se, se.getConnectionStatus());
-        } catch (DSAccessException ae) {
-            throw new AccessException(error, ae);
-        }
+        String error = "Cannot add tag " + tagData.getId() + " to " + this;
+        handleServiceAndAccess(client.getDm(),
+                               d -> d.attachAnnotation(client.getCtx(), tagData, data),
+                               error);
     }
 
 
