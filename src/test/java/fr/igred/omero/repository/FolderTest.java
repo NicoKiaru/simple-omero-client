@@ -19,6 +19,7 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.UserTest;
+import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.roi.ROIWrapper;
 import fr.igred.omero.roi.RectangleWrapper;
 import org.junit.Test;
@@ -203,6 +204,26 @@ public class FolderTest extends UserTest {
         }
 
         assertEquals(0, image.getROIs(client).size());
+    }
+
+
+    @Test
+    public void testAddAndRemoveTagFromFolder() throws Exception {
+        FolderWrapper folder = new FolderWrapper(client, "Test1");
+
+        TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to a folder");
+
+        folder.addTag(client, tag);
+
+        List<TagAnnotationWrapper> tags = folder.getTags(client);
+        assertEquals(1, tags.size());
+        folder.unlink(client, tags.get(0));
+
+        List<TagAnnotationWrapper> removed = folder.getTags(client);
+        assertEquals(0, removed.size());
+
+        client.delete(tag);
+        client.delete(folder);
     }
 
 }

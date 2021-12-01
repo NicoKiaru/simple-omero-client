@@ -19,6 +19,7 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
+import fr.igred.omero.annotations.GenericAnnotationWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.OMEROServerError;
@@ -63,6 +64,8 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
  */
 public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> {
 
+    public static final String ANNOTATION_LINK = "DatasetAnnotationLink";
+
 
     /**
      * Constructor of the DatasetWrapper class
@@ -84,6 +87,14 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public DatasetWrapper(DatasetData dataset) {
         super(dataset);
+    }
+
+
+    @Override
+    public <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
+    throws ServiceException, OMEROServerError, AccessException, ExecutionException, InterruptedException {
+        removeLink(client, ANNOTATION_LINK, annotation.getId());
+        refresh(client);
     }
 
 
@@ -364,6 +375,24 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
 
         client.save(link);
         refresh(client);
+    }
+
+
+    /**
+     * Removes an image from the dataset in OMERO.
+     *
+     * @param client The client handling the connection.
+     * @param image  Image to remove.
+     *
+     * @throws ServiceException     Cannot connect to OMERO.
+     * @throws AccessException      Cannot access data.
+     * @throws ExecutionException   A Facility can't be retrieved or instantiated.
+     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws InterruptedException If block(long) does not return.
+     */
+    public void removeImage(Client client, ImageWrapper image)
+    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+        removeLink(client, "DatasetImageLink", image.getId());
     }
 
 

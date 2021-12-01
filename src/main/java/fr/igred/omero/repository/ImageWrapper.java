@@ -19,6 +19,7 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
+import fr.igred.omero.annotations.GenericAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
@@ -78,6 +79,8 @@ import static omero.rtypes.rint;
  */
 public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
 
+    public static final String ANNOTATION_LINK = "ImageAnnotationLink";
+
 
     /**
      * Constructor of the class ImageWrapper
@@ -86,6 +89,13 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      */
     public ImageWrapper(ImageData image) {
         super(image);
+    }
+
+
+    @Override
+    <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
+    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+        removeLink(client, ANNOTATION_LINK, annotation.getId());
     }
 
 

@@ -19,6 +19,7 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
+import fr.igred.omero.annotations.GenericAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
@@ -30,7 +31,11 @@ import omero.gateway.facility.ROIFacility;
 import omero.gateway.model.FolderData;
 import omero.gateway.model.ROIData;
 import omero.gateway.model.ROIResult;
+import omero.gateway.model.TagAnnotationData;
 import omero.model.Folder;
+import omero.model.FolderAnnotationLink;
+import omero.model.FolderAnnotationLinkI;
+import omero.model.FolderI;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +53,10 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndServer;
  */
 public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
+    public static final String ANNOTATION_LINK = "FolderAnnotationLink";
+
     /** Id of the associated image */
-    private Long imageId = null;
+    private long imageId = -1L;
 
 
     /**
@@ -89,6 +96,33 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
                                                          .saveAndReturnObject(data.asIObject()),
                                                    "Could not create Folder with name: " + name);
         data.setFolder(f);
+    }
+
+
+    /**
+     * Private function. Adds a tag to the object in OMERO, if possible.
+     *
+     * @param client  The client handling the connection.
+     * @param tagData Tag to be added.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    @Override
+    protected void addTag(Client client, TagAnnotationData tagData)
+    throws ServiceException, AccessException, ExecutionException {
+        FolderAnnotationLink link = new FolderAnnotationLinkI();
+        link.setChild(tagData.asAnnotation());
+        link.setParent(new FolderI(data.getId(), false));
+        client.save(link);
+    }
+
+
+    @Override
+    <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
+    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+        removeLink(client, ANNOTATION_LINK, annotation.getId());
     }
 
 
@@ -149,7 +183,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      *
      * @param id Id of the image to associate.
      */
-    public void setImage(Long id) {
+    public void setImage(long id) {
         imageId = id;
     }
 
@@ -231,9 +265,9 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public void unlinkAllROI(Client client) throws ServiceException, AccessException, ExecutionException {
-        String error = "Cannot unlink ROIs from " + this;
-        ROIFacility rf = client.getRoiFacility();
-        List<ROIWrapper> rois = getROIs(client);
+        String           error = "Cannot unlink ROIs from " + this;
+        ROIFacility      rf    = client.getRoiFacility();
+        List<ROIWrapper> rois  = getROIs(client);
         for (ROIWrapper roi : rois) {
             ExceptionHandler.of(roi, error)
                             .apply(r -> rf.removeRoisFromFolders(client.getCtx(),

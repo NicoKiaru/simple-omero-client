@@ -539,6 +539,24 @@ public class ImageTest extends UserTest {
 
 
     @Test
+    public void testAddAndRemoveTagFromImage() throws Exception {
+        ImageWrapper image = client.getImages(3L).get(0);
+
+        TagAnnotationWrapper tag = new TagAnnotationWrapper(client, "Dataset tag", "tag attached to an image");
+
+        image.addTag(client, tag);
+
+        List<TagAnnotationWrapper> tags = image.getTags(client);
+        image.unlink(client, tag);
+        List<TagAnnotationWrapper> removed = image.getTags(client);
+        client.delete(tag);
+
+        assertEquals(1, tags.size());
+        assertEquals(0, removed.size());
+    }
+
+
+    @Test
     public void testImageOrder() throws Exception {
         List<ImageWrapper> images = client.getUserImages();
         for (int i = 1; i < images.size(); i++) {

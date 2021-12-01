@@ -18,10 +18,21 @@
 package fr.igred.omero.annotations;
 
 
+import fr.igred.omero.Client;
 import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.exception.AccessException;
+import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServiceException;
+import fr.igred.omero.repository.DatasetWrapper;
+import fr.igred.omero.repository.ImageWrapper;
+import fr.igred.omero.repository.ProjectWrapper;
+import omero.RLong;
 import omero.gateway.model.AnnotationData;
+import omero.model.IObject;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -90,6 +101,84 @@ public abstract class GenericAnnotationWrapper<T extends AnnotationData> extends
      */
     public void setDescription(String description) {
         data.setDescription(description);
+    }
+
+
+    /**
+     * Gets all projects with this tag from OMERO.
+     *
+     * @param client The client handling the connection.
+     *
+     * @return ProjectWrapper list.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws OMEROServerError   Server error.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    public List<ProjectWrapper> getProjects(Client client)
+    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+        List<IObject> os  = getLinks(client, ProjectWrapper.ANNOTATION_LINK);
+        Long[]        ids = os.stream().map(IObject::getId).map(RLong::getValue).sorted().toArray(Long[]::new);
+        return client.getProjects(ids);
+    }
+
+
+    /**
+     * Gets all datasets with this tag from OMERO.
+     *
+     * @param client The client handling the connection.
+     *
+     * @return DatasetWrapper list.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws OMEROServerError   Server error.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    public List<DatasetWrapper> getDatasets(Client client)
+    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+        List<IObject> os  = getLinks(client, DatasetWrapper.ANNOTATION_LINK);
+        Long[]        ids = os.stream().map(IObject::getId).map(RLong::getValue).sorted().toArray(Long[]::new);
+        return client.getDatasets(ids);
+    }
+
+
+    /**
+     * Gets all images with this tag from OMERO.
+     *
+     * @param client The client handling the connection.
+     *
+     * @return ImageWrapper list.
+     *
+     * @throws ServiceException   Cannot connect to OMERO.
+     * @throws AccessException    Cannot access data.
+     * @throws OMEROServerError   Server error.
+     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     */
+    public List<ImageWrapper> getImages(Client client)
+    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+        List<IObject> os  = getLinks(client, ImageWrapper.ANNOTATION_LINK);
+        Long[]        ids = os.stream().map(IObject::getId).map(RLong::getValue).sorted().toArray(Long[]::new);
+        return client.getImages(ids);
+    }
+
+
+    /**
+     * Retrieves all links of the given type.
+     *
+     * @param client   The client handling the connection.
+     * @param linkType The link type.
+     *
+     * @return The list of linked objects.
+     *
+     * @throws ServiceException Cannot connect to OMERO.
+     * @throws OMEROServerError Server error.
+     */
+    private List<IObject> getLinks(Client client, String linkType)
+    throws ServiceException, OMEROServerError {
+        return client.findByQuery("select link.parent from " + linkType +
+                                  " link where link.child = " + getId());
     }
 
 }
