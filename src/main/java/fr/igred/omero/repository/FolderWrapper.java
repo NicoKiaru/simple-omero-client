@@ -19,7 +19,6 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.annotations.GenericAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
@@ -100,6 +99,17 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
 
     /**
+     * Returns the type of annotation link for this object
+     *
+     * @return See above.
+     */
+    @Override
+    protected String annotationLinkType() {
+        return ANNOTATION_LINK;
+    }
+
+
+    /**
      * Private function. Adds a tag to the object in OMERO, if possible.
      *
      * @param client  The client handling the connection.
@@ -116,13 +126,6 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
         link.setChild(tagData.asAnnotation());
         link.setParent(new FolderI(data.getId(), false));
         client.save(link);
-    }
-
-
-    @Override
-    <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
-        removeLink(client, ANNOTATION_LINK, annotation.getId());
     }
 
 

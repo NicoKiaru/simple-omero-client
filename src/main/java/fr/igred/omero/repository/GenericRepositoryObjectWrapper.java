@@ -73,6 +73,14 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
 
 
     /**
+     * Returns the type of annotation link for this object
+     *
+     * @return See above.
+     */
+    protected abstract String annotationLinkType();
+
+
+    /**
      * Adds a newly created tag to the object in OMERO, if possible.
      *
      * @param client      The client handling the connection.
@@ -452,9 +460,17 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @param client     The client handling the connection.
      * @param annotation An annotation.
      * @param <A>        The type of the annotation.
+     *
+     * @throws ServiceException     Cannot connect to OMERO.
+     * @throws AccessException      Cannot access data.
+     * @throws ExecutionException   A Facility can't be retrieved or instantiated.
+     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws InterruptedException If block(long) does not return.
      */
-    abstract <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
-    throws ServiceException, OMEROServerError, AccessException, ExecutionException, InterruptedException;
+    public <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
+    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+        removeLink(client, annotationLinkType(), annotation.getId());
+    }
 
 
     /**
