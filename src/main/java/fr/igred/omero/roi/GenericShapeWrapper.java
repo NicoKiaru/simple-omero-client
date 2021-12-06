@@ -154,7 +154,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
     /**
      * Sets the channel.
      *
-     * @param c the channel. Pass -1 to remove z value, i. e. shape applies to all channels of the image.
+     * @param c the channel. Pass -1 to remove z value, i.e. shape applies to all channels of the image.
      */
     public void setC(int c) {
         this.data.setC(c);
@@ -174,7 +174,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
     /**
      * Sets the z-section.
      *
-     * @param z the z-section. Pass -1 to remove z value, i. e. shape applies to all z-sections of the image.
+     * @param z the z-section. Pass -1 to remove z value, i.e. shape applies to all z-sections of the image.
      */
     public void setZ(int z) {
         this.data.setZ(z);
@@ -194,7 +194,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
     /**
      * Sets the time-point.
      *
-     * @param t the time-point. Pass -1 to remove t value, i. e. shape applies to all time-points of the image.
+     * @param t the time-point. Pass -1 to remove t value, i.e. shape applies to all time-points of the image.
      */
     public void setT(int t) {
         this.data.setT(t);
@@ -204,9 +204,9 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
     /**
      * Sets the channel, z-section and time-point at once.
      *
-     * @param c the channel. Pass -1 to remove z value, i. e. shape applies to all channels of the image.
-     * @param z the z-section. Pass -1 to remove z value, i. e. shape applies to all z-sections of the image.
-     * @param t the time-point. Pass -1 to remove t value, i. e. shape applies to all time-points of the image.
+     * @param c the channel. Pass -1 to remove z value, i.e. shape applies to all channels of the image.
+     * @param z the z-section. Pass -1 to remove z value, i.e. shape applies to all z-sections of the image.
+     * @param t the time-point. Pass -1 to remove t value, i.e. shape applies to all time-points of the image.
      */
     public void setCZT(int c, int z, int t) {
         setC(c);

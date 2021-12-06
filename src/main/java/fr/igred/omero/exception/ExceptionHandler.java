@@ -163,7 +163,7 @@ public class ExceptionHandler<T> {
      *
      * @return The same ExceptionHandler.
      *
-     * @throws E An exception of the specified type.
+     * @throws E An exception from the specified type.
      */
     public <E extends Throwable> ExceptionHandler<T> propagate(Class<E> type) throws E {
         if (type.isInstance(exception))

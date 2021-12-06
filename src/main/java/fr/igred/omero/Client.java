@@ -292,7 +292,7 @@ public class Client {
      * @param port     Port used by OMERO.
      * @param username Username of the user.
      * @param password Password of the user.
-     * @param groupID  Id of the group to connect.
+     * @param groupID  ID of the group to connect.
      *
      * @throws ServiceException Cannot connect to OMERO.
      */
@@ -827,7 +827,7 @@ public class Client {
     /**
      * Deletes a file from OMERO
      *
-     * @param id Id of the file to delete.
+     * @param id ID of the file to delete.
      *
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.

@@ -249,9 +249,9 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      * Gets the folder with the specified id on OMERO.
      *
      * @param client   The client handling the connection.
-     * @param folderId Id of the folder.
+     * @param folderId ID of the folder.
      *
-     * @return The folder if it exist.
+     * @return The folder if it exists.
      *
      * @throws ServiceException Cannot connect to OMERO.
      * @throws OMEROServerError Server error.

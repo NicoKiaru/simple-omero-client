@@ -54,7 +54,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
     public static final String ANNOTATION_LINK = "FolderAnnotationLink";
 
-    /** Id of the associated image */
+    /** ID of the associated image */
     private long imageId = -1L;
 
 
@@ -184,7 +184,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
     /**
      * Sets the image associated to the folder
      *
-     * @param id Id of the image to associate.
+     * @param id ID of the image to associate.
      */
     public void setImage(long id) {
         imageId = id;

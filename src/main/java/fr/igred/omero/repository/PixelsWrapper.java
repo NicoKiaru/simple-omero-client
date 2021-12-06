@@ -173,11 +173,11 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
 
 
     /**
-     * Returns an array containing the value for each voxels
+     * Returns an array containing the value for each voxel
      *
      * @param client The client handling the connection.
      *
-     * @return Array containing the value for each voxels of the image.
+     * @return Array containing the value for each voxel of the image.
      *
      * @throws AccessException    If an error occurs while retrieving the plane data from the pixels source.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
@@ -188,7 +188,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
 
 
     /**
-     * Returns an array containing the value for each voxels corresponding to the bounds
+     * Returns an array containing the value for each voxel corresponding to the bounds
      *
      * @param client The client handling the connection.
      * @param xBound Array containing the X bound from which the pixels should be retrieved.
@@ -197,7 +197,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
      * @param zBound Array containing the Z bound from which the pixels should be retrieved.
      * @param tBound Array containing the T bound from which the pixels should be retrieved.
      *
-     * @return Array containing the value for each voxels of the image.
+     * @return Array containing the value for each voxel of the image.
      *
      * @throws AccessException    If an error occurs while retrieving the plane data from the pixels source.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
@@ -288,7 +288,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
 
 
     /**
-     * Returns an array containing the raw values for each voxels for each planes
+     * Returns an array containing the raw values for each voxel for each planes
      *
      * @param client The client handling the connection.
      * @param bpp    Bytes per pixels of the image.
@@ -304,7 +304,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
 
 
     /**
-     * Returns an array containing the raw values for each voxels for each planes corresponding to the bounds
+     * Returns an array containing the raw values for each voxel for each plane corresponding to the bounds
      *
      * @param client The client handling the connection.
      * @param xBound Array containing the X bound from which the pixels should be retrieved.

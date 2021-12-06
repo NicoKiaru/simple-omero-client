@@ -138,7 +138,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * Adds multiple tags to the object in OMERO, if possible.
      *
      * @param client The client handling the connection.
-     * @param id     Id in OMERO of tag to add.
+     * @param id     Tag ID to add in OMERO.
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.

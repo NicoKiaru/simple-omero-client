@@ -604,7 +604,7 @@ public class TableWrapper {
     /**
      * Checks if the table is complete
      *
-     * @return true  if the table is completed. false if some row are still empty.
+     * @return true if the table is completed, false if some rows are still empty.
      */
     public boolean isComplete() {
         return row == rowCount;
