@@ -57,15 +57,7 @@ public class LineWrapper extends GenericShapeWrapper<LineData> {
      */
     public LineWrapper(Line line) {
         this(line.x1d, line.y1d, line.x2d, line.y2d);
-
-        int c = Math.max(-1, line.getCPosition() - 1);
-        int z = Math.max(-1, line.getZPosition() - 1);
-        int t = Math.max(-1, line.getTPosition() - 1);
-        data.setC(c);
-        data.setZ(z);
-        data.setT(t);
         data.setText(line.getName());
-        data.getShapeSettings().setStroke(line.getStrokeColor());
 
         if(line instanceof Arrow) {
             data.getShapeSettings().setMarkerEnd(ARROW);
@@ -73,6 +65,7 @@ public class LineWrapper extends GenericShapeWrapper<LineData> {
                 data.getShapeSettings().setMarkerStart(ARROW);
             }
         }
+        copy(line);
     }
 
 

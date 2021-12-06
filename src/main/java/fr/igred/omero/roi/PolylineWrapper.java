@@ -52,26 +52,19 @@ public class PolylineWrapper extends GenericShapeWrapper<PolylineData> {
     /**
      * Constructor of the PolylineWrapper class using an ImageJ PolygonRoi.
      *
-     * @param polygon An ImageJ ROI.
+     * @param polyline An ImageJ ROI.
      */
-    public PolylineWrapper(PolygonRoi polygon) {
+    public PolylineWrapper(PolygonRoi polyline) {
         this();
-        int[] x = polygon.getPolygon().xpoints;
-        int[] y = polygon.getPolygon().ypoints;
+        int[] x = polyline.getPolygon().xpoints;
+        int[] y = polyline.getPolygon().ypoints;
 
         List<Point2D.Double> points = new LinkedList<>();
         IntStream.range(0, x.length).forEach(i -> points.add(new Point2D.Double(x[i], y[i])));
 
         data.setPoints(points);
-
-        int c = Math.max(-1, polygon.getCPosition() - 1);
-        int z = Math.max(-1, polygon.getZPosition() - 1);
-        int t = Math.max(-1, polygon.getTPosition() - 1);
-        data.setText(polygon.getName());
-        data.setC(c);
-        data.setZ(z);
-        data.setT(t);
-        data.getShapeSettings().setStroke(polygon.getStrokeColor());
+        data.setText(polyline.getName());
+        copy(polyline);
     }
 
 

@@ -58,15 +58,8 @@ public class EllipseWrapper extends GenericShapeWrapper<EllipseData> {
              ijRoi.getBounds().getY() + ijRoi.getBounds().getHeight() / 2,
              ijRoi.getBounds().getWidth() / 2,
              ijRoi.getBounds().getHeight() / 2);
-
-        int c = Math.max(-1, ijRoi.getCPosition() - 1);
-        int z = Math.max(-1, ijRoi.getZPosition() - 1);
-        int t = Math.max(-1, ijRoi.getTPosition() - 1);
         data.setText(ijRoi.getName());
-        data.setC(c);
-        data.setZ(z);
-        data.setT(t);
-        data.getShapeSettings().setStroke(ijRoi.getStrokeColor());
+        copy(ijRoi);
     }
 
 

@@ -52,13 +52,7 @@ public class TextWrapper extends GenericShapeWrapper<TextData> {
      */
     public TextWrapper(TextRoi text) {
         this(text.getText(), text.getBounds().getX(), text.getBounds().getY());
-        int c = Math.max(-1, text.getCPosition() - 1);
-        int z = Math.max(-1, text.getZPosition() - 1);
-        int t = Math.max(-1, text.getTPosition() - 1);
-        data.setC(c);
-        data.setZ(z);
-        data.setT(t);
-        data.getShapeSettings().setStroke(text.getStrokeColor());
+        copy(text);
     }
 
 
