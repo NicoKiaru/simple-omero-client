@@ -47,6 +47,28 @@ public class RectangleWrapper extends GenericShapeWrapper<RectangleData> {
 
 
     /**
+     * Constructor of the RectangleWrapper class using bounds from an ImageJ ROI.
+     *
+     * @param ijRoi An ImageJ ROI.
+     */
+    public RectangleWrapper(ij.gui.Roi ijRoi) {
+        this(ijRoi.getBounds().getX(),
+             ijRoi.getBounds().getY(),
+             ijRoi.getBounds().getWidth(),
+             ijRoi.getBounds().getHeight());
+
+        int c = Math.max(-1, ijRoi.getCPosition() - 1);
+        int z = Math.max(-1, ijRoi.getZPosition() - 1);
+        int t = Math.max(-1, ijRoi.getTPosition() - 1);
+        data.setText(ijRoi.getName());
+        data.setC(c);
+        data.setZ(z);
+        data.setT(t);
+        data.getShapeSettings().setStroke(ijRoi.getStrokeColor());
+    }
+
+
+    /**
      * Constructor of the RectangleWrapper class using a new RectangleData.
      *
      * @param x      The x-coordinate of the top-left corner.

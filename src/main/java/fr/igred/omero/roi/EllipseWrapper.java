@@ -49,6 +49,28 @@ public class EllipseWrapper extends GenericShapeWrapper<EllipseData> {
 
 
     /**
+     * Constructor of the EllipseWrapper class using bounds from an ImageJ ROI.
+     *
+     * @param ijRoi An ImageJ ROI.
+     */
+    public EllipseWrapper(ij.gui.Roi ijRoi) {
+        this(ijRoi.getBounds().getX() + ijRoi.getBounds().getWidth() / 2,
+             ijRoi.getBounds().getY() + ijRoi.getBounds().getHeight() / 2,
+             ijRoi.getBounds().getWidth() / 2,
+             ijRoi.getBounds().getHeight() / 2);
+
+        int c = Math.max(-1, ijRoi.getCPosition() - 1);
+        int z = Math.max(-1, ijRoi.getZPosition() - 1);
+        int t = Math.max(-1, ijRoi.getTPosition() - 1);
+        data.setText(ijRoi.getName());
+        data.setC(c);
+        data.setZ(z);
+        data.setT(t);
+        data.getShapeSettings().setStroke(ijRoi.getStrokeColor());
+    }
+
+
+    /**
      * Constructor of the EllipseWrapper class using a new EllipseData.
      *
      * @param x       The x-coordinate of the center of the ellipse.

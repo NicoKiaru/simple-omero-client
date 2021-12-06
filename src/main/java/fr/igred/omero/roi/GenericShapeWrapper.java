@@ -17,7 +17,6 @@ package fr.igred.omero.roi;
 
 
 import fr.igred.omero.GenericObjectWrapper;
-import ij.gui.Arrow;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.PointRoi;
@@ -32,9 +31,9 @@ import omero.model.AffineTransformI;
 import omero.model.LengthI;
 import omero.model.enums.UnitsLength;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -68,60 +67,18 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
      * @return A list of ShapeWrappers.
      */
     static ShapeList fromImageJ(ij.gui.Roi ijRoi) {
-        final String arrow = "Arrow";
-
-        int c = Math.max(-1, ijRoi.getCPosition() - 1);
-        int z = Math.max(-1, ijRoi.getZPosition() - 1);
-        int t = Math.max(-1, ijRoi.getTPosition() - 1);
-
         ShapeList list = new ShapeList();
-
-        GenericShapeWrapper<?> shape;
         if (ijRoi instanceof TextRoi) {
-            String text = ((TextRoi) ijRoi).getText();
-
-            double x = ijRoi.getBounds().getX();
-            double y = ijRoi.getBounds().getY();
-
-            shape = new TextWrapper(text, x, y);
-            shape.setCZT(c, z, t);
-            list.add(shape);
+            list.add(new TextWrapper((TextRoi) ijRoi));
         } else if (ijRoi instanceof OvalRoi) {
-            double x = ijRoi.getBounds().getX();
-            double y = ijRoi.getBounds().getY();
-            double w = ijRoi.getBounds().getWidth();
-            double h = ijRoi.getBounds().getHeight();
-
-            shape = new EllipseWrapper(x + w / 2, y + h / 2, w / 2, h / 2);
-            shape.setText(ijRoi.getName());
-            shape.setCZT(c, z, t);
-            list.add(shape);
-        } else if (ijRoi instanceof Arrow) {
-            double x1 = ((Line) ijRoi).x1d;
-            double x2 = ((Line) ijRoi).x2d;
-            double y1 = ((Line) ijRoi).y1d;
-            double y2 = ((Line) ijRoi).y2d;
-
-            shape = new LineWrapper(x1, y1, x2, y2);
-
-            shape.asShapeData().getShapeSettings().setMarkerEnd(arrow);
-            if (((Arrow) ijRoi).getDoubleHeaded()) {
-                shape.asShapeData().getShapeSettings().setMarkerStart(arrow);
-            }
-            shape.setText(ijRoi.getName());
-            shape.setCZT(c, z, t);
-            list.add(shape);
+            list.add(new EllipseWrapper(ijRoi));
         } else if (ijRoi instanceof Line) {
-            double x1 = ((Line) ijRoi).x1d;
-            double x2 = ((Line) ijRoi).x2d;
-            double y1 = ((Line) ijRoi).y1d;
-            double y2 = ((Line) ijRoi).y2d;
-
-            shape = new LineWrapper(x1, y1, x2, y2);
-            shape.setText(ijRoi.getName());
-            shape.setCZT(c, z, t);
-            list.add(shape);
+            list.add(new LineWrapper((Line) ijRoi));
         } else if (ijRoi instanceof PointRoi) {
+            int c = Math.max(-1, ijRoi.getCPosition() - 1);
+            int z = Math.max(-1, ijRoi.getZPosition() - 1);
+            int t = Math.max(-1, ijRoi.getTPosition() - 1);
+
             int[] x = ijRoi.getPolygon().xpoints;
             int[] y = ijRoi.getPolygon().ypoints;
 
@@ -133,39 +90,20 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
             list.addAll(points);
         } else if (ijRoi instanceof PolygonRoi) {
             String type = ijRoi.getTypeAsString();
-
-            int[] x = ijRoi.getPolygon().xpoints;
-            int[] y = ijRoi.getPolygon().ypoints;
-
-            List<Point2D.Double> points = new LinkedList<>();
-            IntStream.range(0, x.length).forEach(i -> points.add(new Point2D.Double(x[i], y[i])));
-
             if ("Polyline".equals(type) || "Freeline".equals(type) || "Angle".equals(type)) {
-                shape = new PolylineWrapper(points);
+                list.add(new PolylineWrapper((PolygonRoi) ijRoi));
             } else {
-                shape = new PolygonWrapper(points);
+                list.add(new PolygonWrapper((PolygonRoi) ijRoi));
             }
-            shape.setText(ijRoi.getName());
-            shape.setCZT(c, z, t);
-            list.add(shape);
         } else if (ijRoi instanceof ShapeRoi) {
-            ij.gui.Roi[] rois = ((ShapeRoi) ijRoi).getRois();
-            IntStream.range(0, rois.length).forEach(i -> rois[i].setName(ijRoi.getName()));
-            IntStream.range(0, rois.length).forEach(i -> rois[i].setPosition(ijRoi.getCPosition(),
-                                                                             ijRoi.getZPosition(),
-                                                                             ijRoi.getTPosition()));
-            IntStream.range(0, rois.length).forEach(i -> list.addAll(fromImageJ(rois[i])));
+            List<ij.gui.Roi> rois = Arrays.asList(((ShapeRoi) ijRoi).getRois());
+            rois.forEach(r -> r.setName(ijRoi.getName()));
+            rois.forEach(r -> r.setPosition(ijRoi.getCPosition(),
+                                            ijRoi.getZPosition(),
+                                            ijRoi.getTPosition()));
+            rois.stream().map(GenericShapeWrapper::fromImageJ).forEach(list::addAll);
         } else if (ijRoi.getType() == ij.gui.Roi.RECTANGLE) {
-            double x = ijRoi.getBounds().getX();
-            double y = ijRoi.getBounds().getY();
-            double w = ijRoi.getBounds().getWidth();
-            double h = ijRoi.getBounds().getHeight();
-
-            shape = new RectangleWrapper(x, y, w, h);
-
-            shape.setText(ijRoi.getName());
-            shape.setCZT(c, z, t);
-            list.add(shape);
+            list.add(new RectangleWrapper(ijRoi));
         }
         return list;
     }
