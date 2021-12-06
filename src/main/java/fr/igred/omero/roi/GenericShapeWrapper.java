@@ -70,9 +70,9 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
     static ShapeList fromImageJ(ij.gui.Roi ijRoi) {
         final String arrow = "Arrow";
 
-        int c = Math.max(0, ijRoi.getCPosition() - 1);
-        int z = Math.max(0, ijRoi.getZPosition() - 1);
-        int t = Math.max(0, ijRoi.getTPosition() - 1);
+        int c = Math.max(-1, ijRoi.getCPosition() - 1);
+        int z = Math.max(-1, ijRoi.getZPosition() - 1);
+        int t = Math.max(-1, ijRoi.getTPosition() - 1);
 
         ShapeList list = new ShapeList();
 
@@ -256,6 +256,16 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
 
 
     /**
+     * Returns the C,Z,T positions as a comma-delimited String.
+     *
+     * @return See above.
+     */
+    String getCZT() {
+        return String.format("%d,%d,%d", getC(), getZ(), getT());
+    }
+
+
+    /**
      * Gets ShapeData font size
      *
      * @return The font size (in typography points)
@@ -422,6 +432,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
      */
     public Roi toImageJ() {
         ij.gui.ShapeRoi roi = new ij.gui.ShapeRoi(createTransformedAWTShape());
+        roi.setName(getText());
         roi.setStrokeColor(getStroke());
         int c = Math.max(0, getC() + 1);
         int z = Math.max(0, getZ() + 1);

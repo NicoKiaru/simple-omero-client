@@ -186,7 +186,7 @@ public class TableTest extends UserTest {
         for (int i = 0; i < 4; i++) {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
-            rectangle.setZ(0);
+            rectangle.setZ(i);
             rectangle.setT(0);
             rectangle.setC(0);
 
@@ -244,7 +244,7 @@ public class TableTest extends UserTest {
         for (int i = 0; i < 4; i++) {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
-            rectangle.setZ(0);
+            rectangle.setZ(i);
             rectangle.setT(0);
             rectangle.setC(0);
 
@@ -304,7 +304,7 @@ public class TableTest extends UserTest {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
-            rectangle.setT(0);
+            rectangle.setT(i);
             rectangle.setC(0);
 
             roi.addShape(rectangle);
@@ -360,7 +360,7 @@ public class TableTest extends UserTest {
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
             rectangle.setZ(0);
             rectangle.setT(0);
-            rectangle.setC(0);
+            rectangle.setC(i);
 
             roi.addShape(rectangle);
         }
@@ -497,7 +497,7 @@ public class TableTest extends UserTest {
         for (int i = 0; i < 4; i++) {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
-            rectangle.setZ(0);
+            rectangle.setZ(i % 2);
             rectangle.setT(0);
             rectangle.setC(0);
 
@@ -565,7 +565,7 @@ public class TableTest extends UserTest {
         for (int i = 0; i < 4; i++) {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
-            rectangle.setZ(0);
+            rectangle.setZ(i);
             rectangle.setT(0);
             rectangle.setC(0);
 
@@ -702,7 +702,7 @@ public class TableTest extends UserTest {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setText(String.valueOf(10 + i % 2));
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
-            rectangle.setZ(0);
+            rectangle.setZ(i);
             rectangle.setT(0);
             rectangle.setC(0);
 
@@ -775,7 +775,7 @@ public class TableTest extends UserTest {
             RectangleWrapper rectangle = new RectangleWrapper();
             rectangle.setText(String.valueOf(10 + i % 2));
             rectangle.setCoordinates(i * 2, i * 2, 10, 10);
-            rectangle.setZ(0);
+            rectangle.setZ(i);
             rectangle.setT(0);
             rectangle.setC(0);
 
