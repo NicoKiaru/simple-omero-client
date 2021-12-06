@@ -107,6 +107,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      *
      * @return name.
      */
+    @Override
     public String getName() {
         return data.getName();
     }
@@ -129,6 +130,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      *
      * @return description.
      */
+    @Override
     public String getDescription() {
         return data.getDescription();
     }

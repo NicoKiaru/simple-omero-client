@@ -144,6 +144,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      *
      * @return name.
      */
+    @Override
     public String getName() {
         return data.getName();
     }
@@ -166,6 +167,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      *
      * @return The folder description.
      */
+    @Override
     public String getDescription() {
         return data.getDescription();
     }

@@ -112,6 +112,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      *
      * @return ProjectData name.
      */
+    @Override
     public String getName() {
         return data.getName();
     }
@@ -134,6 +135,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      *
      * @return The project description.
      */
+    @Override
     public String getDescription() {
         return data.getDescription();
     }

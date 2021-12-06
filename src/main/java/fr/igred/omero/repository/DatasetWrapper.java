@@ -105,6 +105,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @return DatasetData name.
      */
+    @Override
     public String getName() {
         return data.getName();
     }
@@ -127,6 +128,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @return DatasetData description.
      */
+    @Override
     public String getDescription() {
         return data.getDescription();
     }
