@@ -97,17 +97,6 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
 
 
     /**
-     * Returns the type of annotation link for this object
-     *
-     * @return See above.
-     */
-    @Override
-    protected String annotationLinkType() {
-        return ANNOTATION_LINK;
-    }
-
-
-    /**
      * Gets the ProjectData name
      *
      * @return ProjectData name.
@@ -156,6 +145,17 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      */
     public ProjectData asProjectData() {
         return data;
+    }
+
+
+    /**
+     * Returns the type of annotation link for this object
+     *
+     * @return See above.
+     */
+    @Override
+    protected String annotationLinkType() {
+        return ANNOTATION_LINK;
     }
 
 

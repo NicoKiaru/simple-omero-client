@@ -90,17 +90,6 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
 
 
     /**
-     * Returns the type of annotation link for this object
-     *
-     * @return See above.
-     */
-    @Override
-    protected String annotationLinkType() {
-        return ANNOTATION_LINK;
-    }
-
-
-    /**
      * Gets the DatasetData name
      *
      * @return DatasetData name.
@@ -149,6 +138,17 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public DatasetData asDatasetData() {
         return data;
+    }
+
+
+    /**
+     * Returns the type of annotation link for this object
+     *
+     * @return See above.
+     */
+    @Override
+    protected String annotationLinkType() {
+        return ANNOTATION_LINK;
     }
 
 
