@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 
-public class PolygonWrapper extends GenericShapeWrapper<PolygonData> {
+public class PolygonWrapper extends ShapeWrapper<PolygonData> {
 
 
     /**

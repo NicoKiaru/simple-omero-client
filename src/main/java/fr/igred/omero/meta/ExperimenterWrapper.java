@@ -18,13 +18,13 @@
 package fr.igred.omero.meta;
 
 
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import omero.gateway.model.ExperimenterData;
 
 import java.util.List;
 
 
-public class ExperimenterWrapper extends GenericObjectWrapper<ExperimenterData> {
+public class ExperimenterWrapper extends ObjectWrapper<ExperimenterData> {
 
     /**
      * Constructor of the class ExperimenterWrapper.

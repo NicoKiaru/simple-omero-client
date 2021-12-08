@@ -61,7 +61,7 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
  * Class containing a DatasetData.
  * <p> Implements function using the DatasetData contained
  */
-public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> {
+public class DatasetWrapper extends RepositoryObjectWrapper<DatasetData> {
 
     public static final String ANNOTATION_LINK = "DatasetAnnotationLink";
 

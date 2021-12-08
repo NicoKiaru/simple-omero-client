@@ -374,7 +374,7 @@ public class Client {
         Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
                                                                   bf -> bf.getProjects(ctx, Arrays.asList(ids)),
                                                                   error);
-        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
+        return ObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
 
@@ -391,7 +391,7 @@ public class Client {
         Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
                                                                   bf -> bf.getProjects(ctx),
                                                                   "Cannot get projects");
-        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
+        return ObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
 
@@ -411,7 +411,7 @@ public class Client {
         Collection<ProjectData> projects = handleServiceAndAccess(getBrowseFacility(),
                                                                   bf -> bf.getProjects(ctx, name),
                                                                   error);
-        return GenericObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
+        return ObjectWrapper.wrap(projects, ProjectWrapper::new, ProjectWrapper::getId);
     }
 
 
@@ -432,7 +432,7 @@ public class Client {
         Collection<DatasetData> datasets = handleServiceAndAccess(getBrowseFacility(),
                                                                   bf -> bf.getDatasets(ctx, Arrays.asList(ids)),
                                                                   error);
-        return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
+        return ObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
     }
 
 
@@ -472,7 +472,7 @@ public class Client {
         Collection<DatasetData> datasets = handleServiceAndAccess(getBrowseFacility(),
                                                                   bf -> bf.getDatasets(ctx, name),
                                                                   error);
-        return GenericObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
+        return ObjectWrapper.wrap(datasets, DatasetWrapper::new, DatasetWrapper::getId);
     }
 
 
@@ -493,7 +493,7 @@ public class Client {
         Collection<ImageData> images = handleServiceAndAccess(getBrowseFacility(),
                                                               bf -> bf.getImages(ctx, Arrays.asList(ids)),
                                                               error);
-        return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
+        return ObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -510,7 +510,7 @@ public class Client {
         Collection<ImageData> images = handleServiceAndAccess(getBrowseFacility(),
                                                               bf -> bf.getUserImages(ctx),
                                                               "Cannot get images");
-        return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
+        return ObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -531,7 +531,7 @@ public class Client {
                                                               bf -> bf.getImages(ctx, name),
                                                               error);
         images.removeIf(image -> !image.getName().equals(name));
-        return GenericObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
+        return ObjectWrapper.wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -797,7 +797,7 @@ public class Client {
      * @throws OMEROServerError     If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
-    public void delete(GenericObjectWrapper<?> object)
+    public void delete(ObjectWrapper<?> object)
     throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
         if (object instanceof FolderWrapper) {
             ((FolderWrapper) object).unlinkAllROI(this);

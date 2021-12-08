@@ -14,10 +14,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class FileAnnotationWrapper extends GenericAnnotationWrapper<FileAnnotationData> {
+public class FileAnnotationWrapper extends AnnotationWrapper<FileAnnotationData> {
 
     /**
-     * Constructor of the GenericAnnotationWrapper class.
+     * Constructor of the AnnotationWrapper class.
      *
      * @param annotation Annotation to be contained.
      */

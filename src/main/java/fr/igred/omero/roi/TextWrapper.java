@@ -24,7 +24,7 @@ import omero.gateway.model.TextData;
 import java.awt.geom.Path2D;
 
 
-public class TextWrapper extends GenericShapeWrapper<TextData> {
+public class TextWrapper extends ShapeWrapper<TextData> {
 
 
     /**

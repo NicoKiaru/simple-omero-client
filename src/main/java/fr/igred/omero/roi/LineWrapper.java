@@ -27,7 +27,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 
 
-public class LineWrapper extends GenericShapeWrapper<LineData> {
+public class LineWrapper extends ShapeWrapper<LineData> {
 
     public static final String ARROW = "Arrow";
 
