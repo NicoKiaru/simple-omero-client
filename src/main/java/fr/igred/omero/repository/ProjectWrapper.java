@@ -80,7 +80,7 @@ public class ProjectWrapper extends RepositoryObjectWrapper<ProjectData> {
 
 
     /**
-     * Gets all images in the dataset available from OMERO.
+     * Only keep images with different IDs in a list.
      *
      * @return ImageWrapper list.
      */
@@ -290,13 +290,13 @@ public class ProjectWrapper extends RepositoryObjectWrapper<ProjectData> {
     throws ServiceException, AccessException, ExecutionException {
         Collection<DatasetWrapper> datasets = getDatasets();
 
-        List<ImageWrapper> imageWrappers = new ArrayList<>();
+        List<ImageWrapper> images = new ArrayList<>();
         for (DatasetWrapper dataset : datasets) {
-            imageWrappers.addAll(dataset.getImages(client, name));
+            images.addAll(dataset.getImages(client, name));
         }
-        imageWrappers.sort(Comparator.comparing(ImageWrapper::getId));
+        images.sort(Comparator.comparing(ImageWrapper::getId));
 
-        return purge(imageWrappers);
+        return purge(images);
     }
 
 
