@@ -41,34 +41,34 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
  *
  * @param <T> Subclass of {@link DataObject}
  */
-public abstract class GenericObjectWrapper<T extends DataObject> {
+public abstract class ObjectWrapper<T extends DataObject> {
 
     protected T data;
 
 
     /**
-     * Constructor of the class GenericObjectWrapper.
+     * Constructor of the class ObjectWrapper.
      *
-     * @param object The object contained in the GenericObjectWrapper.
+     * @param object The object contained in the ObjectWrapper.
      */
-    protected GenericObjectWrapper(T object) {
+    protected ObjectWrapper(T object) {
         this.data = object;
     }
 
 
     /**
-     * Converts a DataObject list to a GenericObjectWrapper list, sorted by {@code sorter}.
+     * Converts a DataObject list to a ObjectWrapper list, sorted by {@code sorter}.
      *
      * @param objects The DataObject list.
      * @param mapper  The method used to map objects.
      * @param sorter  The method used to sort the objects.
      * @param <U>     The type of input (extends DataObject).
-     * @param <V>     The type of output (extends GenericObjectWrapper).
+     * @param <V>     The type of output (extends ObjectWrapper).
      * @param <W>     The type used to sort the output.
      *
      * @return See above.
      */
-    protected static <U extends DataObject, V extends GenericObjectWrapper<U>, W extends Comparable<W>> List<V>
+    protected static <U extends DataObject, V extends ObjectWrapper<U>, W extends Comparable<W>> List<V>
     wrap(Collection<U> objects, Function<? super U, ? extends V> mapper, Function<? super V, ? extends W> sorter) {
         return objects.stream()
                       .map(mapper)

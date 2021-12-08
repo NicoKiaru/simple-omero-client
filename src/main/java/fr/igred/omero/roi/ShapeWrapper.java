@@ -16,7 +16,7 @@
 package fr.igred.omero.roi;
 
 
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import ij.gui.Arrow;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
@@ -47,15 +47,15 @@ import java.util.stream.IntStream;
  *
  * @param <T> Subclass of {@link ShapeData}
  */
-public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericObjectWrapper<T> {
+public abstract class ShapeWrapper<T extends ShapeData> extends ObjectWrapper<T> {
 
 
     /**
-     * Constructor of the GenericShapeWrapper class using a ShapeData.
+     * Constructor of the ShapeWrapper class using a ShapeData.
      *
      * @param object the shape
      */
-    protected GenericShapeWrapper(T object) {
+    protected ShapeWrapper(T object) {
         super(object);
     }
 
@@ -76,7 +76,7 @@ public abstract class GenericShapeWrapper<T extends ShapeData> extends GenericOb
 
         ShapeList list = new ShapeList();
 
-        GenericShapeWrapper<?> shape;
+        ShapeWrapper<?> shape;
         if (ijRoi instanceof TextRoi) {
             String text = ((TextRoi) ijRoi).getText();
 

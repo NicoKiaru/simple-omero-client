@@ -19,7 +19,7 @@ package fr.igred.omero.roi;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.ImageWrapper;
@@ -46,7 +46,7 @@ import static java.util.stream.Collectors.groupingBy;
  * Class containing a ROIData
  * <p> Implements function using the ROIData contained
  */
-public class ROIWrapper extends GenericObjectWrapper<ROIData> {
+public class ROIWrapper extends ObjectWrapper<ROIData> {
 
     /**
      * Default IJ property to store ROI local IDs / indices.
@@ -67,10 +67,10 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
      *
      * @param shapes List of shapes to add to the ROIData.
      */
-    public ROIWrapper(Iterable<? extends GenericShapeWrapper<?>> shapes) {
+    public ROIWrapper(Iterable<? extends ShapeWrapper<?>> shapes) {
         super(new ROIData());
 
-        for (GenericShapeWrapper<?> shape : shapes) {
+        for (ShapeWrapper<?> shape : shapes) {
             data.addShapeData(shape.asShapeData());
         }
     }
@@ -216,21 +216,21 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
 
 
     /**
-     * Adds ShapeData objects from a list of GenericShapeWrapper to the ROIData
+     * Adds ShapeData objects from a list of ShapeWrapper to the ROIData
      *
-     * @param shapes List of GenericShapeWrapper.
+     * @param shapes List of ShapeWrapper.
      */
-    public void addShapes(Iterable<? extends GenericShapeWrapper<?>> shapes) {
+    public void addShapes(Iterable<? extends ShapeWrapper<?>> shapes) {
         shapes.forEach(this::addShape);
     }
 
 
     /**
-     * Adds a ShapeData from a GenericShapeWrapper to the ROIData
+     * Adds a ShapeData from a ShapeWrapper to the ROIData
      *
-     * @param shape GenericShapeWrapper to add.
+     * @param shape ShapeWrapper to add.
      */
-    public void addShape(GenericShapeWrapper<?> shape) {
+    public void addShape(ShapeWrapper<?> shape) {
         data.addShapeData(shape.asShapeData());
     }
 
@@ -317,7 +317,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
         int[] c = {Integer.MAX_VALUE, Integer.MIN_VALUE};
         int[] z = {Integer.MAX_VALUE, Integer.MIN_VALUE};
         int[] t = {Integer.MAX_VALUE, Integer.MIN_VALUE};
-        for (GenericShapeWrapper<?> shape : getShapes()) {
+        for (ShapeWrapper<?> shape : getShapes()) {
             RectangleWrapper box = shape.getBoundingBox();
             x[0] = Math.min(x[0], (int) box.getX());
             y[0] = Math.min(y[0], (int) box.getY());
@@ -357,20 +357,20 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
         property = checkProperty(property);
         ShapeList shapes = getShapes();
 
-        Map<String, List<GenericShapeWrapper<?>>> sameSlice = shapes.stream()
-                                                                    .collect(groupingBy(GenericShapeWrapper::getCZT,
-                                                                                        LinkedHashMap::new,
-                                                                                        Collectors.toList()));
+        Map<String, List<ShapeWrapper<?>>> sameSlice = shapes.stream()
+                                                             .collect(groupingBy(ShapeWrapper::getCZT,
+                                                                                 LinkedHashMap::new,
+                                                                                 Collectors.toList()));
         sameSlice.values().removeIf(List::isEmpty);
         List<ij.gui.Roi> rois = new ArrayList<>(shapes.size());
-        for (List<GenericShapeWrapper<?>> slice : sameSlice.values()) {
-            GenericShapeWrapper<?> shape = slice.iterator().next();
+        for (List<ShapeWrapper<?>> slice : sameSlice.values()) {
+            ShapeWrapper<?> shape = slice.iterator().next();
 
             ij.gui.Roi roi = shape.toImageJ();
             String     txt = shape.getText();
             if (slice.size() > 1) {
                 ij.gui.Roi xor = slice.stream()
-                                      .map(GenericShapeWrapper::toImageJ)
+                                      .map(ShapeWrapper::toImageJ)
                                       .map(ShapeRoi::new)
                                       .reduce(ShapeRoi::xor)
                                       .map(ij.gui.Roi.class::cast)
@@ -397,7 +397,7 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
      * @param ijRoi The ImageJ ROI.
      */
     private void addShape(ij.gui.Roi ijRoi) {
-        addShapes(GenericShapeWrapper.fromImageJ(ijRoi));
+        addShapes(ShapeWrapper.fromImageJ(ijRoi));
     }
 
 }

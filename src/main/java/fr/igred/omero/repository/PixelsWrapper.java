@@ -19,7 +19,7 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import fr.igred.omero.exception.AccessException;
 import omero.gateway.exception.DataSourceException;
 import omero.gateway.facility.RawDataFacility;
@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutionException;
  * Class containing a PixelData
  * <p> Implements function using the PixelData contained
  */
-public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
+public class PixelsWrapper extends ObjectWrapper<PixelsData> {
 
     /** Size of tiles when retrieving pixels */
     public static final int MAX_DIST = 5000;

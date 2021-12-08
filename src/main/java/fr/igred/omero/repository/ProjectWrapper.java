@@ -41,7 +41,7 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
  * Class containing a ProjectData
  * <p> Implements function using the Project contained
  */
-public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> {
+public class ProjectWrapper extends RepositoryObjectWrapper<ProjectData> {
 
     public static final String ANNOTATION_LINK = "ProjectAnnotationLink";
 

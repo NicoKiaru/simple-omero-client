@@ -19,7 +19,7 @@ package fr.igred.omero.annotations;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
@@ -40,15 +40,15 @@ import java.util.concurrent.ExecutionException;
  *
  * @param <T> Subclass of {@link AnnotationData}
  */
-public abstract class GenericAnnotationWrapper<T extends AnnotationData> extends GenericObjectWrapper<T> {
+public abstract class AnnotationWrapper<T extends AnnotationData> extends ObjectWrapper<T> {
 
 
     /**
-     * Constructor of the GenericAnnotationWrapper class.
+     * Constructor of the AnnotationWrapper class.
      *
      * @param object Annotation to be contained.
      */
-    protected GenericAnnotationWrapper(T object) {
+    protected AnnotationWrapper(T object) {
         super(object);
     }
 

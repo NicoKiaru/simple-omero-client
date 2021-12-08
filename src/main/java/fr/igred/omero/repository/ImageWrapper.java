@@ -77,7 +77,7 @@ import static omero.rtypes.rint;
  * Class containing an ImageData.
  * <p> Implements function using the ImageData contained
  */
-public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
+public class ImageWrapper extends RepositoryObjectWrapper<ImageData> {
 
     public static final String ANNOTATION_LINK = "ImageAnnotationLink";
 

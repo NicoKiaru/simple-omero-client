@@ -50,7 +50,7 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndServer;
  * Class containing a FolderData.
  * <p> Implements function using the FolderData contained.
  */
-public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
+public class FolderWrapper extends RepositoryObjectWrapper<FolderData> {
 
     public static final String ANNOTATION_LINK = "FolderAnnotationLink";
 
