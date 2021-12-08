@@ -58,7 +58,7 @@ public class ShapeList extends ArrayList<GenericShapeWrapper<?>> {
      * @return {@code true} (as specified by {@link ArrayList#add(Object)})
      */
     public boolean add(ShapeData shape) {
-        boolean added;
+        boolean added = false;
         if (shape instanceof PointData) {
             added = add(new PointWrapper((PointData) shape));
         } else if (shape instanceof TextData) {
@@ -75,8 +75,6 @@ public class ShapeList extends ArrayList<GenericShapeWrapper<?>> {
             added = add(new PolylineWrapper((PolylineData) shape));
         } else if (shape instanceof PolygonData) {
             added = add(new PolygonWrapper((PolygonData) shape));
-        } else {
-            added = add(new ShapeWrapper(shape));
         }
         return added;
     }
