@@ -384,9 +384,9 @@ public class ImageTest extends UserTest {
         ImagePlus       difference = calculator.run("difference create stack", crop, imp);
         ImageStatistics stats      = difference.getStatistics();
 
-        assertEquals(0.5, imp.getCalibration().pixelHeight, 0.001);
-        assertEquals(0.5, imp.getCalibration().pixelWidth, 0.001);
-        assertEquals(1.0, imp.getCalibration().pixelDepth, 0.001);
+        assertEquals(0.5, imp.getCalibration().pixelHeight, Double.MIN_VALUE);
+        assertEquals(0.5, imp.getCalibration().pixelWidth, Double.MIN_VALUE);
+        assertEquals(1.0, imp.getCalibration().pixelDepth, Double.MIN_VALUE);
         assertEquals("MICROMETER", imp.getCalibration().getUnit());
         assertEquals(0, (int) stats.max);
     }

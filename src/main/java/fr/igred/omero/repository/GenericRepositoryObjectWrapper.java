@@ -81,6 +81,22 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
 
 
     /**
+     * Gets the object name.
+     *
+     * @return See above.
+     */
+    public abstract String getName();
+
+
+    /**
+     * Gets the object description
+     *
+     * @return See above.
+     */
+    public abstract String getDescription();
+
+
+    /**
      * Adds a newly created tag to the object in OMERO, if possible.
      *
      * @param client      The client handling the connection.

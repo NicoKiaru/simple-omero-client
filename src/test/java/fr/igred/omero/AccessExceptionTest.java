@@ -20,8 +20,11 @@ import fr.igred.omero.annotations.MapAnnotationWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.ServiceException;
+import fr.igred.omero.repository.FolderWrapper;
 import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.ProjectWrapper;
+import fr.igred.omero.roi.ROIWrapper;
+import fr.igred.omero.roi.RectangleWrapper;
 import omero.gateway.model.ProjectData;
 import omero.model.NamedValue;
 import omero.model.ProjectI;
@@ -84,10 +87,11 @@ public class AccessExceptionTest extends BasicTest {
 
     @After
     public void cleanUp() {
-        showErrors();
         try {
             client.disconnect();
+            showErrors();
         } catch (RuntimeException e) {
+            showErrors();
             logger.log(Level.WARNING, ANSI_YELLOW + "Disconnection failed." + ANSI_RESET, e);
         }
     }
@@ -118,6 +122,21 @@ public class AccessExceptionTest extends BasicTest {
 
         client.delete(tag);
         assertTrue(exception);
+    }
+
+
+    @Test(expected = AccessException.class)
+    public void testFolderAddROIWithoutImage() throws Exception {
+        FolderWrapper folder = new FolderWrapper(client, "Test1");
+
+        RectangleWrapper rectangle = new RectangleWrapper(0, 0, 10, 10);
+        rectangle.setCZT(0, 0, 0);
+
+        ROIWrapper roi = new ROIWrapper();
+        roi.addShape(rectangle);
+        roi.saveROI(client);
+
+        folder.addROI(client, roi);
     }
 
 

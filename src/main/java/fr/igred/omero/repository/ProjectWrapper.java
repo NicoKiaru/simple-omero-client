@@ -23,8 +23,9 @@ import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
-import omero.gateway.model.DatasetData;
 import omero.gateway.model.ProjectData;
+import omero.model.ProjectDatasetLink;
+import omero.model.ProjectDatasetLinkI;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,21 +98,11 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
 
 
     /**
-     * Returns the type of annotation link for this object
-     *
-     * @return See above.
-     */
-    @Override
-    protected String annotationLinkType() {
-        return ANNOTATION_LINK;
-    }
-
-
-    /**
      * Gets the ProjectData name
      *
      * @return ProjectData name.
      */
+    @Override
     public String getName() {
         return data.getName();
     }
@@ -134,6 +125,7 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      *
      * @return The project description.
      */
+    @Override
     public String getDescription() {
         return data.getDescription();
     }
@@ -154,6 +146,17 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      */
     public ProjectData asProjectData() {
         return data;
+    }
+
+
+    /**
+     * Returns the type of annotation link for this object
+     *
+     * @return See above.
+     */
+    @Override
+    protected String annotationLinkType() {
+        return ANNOTATION_LINK;
     }
 
 
@@ -196,10 +199,9 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      */
     public DatasetWrapper addDataset(Client client, String name, String description)
     throws ServiceException, AccessException, ExecutionException {
-        DatasetData datasetData = new DatasetData();
-        datasetData.setName(name);
-        datasetData.setDescription(description);
-        return addDataset(client, datasetData);
+        DatasetWrapper dataset = new DatasetWrapper(name, description);
+        dataset.saveAndUpdate(client);
+        return addDataset(client, dataset);
     }
 
 
@@ -217,29 +219,15 @@ public class ProjectWrapper extends GenericRepositoryObjectWrapper<ProjectData> 
      */
     public DatasetWrapper addDataset(Client client, DatasetWrapper dataset)
     throws ServiceException, AccessException, ExecutionException {
-        return addDataset(client, dataset.asDatasetData());
-    }
+        dataset.saveAndUpdate(client);
+        ProjectDatasetLink link = new ProjectDatasetLinkI();
+        link.setChild(dataset.asDatasetData().asDataset());
+        link.setParent(data.asProject());
 
-
-    /**
-     * Private function. Add a dataset to the project.
-     *
-     * @param client      The client handling the connection.
-     * @param datasetData Dataset to be added.
-     *
-     * @return The object saved in OMERO.
-     *
-     * @throws ServiceException   Cannot connect to OMERO.
-     * @throws AccessException    Cannot access data.
-     * @throws ExecutionException A Facility can't be retrieved or instantiated.
-     */
-    private DatasetWrapper addDataset(Client client, DatasetData datasetData)
-    throws ServiceException, AccessException, ExecutionException {
-        datasetData.setProjects(Collections.singleton(data));
-        DatasetWrapper newDataset = new DatasetWrapper(datasetData);
-        newDataset.saveAndUpdate(client);
+        client.save(link);
         refresh(client);
-        return newDataset;
+        dataset.refresh(client);
+        return dataset;
     }
 
 

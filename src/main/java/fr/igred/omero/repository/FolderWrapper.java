@@ -99,17 +99,6 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
 
     /**
-     * Returns the type of annotation link for this object
-     *
-     * @return See above.
-     */
-    @Override
-    protected String annotationLinkType() {
-        return ANNOTATION_LINK;
-    }
-
-
-    /**
      * Private function. Adds a tag to the object in OMERO, if possible.
      *
      * @param client  The client handling the connection.
@@ -140,10 +129,22 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
 
 
     /**
+     * Returns the type of annotation link for this object
+     *
+     * @return See above.
+     */
+    @Override
+    protected String annotationLinkType() {
+        return ANNOTATION_LINK;
+    }
+
+
+    /**
      * Gets the name of the folder
      *
      * @return name.
      */
+    @Override
     public String getName() {
         return data.getName();
     }
@@ -166,6 +167,7 @@ public class FolderWrapper extends GenericRepositoryObjectWrapper<FolderData> {
      *
      * @return The folder description.
      */
+    @Override
     public String getDescription() {
         return data.getDescription();
     }
