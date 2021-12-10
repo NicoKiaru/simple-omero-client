@@ -22,7 +22,7 @@ import fr.igred.omero.annotations.TableWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.ExceptionHandler;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.meta.ExperimenterWrapper;
 import fr.igred.omero.meta.GroupWrapper;
@@ -197,9 +197,9 @@ public class Client {
      * @return A list of OMERO objects.
      *
      * @throws ServiceException Cannot connect to OMERO.
-     * @throws OMEROServerError Server error.
+     * @throws ServerException Server error.
      */
-    public List<IObject> findByQuery(String query) throws ServiceException, OMEROServerError {
+    public List<IObject> findByQuery(String query) throws ServiceException, ServerException {
         String error = "Query failed: " + query;
         return handleServiceAndServer(gateway,
                                       g -> g.getQueryService(ctx).findAllByQuery(query, null),
@@ -443,11 +443,11 @@ public class Client {
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException   Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<DatasetWrapper> getDatasets()
-    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+    throws ServiceException, AccessException, ServerException, ExecutionException {
         List<IObject>        os       = findByQuery("select d from Dataset d");
         Long[]               ids      = os.stream().map(IObject::getId).map(RLong::getValue).toArray(Long[]::new);
         List<DatasetWrapper> datasets = getDatasets(ids);
@@ -563,11 +563,11 @@ public class Client {
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException   Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImages(TagAnnotationWrapper tag)
-    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+    throws ServiceException, AccessException, ServerException, ExecutionException {
         return tag.getImages(this);
     }
 
@@ -581,11 +581,11 @@ public class Client {
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException   Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImagesTagged(Long tagId)
-    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+    throws ServiceException, AccessException, ServerException, ExecutionException {
         return getTag(tagId).getImages(this);
     }
 
@@ -687,10 +687,10 @@ public class Client {
      *
      * @return list of TagAnnotationWrapper.
      *
-     * @throws OMEROServerError Server error.
+     * @throws ServerException Server error.
      * @throws ServiceException Cannot connect to OMERO.
      */
-    public List<TagAnnotationWrapper> getTags() throws OMEROServerError, ServiceException {
+    public List<TagAnnotationWrapper> getTags() throws ServerException, ServiceException {
         List<IObject> os = handleServiceAndServer(gateway,
                                                   g -> g.getQueryService(ctx)
                                                         .findAll(TagAnnotation.class.getSimpleName(),
@@ -712,10 +712,10 @@ public class Client {
      *
      * @return list of TagAnnotationWrapper.
      *
-     * @throws OMEROServerError Server error.
+     * @throws ServerException Server error.
      * @throws ServiceException Cannot connect to OMERO.
      */
-    public List<TagAnnotationWrapper> getTags(String name) throws OMEROServerError, ServiceException {
+    public List<TagAnnotationWrapper> getTags(String name) throws ServerException, ServiceException {
         List<TagAnnotationWrapper> tags = getTags();
         tags.removeIf(tag -> !tag.getName().equals(name));
         tags.sort(Comparator.comparing(TagAnnotationWrapper::getId));
@@ -730,10 +730,10 @@ public class Client {
      *
      * @return TagAnnotationWrapper containing the specified tag.
      *
-     * @throws OMEROServerError Server error.
+     * @throws ServerException Server error.
      * @throws ServiceException Cannot connect to OMERO.
      */
-    public TagAnnotationWrapper getTag(Long id) throws OMEROServerError, ServiceException {
+    public TagAnnotationWrapper getTag(Long id) throws ServerException, ServiceException {
         IObject o = handleServiceAndServer(gateway,
                                            g -> g.getQueryService(ctx)
                                                  .find(TagAnnotation.class.getSimpleName(),
@@ -771,18 +771,18 @@ public class Client {
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException     If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
     void delete(IObject object)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         final long wait = 500L;
         ExceptionHandler.of(getDm(), "Cannot delete object")
                         .map(d -> d.delete(ctx, object).loop(10, wait))
                         .propagate(InterruptedException.class)
                         .propagate(DSOutOfServiceException.class, ServiceException::new)
                         .propagate(DSAccessException.class, AccessException::new)
-                        .propagate(ServerError.class, OMEROServerError::new);
+                        .propagate(ServerError.class, ServerException::new);
     }
 
 
@@ -794,11 +794,11 @@ public class Client {
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException     If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
     public void delete(ObjectWrapper<?> object)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         if (object instanceof FolderWrapper) {
             ((FolderWrapper) object).unlinkAllROI(this);
         }
@@ -815,11 +815,11 @@ public class Client {
      * @throws AccessException          Cannot access data.
      * @throws ExecutionException       A Facility can't be retrieved or instantiated.
      * @throws IllegalArgumentException Id not defined.
-     * @throws OMEROServerError         If the thread was interrupted.
+     * @throws ServerException         If the thread was interrupted.
      * @throws InterruptedException     If block(long) does not return.
      */
     public void delete(TableWrapper table)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         deleteFile(table.getId());
     }
 
@@ -832,11 +832,11 @@ public class Client {
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException     If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
     public void deleteFile(Long id)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         FileAnnotationI file = new FileAnnotationI(id, false);
         delete(file);
     }

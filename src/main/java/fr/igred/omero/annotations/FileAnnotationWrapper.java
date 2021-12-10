@@ -2,7 +2,7 @@ package fr.igred.omero.annotations;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import omero.ServerError;
 import omero.api.RawFileStorePrx;
@@ -71,7 +71,7 @@ public class FileAnnotationWrapper extends AnnotationWrapper<FileAnnotationData>
     }
 
 
-    public File getFile(Client client, String path) throws IOException, ServiceException, OMEROServerError {
+    public File getFile(Client client, String path) throws IOException, ServiceException, ServerException {
         final int inc = 262144;
 
         File file = new File(path);
@@ -90,12 +90,12 @@ public class FileAnnotationWrapper extends AnnotationWrapper<FileAnnotationData>
         } catch (DSOutOfServiceException se) {
             throw new ServiceException("Could not create RawFileService", se, se.getConnectionStatus());
         } catch (ServerError e) {
-            throw new OMEROServerError("Could not create RawFileService", e);
+            throw new ServerException("Could not create RawFileService", e);
         }
         try {
             store.close();
         } catch (ServerError e) {
-            throw new OMEROServerError("Could not close RawFileService", e);
+            throw new ServerException("Could not close RawFileService", e);
         }
 
         return file;

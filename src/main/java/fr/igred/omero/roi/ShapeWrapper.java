@@ -394,6 +394,7 @@ public abstract class ShapeWrapper<T extends ShapeData> extends ObjectWrapper<T>
         Roi roi = new ShapeRoi(createTransformedAWTShape()).trySimplify();
         roi.setName(getText());
         roi.setStrokeColor(getStroke());
+        roi.setFillColor(data.getShapeSettings().getFill());
         int c = Math.max(0, getC() + 1);
         int z = Math.max(0, getZ() + 1);
         int t = Math.max(0, getT() + 1);

@@ -20,7 +20,7 @@ package fr.igred.omero.roi;
 
 import fr.igred.omero.Client;
 import fr.igred.omero.ObjectWrapper;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.PixelsWrapper;
@@ -30,12 +30,13 @@ import omero.gateway.model.ShapeData;
 import omero.model.Roi;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndServer;
@@ -51,7 +52,8 @@ public class ROIWrapper extends ObjectWrapper<ROIData> {
     /**
      * Default IJ property to store ROI local IDs / indices.
      */
-    public static final String IJ_PROPERTY = "ROI";
+    public static final  String  IJ_PROPERTY = "ROI";
+    private static final Pattern INT_PATTERN = Pattern.compile("-?\\d+");
 
 
     /**
@@ -142,7 +144,7 @@ public class ROIWrapper extends ObjectWrapper<ROIData> {
 
         for (int i = 0; i < ijRois.size(); i++) {
             String value = ijRois.get(i).getProperty(property);
-            if (value != null && value.matches("-?\\d+")) {
+            if (value != null && INT_PATTERN.matcher(value).matches()) {
                 long id = Long.parseLong(value);
                 rois4D.computeIfAbsent(id, val -> new ROIWrapper());
                 shape2roi.put(i, rois4D.get(id));
@@ -295,9 +297,9 @@ public class ROIWrapper extends ObjectWrapper<ROIData> {
      * @param client The client handling the connection.
      *
      * @throws ServiceException Cannot connect to OMERO.
-     * @throws OMEROServerError Server error.
+     * @throws ServerException  Server error.
      */
-    public void saveROI(Client client) throws OMEROServerError, ServiceException {
+    public void saveROI(Client client) throws ServerException, ServiceException {
         Roi roi = (Roi) handleServiceAndServer(client.getGateway(),
                                                g -> g.getUpdateService(client.getCtx())
                                                      .saveAndReturnObject(data.asIObject()),
