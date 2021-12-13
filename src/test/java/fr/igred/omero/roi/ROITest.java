@@ -149,6 +149,13 @@ public class ROITest extends UserTest {
 
         assertEquals(size, roi.getShapes().size());
         assertEquals(roiNumber, rois.size());
+
+        for (ROIWrapper r : rois) {
+            client.delete(r);
+        }
+
+        rois = image.getROIs(client);
+        assertEquals(0, rois.size());
     }
 
 

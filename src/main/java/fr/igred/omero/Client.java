@@ -62,6 +62,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -651,9 +652,10 @@ public class Client {
      *
      * @return The client corresponding to the new user.
      *
-     * @throws ServiceException   Cannot connect to OMERO.
-     * @throws AccessException    Cannot access data.
-     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     * @throws ServiceException       Cannot connect to OMERO.
+     * @throws AccessException        Cannot access data.
+     * @throws ExecutionException     A Facility can't be retrieved or instantiated.
+     * @throws NoSuchElementException The requested user does not exist.
      */
     public Client sudo(String username) throws ServiceException, AccessException, ExecutionException {
         Client c = new Client();
@@ -849,9 +851,10 @@ public class Client {
      *
      * @return The user matching the username, or null if it does not exist.
      *
-     * @throws ServiceException   Cannot connect to OMERO.
-     * @throws AccessException    Cannot access data.
-     * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     * @throws ServiceException       Cannot connect to OMERO.
+     * @throws AccessException        Cannot access data.
+     * @throws ExecutionException     A Facility can't be retrieved or instantiated.
+     * @throws NoSuchElementException The requested user does not exist.
      */
     public ExperimenterWrapper getUser(String username)
     throws ExecutionException, ServiceException, AccessException {
@@ -861,7 +864,7 @@ public class Client {
         if (experimenter != null) {
             return new ExperimenterWrapper(experimenter);
         } else {
-            return null;
+            throw new NoSuchElementException(String.format("User not found: %s", username));
         }
     }
 
