@@ -42,6 +42,7 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
     /** Raw Data Facility to retrieve pixels */
     private RawDataFacility rawDataFacility = null;
 
+
     /**
      * Constructor of the PixelsWrapper class
      *
@@ -49,6 +50,63 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
      */
     public PixelsWrapper(PixelsData pixels) {
         super(pixels);
+    }
+
+
+    /**
+     * Copies the value from the plane at the corresponding position in the 2D array
+     *
+     * @param tab    2D array containing the results.
+     * @param p      Plane2D containing the voxels value.
+     * @param start  Start position of the tile.
+     * @param width  Width of the plane.
+     * @param height Height of the plane.
+     */
+    private static void copy(double[][] tab, Plane2D p, Coordinates start, int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                tab[start.getY() + y][start.getX() + x] = p.getPixelValue(x, y);
+            }
+        }
+    }
+
+
+    /**
+     * Copies the value from the plane at the corresponding position in the array
+     *
+     * @param bytes     Array containing the results.
+     * @param p         Plane2D containing the voxels value.
+     * @param start     Starting pixel coordinates.
+     * @param width     Width of the plane.
+     * @param height    Height of the plane.
+     * @param trueWidth Width of the image.
+     * @param bpp       Bytes per pixels of the image.
+     */
+    private static void copy(byte[] bytes, Plane2D p, Coordinates start, int width, int height, int trueWidth,
+                             int bpp) {
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                for (int i = 0; i < bpp; i++)
+                    bytes[((y + start.getY()) * trueWidth + x + start.getX()) * bpp + i] =
+                            p.getRawValue((x + y * width) * bpp + i);
+    }
+
+
+    /**
+     * Checks bounds
+     *
+     * @param bounds    Array containing the specified bounds for 1 coordinate.
+     * @param imageSize Size of the image (in the corresponding dimension).
+     *
+     * @return New array with valid bounds.
+     */
+    private static int[] checkBounds(int[] bounds, int imageSize) {
+        int[] newBounds = {0, imageSize - 1};
+        if (bounds != null && bounds.length > 1) {
+            newBounds[0] = Math.max(newBounds[0], bounds[0]);
+            newBounds[1] = Math.min(newBounds[1], bounds[1]);
+        }
+        return newBounds;
     }
 
 
@@ -211,13 +269,16 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
         boolean rdf = createRawDataFacility(client);
         Bounds  lim = getBounds(xBound, yBound, cBound, zBound, tBound);
 
-        double[][][][][] tab = new double[lim.size.t][lim.size.z][lim.size.c][][];
+        Coordinates start = lim.getStart();
+        Coordinates size = lim.getSize();
 
-        for (int t = 0, posT = lim.start.t; t < lim.size.t; t++, posT++) {
-            for (int z = 0, posZ = lim.start.z; z < lim.size.z; z++, posZ++) {
-                for (int c = 0, posC = lim.start.c; c < lim.size.c; c++, posC++) {
-                    Coordinates pos = new Coordinates(lim.start.x, lim.start.y, posC, posZ, posT);
-                    tab[t][z][c] = getTile(client, pos, lim.size.x, lim.size.y);
+        double[][][][][] tab = new double[size.getT()][size.getZ()][size.getC()][][];
+
+        for (int t = 0, posT = start.getT(); t < size.getT(); t++, posT++) {
+            for (int z = 0, posZ = start.getZ(); z < size.getZ(); z++, posZ++) {
+                for (int c = 0, posC = start.getC(); c < size.getC(); c++, posC++) {
+                    Coordinates pos = new Coordinates(start.getX(), start.getY(), posC, posZ, posT);
+                    tab[t][z][c] = getTile(client, pos, size.getX(), size.getY());
                 }
             }
         }
@@ -248,16 +309,17 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
         Plane2D p;
 
         double[][] tile = new double[height][width];
-        for (int relX = 0, x = start.x; relX < width; relX += MAX_DIST, x += MAX_DIST) {
+        for (int relX = 0, x = start.getX(); relX < width; relX += MAX_DIST, x += MAX_DIST) {
             int sizeX = Math.min(MAX_DIST, width - relX);
-            for (int relY = 0, y = start.y; relY < height; relY += MAX_DIST, y += MAX_DIST) {
+            for (int relY = 0, y = start.getY(); relY < height; relY += MAX_DIST, y += MAX_DIST) {
                 int sizeY = Math.min(MAX_DIST, height - relY);
                 try {
-                    p = rawDataFacility.getTile(client.getCtx(), data, start.z, start.t, start.c, x, y, sizeX, sizeY);
+                    p = rawDataFacility.getTile(client.getCtx(), data, start.getZ(), start.getT(), start.getC(),
+                                                x, y, sizeX, sizeY);
                 } catch (DataSourceException dse) {
                     throw new AccessException("Cannot read tile", dse);
                 }
-                Coordinates pos = new Coordinates(relX, relY, start.c, start.z, start.t);
+                Coordinates pos = new Coordinates(relX, relY, start.getC(), start.getZ(), start.getT());
                 copy(tile, p, pos, sizeX, sizeY);
             }
         }
@@ -265,24 +327,6 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
             destroyRawDataFacility();
         }
         return tile;
-    }
-
-
-    /**
-     * Copies the value from the plane at the corresponding position in the 2D array
-     *
-     * @param tab    2D array containing the results.
-     * @param p      Plane2D containing the voxels value.
-     * @param start  Start position of the tile.
-     * @param width  Width of the plane.
-     * @param height Height of the plane.
-     */
-    private static void copy(double[][] tab, Plane2D p, Coordinates start, int width, int height) {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                tab[start.y + y][start.x + x] = p.getPixelValue(x, y);
-            }
-        }
     }
 
 
@@ -329,13 +373,16 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
         boolean rdf = createRawDataFacility(client);
         Bounds  lim = getBounds(xBound, yBound, cBound, zBound, tBound);
 
-        byte[][][][] bytes = new byte[lim.size.t][lim.size.z][lim.size.c][];
+        Coordinates start = lim.getStart();
+        Coordinates size = lim.getSize();
 
-        for (int t = 0, posT = lim.start.t; t < lim.size.t; t++, posT++) {
-            for (int z = 0, posZ = lim.start.z; z < lim.size.z; z++, posZ++) {
-                for (int c = 0, posC = lim.start.c; c < lim.size.c; c++, posC++) {
-                    Coordinates pos = new Coordinates(lim.start.x, lim.start.y, posC, posZ, posT);
-                    bytes[t][z][c] = getRawTile(client, pos, lim.size.x, lim.size.y, bpp);
+        byte[][][][] bytes = new byte[size.getT()][size.getZ()][size.getC()][];
+
+        for (int t = 0, posT = start.getT(); t < size.getT(); t++, posT++) {
+            for (int z = 0, posZ = start.getZ(); z < size.getZ(); z++, posZ++) {
+                for (int c = 0, posC = start.getC(); c < size.getC(); c++, posC++) {
+                    Coordinates pos = new Coordinates(start.getX(), start.getY(), posC, posZ, posT);
+                    bytes[t][z][c] = getRawTile(client, pos, size.getX(), size.getY(), bpp);
                 }
             }
         }
@@ -366,16 +413,17 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
         Plane2D p;
 
         byte[] tile = new byte[height * width * bpp];
-        for (int relX = 0, x = start.x; relX < width; relX += MAX_DIST, x += MAX_DIST) {
+        for (int relX = 0, x = start.getX(); relX < width; relX += MAX_DIST, x += MAX_DIST) {
             int sizeX = Math.min(MAX_DIST, width - relX);
-            for (int relY = 0, y = start.y; relY < height; relY += MAX_DIST, y += MAX_DIST) {
+            for (int relY = 0, y = start.getY(); relY < height; relY += MAX_DIST, y += MAX_DIST) {
                 int sizeY = Math.min(MAX_DIST, height - relY);
                 try {
-                    p = rawDataFacility.getTile(client.getCtx(), data, start.z, start.t, start.c, x, y, sizeX, sizeY);
+                    p = rawDataFacility.getTile(client.getCtx(), data, start.getZ(), start.getT(), start.getC(),
+                                                x, y, sizeX, sizeY);
                 } catch (DataSourceException dse) {
                     throw new AccessException("Cannot read raw tile", dse);
                 }
-                Coordinates pos = new Coordinates(relX, relY, start.c, start.z, start.t);
+                Coordinates pos = new Coordinates(relX, relY, start.getC(), start.getZ(), start.getT());
                 copy(tile, p, pos, sizeX, sizeY, width, bpp);
             }
         }
@@ -383,44 +431,6 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
             destroyRawDataFacility();
         }
         return tile;
-    }
-
-
-    /**
-     * Copies the value from the plane at the corresponding position in the array
-     *
-     * @param bytes     Array containing the results.
-     * @param p         Plane2D containing the voxels value.
-     * @param start     Starting pixel coordinates.
-     * @param width     Width of the plane.
-     * @param height    Height of the plane.
-     * @param trueWidth Width of the image.
-     * @param bpp       Bytes per pixels of the image.
-     */
-    private static void copy(byte[] bytes, Plane2D p, Coordinates start, int width, int height, int trueWidth, int bpp) {
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-                for (int i = 0; i < bpp; i++)
-                    bytes[((y + start.y) * trueWidth + x + start.x) * bpp + i] =
-                            p.getRawValue((x + y * width) * bpp + i);
-    }
-
-
-    /**
-     * Checks bounds
-     *
-     * @param bounds    Array containing the specified bounds for 1 coordinate.
-     * @param imageSize Size of the image (in the corresponding dimension).
-     *
-     * @return New array with valid bounds.
-     */
-    private static int[] checkBounds(int[] bounds, int imageSize) {
-        int[] newBounds = {0, imageSize - 1};
-        if (bounds != null && bounds.length > 1) {
-            newBounds[0] = Math.max(newBounds[0], bounds[0]);
-            newBounds[1] = Math.min(newBounds[1], bounds[1]);
-        }
-        return newBounds;
     }
 
 
@@ -558,11 +568,11 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
          */
         public Bounds(Coordinates start, Coordinates end) {
             this.start = start;
-            this.size = new Coordinates(end.x - start.x + 1,
-                                        end.y - start.y + 1,
-                                        end.c - start.c + 1,
-                                        end.z - start.z + 1,
-                                        end.t - start.t + 1);
+            this.size = new Coordinates(end.getX() - start.getX() + 1,
+                                        end.getY() - start.getY() + 1,
+                                        end.getC() - start.getC() + 1,
+                                        end.getZ() - start.getZ() + 1,
+                                        end.getT() - start.getT() + 1);
         }
 
 
@@ -582,11 +592,11 @@ public class PixelsWrapper extends ObjectWrapper<PixelsData> {
          * @return Bounds size.
          */
         public Coordinates getEnd() {
-            return new Coordinates(start.x + size.x - 1,
-                                   start.y + size.y - 1,
-                                   start.c + size.c - 1,
-                                   start.z + size.z - 1,
-                                   start.t + size.t - 1);
+            return new Coordinates(start.getX() + size.getX() - 1,
+                                   start.getY() + size.getY() - 1,
+                                   start.getC() + size.getC() - 1,
+                                   start.getZ() + size.getZ() - 1,
+                                   start.getT() + size.getT() - 1);
         }
 
 
