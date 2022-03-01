@@ -565,7 +565,7 @@ public class ImageWrapper extends RepositoryObjectWrapper<ImageData> {
 
         BufferedImage thumbnail = null;
 
-        byte[] array = null;
+        byte[] array;
         try {
             ThumbnailStorePrx store = client.getGateway().getThumbnailService(client.getCtx());
             store.setPixelsId(pixels.getId());

@@ -59,6 +59,7 @@ public class ShapeList extends ArrayList<ShapeWrapper<?>> {
      */
     public boolean add(ShapeData shape) {
         boolean added = false;
+        //noinspection IfStatementWithTooManyBranches,ChainOfInstanceofChecks
         if (shape instanceof PointData) {
             added = add(new PointWrapper((PointData) shape));
         } else if (shape instanceof TextData) {

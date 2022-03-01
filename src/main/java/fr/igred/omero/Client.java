@@ -879,6 +879,7 @@ public class Client {
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
+     * @throws NoSuchElementException The requested group does not exist.
      */
     public GroupWrapper getGroup(String groupName)
     throws ExecutionException, ServiceException, AccessException {
@@ -888,7 +889,7 @@ public class Client {
         if (group != null) {
             return new GroupWrapper(group);
         } else {
-            return null;
+            throw new NoSuchElementException(String.format("Group not found: %s", groupName));
         }
     }
 

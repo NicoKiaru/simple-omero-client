@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -30,10 +31,9 @@ import static org.junit.Assert.assertNull;
 
 public class GroupTest extends RootTest {
 
-    @Test
+    @Test(expected = NoSuchElementException.class)
     public void testGetWrongGroup() throws Exception {
-        GroupWrapper group = client.getGroup("nonexistent");
-        assertNull(group);
+        client.getGroup("nonexistent");
     }
 
 

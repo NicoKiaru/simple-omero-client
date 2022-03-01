@@ -76,7 +76,7 @@ public class FileAnnotationWrapper extends AnnotationWrapper<FileAnnotationData>
 
         File file = new File(path);
 
-        RawFileStorePrx store = null;
+        RawFileStorePrx store;
         try (FileOutputStream stream = new FileOutputStream(file)) {
             store = client.getGateway().getRawFileService(client.getCtx());
             store.setFileId(this.getFileID());

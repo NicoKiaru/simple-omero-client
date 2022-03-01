@@ -57,7 +57,7 @@ public class TagAnnotationWrapper extends AnnotationWrapper<TagAnnotationData> {
     public TagAnnotationWrapper(Client client, String name, String description)
     throws ServiceException, AccessException, ExecutionException {
         super(new TagAnnotationData(name, description));
-        this.saveAndUpdate(client);
+        super.saveAndUpdate(client);
     }
 
 
