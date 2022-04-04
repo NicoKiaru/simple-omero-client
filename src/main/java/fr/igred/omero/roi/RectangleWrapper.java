@@ -25,7 +25,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 
-public class RectangleWrapper extends GenericShapeWrapper<RectangleData> {
+public class RectangleWrapper extends ShapeWrapper<RectangleData> {
 
 
     /**

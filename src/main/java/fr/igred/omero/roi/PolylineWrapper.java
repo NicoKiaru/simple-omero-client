@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 
-public class PolylineWrapper extends GenericShapeWrapper<PolylineData> {
+public class PolylineWrapper extends ShapeWrapper<PolylineData> {
 
 
     /**

@@ -38,7 +38,7 @@ public class ExperimenterTest extends RootTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testSudoWrongUser() throws Exception {
-        client.sudoGetUser("nonexistent");
+        client.sudo("nonexistent");
     }
 
 

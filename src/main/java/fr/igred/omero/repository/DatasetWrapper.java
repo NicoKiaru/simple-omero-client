@@ -19,10 +19,10 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import loci.formats.in.DefaultMetadataOptions;
 import loci.formats.in.MetadataLevel;
@@ -36,8 +36,6 @@ import ome.formats.importer.cli.ErrorHandler;
 import ome.formats.importer.cli.LoggingImportMonitor;
 import omero.RLong;
 import omero.ServerError;
-import omero.gateway.exception.DSAccessException;
-import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
 import omero.model.DatasetI;
@@ -58,14 +56,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 
 
 /**
  * Class containing a DatasetData.
  * <p> Implements function using the DatasetData contained
  */
-public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> {
+public class DatasetWrapper extends RepositoryObjectWrapper<DatasetData> {
 
     public static final String ANNOTATION_LINK = "DatasetAnnotationLink";
 
@@ -168,15 +166,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImages(Client client) throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>(0);
-        try {
-            images = client.getBrowseFacility()
-                           .getImagesForDatasets(client.getCtx(),
-                                                 Collections.singletonList(data.getId()));
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get images from " + this);
-        }
-        return wrap(images, ImageWrapper::new);
+        Collection<ImageData> images = handleServiceAndAccess(client.getBrowseFacility(),
+                                                              bf -> bf.getImagesForDatasets(client.getCtx(),
+                                                                                            Collections.singletonList(
+                                                                                                    data.getId())),
+                                                              "Cannot get images from " + this);
+        return wrap(images, ImageWrapper::new, ImageWrapper::getId);
     }
 
 
@@ -231,11 +226,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException    Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImagesTagged(Client client, TagAnnotationWrapper tag)
-    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+    throws ServiceException, AccessException, ServerException, ExecutionException {
         return getImagesTagged(client, tag.getId());
     }
 
@@ -250,11 +245,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException    Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<ImageWrapper> getImagesTagged(Client client, Long tagId)
-    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+    throws ServiceException, AccessException, ServerException, ExecutionException {
         Long[] ids = client.findByQuery("select link.parent " +
                                         "from ImageAnnotationLink link " +
                                         "where link.child = " +
@@ -286,14 +281,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImagesKey(Client client, String key)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>(0);
-        try {
-            images = client.getBrowseFacility()
-                           .getImagesForDatasets(client.getCtx(),
-                                                 Collections.singletonList(data.getId()));
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get images with key \"" + key + "\" from " + this);
-        }
+        String error = "Cannot get images with key \"" + key + "\" from " + this;
+        Collection<ImageData> images = handleServiceAndAccess(client.getBrowseFacility(),
+                                                              bf -> bf.getImagesForDatasets(client.getCtx(),
+                                                                                            Collections.singletonList(
+                                                                                                    data.getId())),
+                                                              error);
 
         List<ImageWrapper> selected = new ArrayList<>();
         for (ImageData image : images) {
@@ -304,7 +297,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                 selected.add(imageWrapper);
             }
         }
-        selected.sort(Comparator.comparing(GenericObjectWrapper::getId));
+        selected.sort(Comparator.comparing(ObjectWrapper::getId));
 
         return selected;
     }
@@ -325,14 +318,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      */
     public List<ImageWrapper> getImagesPairKeyValue(Client client, String key, String value)
     throws ServiceException, AccessException, ExecutionException {
-        Collection<ImageData> images = new ArrayList<>(0);
-        try {
-            images = client.getBrowseFacility()
-                           .getImagesForDatasets(client.getCtx(),
-                                                 Collections.singletonList(data.getId()));
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot get images with key-value pair from " + this);
-        }
+        String error = "Cannot get images with key-value pair from " + this;
+        Collection<ImageData> images = handleServiceAndAccess(client.getBrowseFacility(),
+                                                              bf -> bf.getImagesForDatasets(client.getCtx(),
+                                                                                            Collections.singletonList(
+                                                                                                    data.getId())),
+                                                              error);
 
         List<ImageWrapper> selected = new ArrayList<>();
         for (ImageData image : images) {
@@ -343,7 +334,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
                 selected.add(imageWrapper);
             }
         }
-        selected.sort(Comparator.comparing(GenericObjectWrapper::getId));
+        selected.sort(Comparator.comparing(ObjectWrapper::getId));
 
         return selected;
     }
@@ -397,11 +388,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException      If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
     public void removeImage(Client client, ImageWrapper image)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         removeLink(client, "DatasetImageLink", image.getId());
     }
 
@@ -416,12 +407,12 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException    Server error.
      * @throws IOException        Cannot read file.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public boolean importImages(Client client, String... paths)
-    throws ServiceException, OMEROServerError, AccessException, IOException, ExecutionException {
+    throws ServiceException, ServerException, AccessException, IOException, ExecutionException {
         boolean success;
 
         ImportConfig config = new ImportConfig();
@@ -442,7 +433,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
             ImportCandidates candidates = new ImportCandidates(reader, paths, handler);
             success = library.importCandidates(config, candidates);
         } catch (ServerError se) {
-            throw new OMEROServerError(se);
+            throw new ServerException(se);
         } finally {
             store.logout();
         }
@@ -462,11 +453,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      *
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException    Server error.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<Long> importImage(Client client, String path)
-    throws ServiceException, AccessException, OMEROServerError, ExecutionException {
+    throws ServiceException, AccessException, ServerException, ExecutionException {
         ImportConfig config = new ImportConfig();
         config.target.set("Dataset:" + data.getId());
         config.username.set(client.getUser().getUserName());
@@ -499,7 +490,7 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
             }
             uploadThreadPool.shutdown();
         } catch (Throwable e) {
-            throw new OMEROServerError(e);
+            throw new ServerException(e);
         } finally {
             store.logout();
         }
@@ -521,13 +512,11 @@ public class DatasetWrapper extends GenericRepositoryObjectWrapper<DatasetData> 
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public void refresh(Client client) throws ServiceException, AccessException, ExecutionException {
-        try {
-            data = client.getBrowseFacility()
-                         .getDatasets(client.getCtx(), Collections.singletonList(this.getId()))
-                         .iterator().next();
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot refresh " + this);
-        }
+        data = handleServiceAndAccess(client.getBrowseFacility(),
+                                      bf -> bf.getDatasets(client.getCtx(),
+                                                           Collections.singletonList(this.getId()))
+                                              .iterator().next(),
+                                      "Cannot refresh " + this);
     }
 
 }
