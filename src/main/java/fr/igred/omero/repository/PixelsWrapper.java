@@ -270,7 +270,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
         Bounds  lim = getBounds(xBound, yBound, cBound, zBound, tBound);
 
         Coordinates start = lim.getStart();
-        Coordinates size = lim.getSize();
+        Coordinates size  = lim.getSize();
 
         double[][][][][] tab = new double[size.getT()][size.getZ()][size.getC()][][];
 
@@ -374,7 +374,7 @@ public class PixelsWrapper extends GenericObjectWrapper<PixelsData> {
         Bounds  lim = getBounds(xBound, yBound, cBound, zBound, tBound);
 
         Coordinates start = lim.getStart();
-        Coordinates size = lim.getSize();
+        Coordinates size  = lim.getSize();
 
         byte[][][][] bytes = new byte[size.getT()][size.getZ()][size.getC()][];
 

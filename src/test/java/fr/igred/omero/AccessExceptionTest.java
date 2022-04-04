@@ -251,7 +251,7 @@ public class AccessExceptionTest extends BasicTest {
 
     @Test(expected = AccessException.class)
     public void testSudoFail() throws Exception {
-        sudo.sudoGetUser("root");
+        sudo.sudoGetUser(ROOT.name);
     }
 
 

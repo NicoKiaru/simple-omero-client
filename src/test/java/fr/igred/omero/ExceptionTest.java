@@ -17,7 +17,6 @@ package fr.igred.omero;
 
 
 import fr.igred.omero.exception.AccessException;
-import fr.igred.omero.exception.ExceptionHandler;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import omero.ServerError;
@@ -218,70 +217,21 @@ public class ExceptionTest extends BasicTest {
     @Test(expected = AccessException.class)
     public void testExceptionHandler1() throws Exception {
         Throwable t = new DSAccessException("Test", null);
-        ExceptionHandler.handleException(t, "Great");
+        throw new AccessException(t);
     }
 
 
     @Test(expected = OMEROServerError.class)
     public void testExceptionHandler2() throws Exception {
         Throwable t = new ServerError(null);
-        ExceptionHandler.handleException(t, "Great");
-    }
-
-
-    @Test(expected = OMEROServerError.class)
-    public void testExceptionHandler3() throws Exception {
-        Throwable t = new ServerError(null);
-        ExceptionHandler.handleServiceOrServer(t, "Great");
+        throw new OMEROServerError(t);
     }
 
 
     @Test(expected = ServiceException.class)
     public void testExceptionHandler4() throws Exception {
-        Throwable t = new DSOutOfServiceException(null);
-        ExceptionHandler.handleException(t, "Great");
-    }
-
-
-    @Test
-    public void testExceptionHandler5() {
-        boolean exception = false;
-
-        Throwable t = new Exception("Nothing");
-        try {
-            ExceptionHandler.handleException(t, "Great");
-        } catch (Throwable t2) {
-            exception = true;
-        }
-        assertFalse(exception);
-    }
-
-
-    @Test
-    public void testExceptionHandler6() {
-        boolean exception = false;
-
-        Throwable t = new ServerError(null);
-        try {
-            ExceptionHandler.handleServiceOrAccess(t, "Great");
-        } catch (Throwable t2) {
-            exception = true;
-        }
-        assertFalse(exception);
-    }
-
-
-    @Test
-    public void testExceptionHandler7() {
-        boolean exception = false;
-
-        Throwable t = new DSAccessException("Test", null);
-        try {
-            ExceptionHandler.handleServiceOrServer(t, "Great");
-        } catch (Throwable t2) {
-            exception = true;
-        }
-        assertFalse(exception);
+        DSOutOfServiceException e = new DSOutOfServiceException(null);
+        throw new ServiceException("Great", e, e.getConnectionStatus());
     }
 
 }

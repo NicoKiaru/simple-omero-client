@@ -22,8 +22,6 @@ import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.OMEROServerError;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.meta.ExperimenterWrapper;
-import omero.gateway.exception.DSAccessException;
-import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DataObject;
 import omero.model.IObject;
 
@@ -35,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrAccess;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 
 
 /**
@@ -59,13 +57,13 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Converts a DataObject list to a ObjectWrapper list, sorted by {@code sorter}.
+     * Converts a DataObject list to a GenericObjectWrapper list, sorted by {@code sorter}.
      *
      * @param objects The DataObject list.
      * @param mapper  The method used to map objects.
      * @param sorter  The method used to sort the objects.
      * @param <U>     The type of input (extends DataObject).
-     * @param <V>     The type of output (extends ObjectWrapper).
+     * @param <V>     The type of output (extends GenericObjectWrapper).
      * @param <W>     The type used to sort the output.
      *
      * @return See above.
@@ -80,12 +78,12 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
 
 
     /**
-     * Converts a DataObject list to a ObjectWrapper list, sorted by {@code sorter}.
+     * Converts a DataObject list to a GenericObjectWrapper list, sorted by {@code sorter}.
      *
      * @param objects The DataObject list.
      * @param mapper  The method used to map objects.
      * @param <U>     The type of input (extends DataObject).
-     * @param <V>     The type of output (extends ObjectWrapper).
+     * @param <V>     The type of output (extends GenericObjectWrapper).
      *
      * @return See above.
      */
@@ -183,11 +181,9 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      */
     @SuppressWarnings("unchecked")
     public void saveAndUpdate(Client client) throws ExecutionException, ServiceException, AccessException {
-        try {
-            data = (T) client.getDm().saveAndReturnObject(client.getCtx(), data);
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            handleServiceOrAccess(e, "Cannot save and update object.");
-        }
+        data = (T) handleServiceAndAccess(client.getDm(),
+                                          d -> d.saveAndReturnObject(client.getCtx(), data),
+                                          "Cannot save and update object.");
     }
 
 

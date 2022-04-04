@@ -24,8 +24,6 @@ import fr.igred.omero.repository.ImageWrapper;
 import fr.igred.omero.repository.PixelsWrapper.Bounds;
 import fr.igred.omero.repository.PixelsWrapper.Coordinates;
 import ij.gui.ShapeRoi;
-import omero.ServerError;
-import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ROIData;
 import omero.gateway.model.ShapeData;
 import omero.model.Roi;
@@ -39,7 +37,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static fr.igred.omero.exception.ExceptionHandler.handleServiceOrServer;
+import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndServer;
 import static java.util.stream.Collectors.groupingBy;
 
 
@@ -300,12 +298,11 @@ public class ROIWrapper extends GenericObjectWrapper<ROIData> {
      * @throws OMEROServerError Server error.
      */
     public void saveROI(Client client) throws OMEROServerError, ServiceException {
-        try {
-            Roi roi = (Roi) client.getGateway().getUpdateService(client.getCtx()).saveAndReturnObject(data.asIObject());
-            data = new ROIData(roi);
-        } catch (DSOutOfServiceException | ServerError e) {
-            handleServiceOrServer(e, "Cannot save ROI");
-        }
+        Roi roi = (Roi) handleServiceAndServer(client.getGateway(),
+                                               g -> g.getUpdateService(client.getCtx())
+                                                     .saveAndReturnObject(data.asIObject()),
+                                               "Cannot save ROI");
+        data = new ROIData(roi);
     }
 
 
