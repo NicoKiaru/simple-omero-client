@@ -33,19 +33,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-/** List of GenericShapeWrapper objects */
-public class ShapeList extends ArrayList<GenericShapeWrapper<?>> {
+/** List of ShapeWrapper objects */
+public class ShapeList extends ArrayList<ShapeWrapper<?>> {
 
 
     /**
      * Gets a list of elements from this list whose class is specified.
      *
      * @param clazz Class of the wanted elements.
-     * @param <T>   Subclass of GenericShapeWrapper.
+     * @param <T>   Subclass of ShapeWrapper.
      *
      * @return List of elements of
      */
-    public <T extends GenericShapeWrapper<?>> List<T> getElementsOf(Class<? extends T> clazz) {
+    public <T extends ShapeWrapper<?>> List<T> getElementsOf(Class<? extends T> clazz) {
         return stream().filter(clazz::isInstance).map(clazz::cast).collect(Collectors.toList());
     }
 

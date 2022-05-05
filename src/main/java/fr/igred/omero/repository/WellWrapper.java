@@ -21,7 +21,7 @@ import omero.gateway.model.WellData;
 import java.util.List;
 
 
-public class WellWrapper extends GenericRepositoryObjectWrapper<WellData> {
+public class WellWrapper extends RepositoryObjectWrapper<WellData> {
 
     public static final String ANNOTATION_LINK = "WellAnnotationLink";
 

@@ -17,14 +17,14 @@
 package fr.igred.omero.repository;
 
 
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
 import ome.model.units.BigResult;
 import omero.gateway.model.WellSampleData;
 import omero.model.Length;
 import omero.model.enums.UnitsLength;
 
 
-public class WellSampleWrapper extends GenericObjectWrapper<WellSampleData> {
+public class WellSampleWrapper extends ObjectWrapper<WellSampleData> {
 
 
     /**

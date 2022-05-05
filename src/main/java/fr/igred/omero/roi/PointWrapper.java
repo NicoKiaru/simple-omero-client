@@ -24,7 +24,7 @@ import omero.gateway.model.PointData;
 import java.awt.geom.Path2D;
 
 
-public class PointWrapper extends GenericShapeWrapper<PointData> {
+public class PointWrapper extends ShapeWrapper<PointData> {
 
 
     /**

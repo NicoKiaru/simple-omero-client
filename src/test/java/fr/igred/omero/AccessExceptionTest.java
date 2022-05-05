@@ -74,7 +74,7 @@ public class AccessExceptionTest extends BasicTest {
             client.connect(HOST, PORT, "testUser", "password".toCharArray(), GROUP1.id);
             assertEquals("Wrong user", USER1.id, client.getId());
             assertEquals("Wrong group", GROUP1.id, client.getCurrentGroupId());
-            sudo = client.sudoGetUser("testUser2");
+            sudo = client.sudo("testUser2");
         } catch (AccessException | ServiceException | ExecutionException | RuntimeException e) {
             sudo = null;
             failed = true;
@@ -251,7 +251,7 @@ public class AccessExceptionTest extends BasicTest {
 
     @Test(expected = AccessException.class)
     public void testSudoFail() throws Exception {
-        sudo.sudoGetUser(ROOT.name);
+        sudo.sudo(ROOT.name);
     }
 
 

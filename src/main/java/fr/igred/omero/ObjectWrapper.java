@@ -19,7 +19,7 @@ package fr.igred.omero;
 
 
 import fr.igred.omero.exception.AccessException;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.meta.ExperimenterWrapper;
 import omero.gateway.model.DataObject;
@@ -41,17 +41,17 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
  *
  * @param <T> Subclass of {@link DataObject}
  */
-public abstract class GenericObjectWrapper<T extends DataObject> {
+public abstract class ObjectWrapper<T extends DataObject> {
 
     protected T data;
 
 
     /**
-     * Constructor of the class GenericObjectWrapper.
+     * Constructor of the class ObjectWrapper.
      *
-     * @param object The object contained in the GenericObjectWrapper.
+     * @param object The object contained in the ObjectWrapper.
      */
-    protected GenericObjectWrapper(T object) {
+    protected ObjectWrapper(T object) {
         this.data = object;
     }
 
@@ -68,7 +68,7 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      *
      * @return See above.
      */
-    protected static <U extends DataObject, V extends GenericObjectWrapper<U>, W extends Comparable<W>> List<V>
+    protected static <U extends DataObject, V extends ObjectWrapper<U>, W extends Comparable<W>> List<V>
     wrap(Collection<U> objects, Function<? super U, ? extends V> mapper, Function<? super V, ? extends W> sorter) {
         return objects.stream()
                       .map(mapper)
@@ -87,9 +87,9 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      *
      * @return See above.
      */
-    protected static <U extends DataObject, V extends GenericObjectWrapper<U>> List<V>
+    protected static <U extends DataObject, V extends ObjectWrapper<U>> List<V>
     wrap(Collection<U> objects, Function<? super U, ? extends V> mapper) {
-        return wrap(objects, mapper, GenericObjectWrapper::getId);
+        return wrap(objects, mapper, ObjectWrapper::getId);
     }
 
 
@@ -102,11 +102,11 @@ public abstract class GenericObjectWrapper<T extends DataObject> {
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException     If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
     protected static void delete(Client client, IObject object)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         client.delete(object);
     }
 

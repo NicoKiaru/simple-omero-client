@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
 
 
-public class PlateWrapper extends GenericRepositoryObjectWrapper<PlateData> {
+public class PlateWrapper extends RepositoryObjectWrapper<PlateData> {
 
     public static final String ANNOTATION_LINK = "PlateAnnotationLink";
 

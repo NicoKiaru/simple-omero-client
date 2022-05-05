@@ -30,7 +30,7 @@ import java.sql.Timestamp;
 import java.util.concurrent.ExecutionException;
 
 
-public class PlateAcquisitionWrapper extends GenericRepositoryObjectWrapper<PlateAcquisitionData> {
+public class PlateAcquisitionWrapper extends RepositoryObjectWrapper<PlateAcquisitionData> {
 
     public static final String ANNOTATION_LINK = "PlateAcquisitionAnnotationLink";
 

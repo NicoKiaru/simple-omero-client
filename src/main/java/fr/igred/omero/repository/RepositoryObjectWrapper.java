@@ -17,14 +17,14 @@ package fr.igred.omero.repository;
 
 
 import fr.igred.omero.Client;
-import fr.igred.omero.GenericObjectWrapper;
+import fr.igred.omero.ObjectWrapper;
+import fr.igred.omero.annotations.AnnotationWrapper;
 import fr.igred.omero.annotations.FileAnnotationWrapper;
-import fr.igred.omero.annotations.GenericAnnotationWrapper;
 import fr.igred.omero.annotations.MapAnnotationWrapper;
 import fr.igred.omero.annotations.TableWrapper;
 import fr.igred.omero.annotations.TagAnnotationWrapper;
 import fr.igred.omero.exception.AccessException;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import omero.constants.metadata.NSCLIENTMAPANNOTATION;
 import omero.gateway.exception.DSAccessException;
@@ -59,14 +59,14 @@ import static fr.igred.omero.exception.ExceptionHandler.handleServiceAndAccess;
  *
  * @param <T> Subclass of {@link DataObject}
  */
-public abstract class GenericRepositoryObjectWrapper<T extends DataObject> extends GenericObjectWrapper<T> {
+public abstract class RepositoryObjectWrapper<T extends DataObject> extends ObjectWrapper<T> {
 
     /**
-     * Constructor of the class GenericRepositoryObjectWrapper.
+     * Constructor of the class RepositoryObjectWrapper.
      *
-     * @param object The object contained in the GenericRepositoryObjectWrapper.
+     * @param object The object contained in the RepositoryObjectWrapper.
      */
-    protected GenericRepositoryObjectWrapper(T object) {
+    protected RepositoryObjectWrapper(T object) {
         super(object);
     }
 
@@ -537,11 +537,11 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException      If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
-    public <A extends GenericAnnotationWrapper<?>> void unlink(Client client, A annotation)
-    throws ServiceException, AccessException, ExecutionException, OMEROServerError, InterruptedException {
+    public <A extends AnnotationWrapper<?>> void unlink(Client client, A annotation)
+    throws ServiceException, AccessException, ExecutionException, ServerException, InterruptedException {
         removeLink(client, annotationLinkType(), annotation.getId());
     }
 
@@ -556,11 +556,11 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws ServiceException     Cannot connect to OMERO.
      * @throws AccessException      Cannot access data.
      * @throws ExecutionException   A Facility can't be retrieved or instantiated.
-     * @throws OMEROServerError     If the thread was interrupted.
+     * @throws ServerException      If the thread was interrupted.
      * @throws InterruptedException If block(long) does not return.
      */
     protected void removeLink(Client client, String linkType, long childId)
-    throws ServiceException, OMEROServerError, AccessException, ExecutionException, InterruptedException {
+    throws ServiceException, ServerException, AccessException, ExecutionException, InterruptedException {
         List<IObject> os = client.findByQuery("select link from " + linkType +
                                               " link where link.parent = " + getId() +
                                               " and link.child = " + childId);
@@ -597,7 +597,7 @@ public abstract class GenericRepositoryObjectWrapper<T extends DataObject> exten
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
-    public void copyAnnotationLinks(Client client, GenericRepositoryObjectWrapper<?> object)
+    public void copyAnnotationLinks(Client client, RepositoryObjectWrapper<?> object)
     throws AccessException, ServiceException, ExecutionException {
         List<AnnotationData> newAnnotations = object.getAnnotations(client);
         List<AnnotationData> oldAnnotations = this.getAnnotations(client);

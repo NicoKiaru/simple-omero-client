@@ -19,7 +19,7 @@ package fr.igred.omero.repository;
 import fr.igred.omero.Client;
 import fr.igred.omero.exception.AccessException;
 import fr.igred.omero.exception.ExceptionHandler;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import fr.igred.omero.repository.PixelsWrapper.Bounds;
 import fr.igred.omero.repository.PixelsWrapper.Coordinates;
@@ -75,7 +75,7 @@ import static omero.rtypes.rint;
  * Class containing an ImageData.
  * <p> Implements function using the ImageData contained
  */
-public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
+public class ImageWrapper extends RepositoryObjectWrapper<ImageData> {
 
     public static final String ANNOTATION_LINK = "ImageAnnotationLink";
 
@@ -255,10 +255,10 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      * @return The folder if it exists.
      *
      * @throws ServiceException       Cannot connect to OMERO.
-     * @throws OMEROServerError       Server error.
+     * @throws ServerException       Server error.
      * @throws NoSuchElementException Folder does not exist.
      */
-    public FolderWrapper getFolder(Client client, Long folderId) throws ServiceException, OMEROServerError {
+    public FolderWrapper getFolder(Client client, Long folderId) throws ServiceException, ServerException {
         List<IObject> os = client.findByQuery("select f " +
                                               "from Folder as f " +
                                               "where f.id = " +
@@ -547,10 +547,10 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      * @return The thumbnail as a {@link BufferedImage}.
      *
      * @throws ServiceException Cannot connect to OMERO.
-     * @throws OMEROServerError Server error.
+     * @throws ServerException Server error.
      * @throws IOException      Cannot read thumbnail from store.
      */
-    public BufferedImage getThumbnail(Client client, int size) throws ServiceException, OMEROServerError, IOException {
+    public BufferedImage getThumbnail(Client client, int size) throws ServiceException, ServerException, IOException {
         PixelsWrapper pixels = getPixels();
 
         int   sizeX  = pixels.getSizeX();
@@ -572,7 +572,7 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
         } catch (DSOutOfServiceException se) {
             throw new ServiceException("Error retrieving thumbnail.", se, se.getConnectionStatus());
         } catch (ServerError se) {
-            throw new OMEROServerError("Error retrieving thumbnail.", se);
+            throw new ServerException("Error retrieving thumbnail.", se);
         }
         if (array != null) {
             try (ByteArrayInputStream stream = new ByteArrayInputStream(array)) {
@@ -592,18 +592,18 @@ public class ImageWrapper extends GenericRepositoryObjectWrapper<ImageData> {
      *
      * @return See above.
      *
-     * @throws OMEROServerError   Server error.
+     * @throws ServerException   Server error.
      * @throws ServiceException   Cannot connect to OMERO.
      * @throws AccessException    Cannot access data.
      * @throws ExecutionException A Facility can't be retrieved or instantiated.
      */
     public List<File> download(Client client, String path)
-    throws OMEROServerError, ServiceException, AccessException, ExecutionException {
+    throws ServerException, ServiceException, AccessException, ExecutionException {
         TransferFacility transfer = client.getGateway().getFacility(TransferFacility.class);
         return ExceptionHandler.of(transfer, "Could not download image " + getId())
                                .map(t -> t.downloadImage(client.getCtx(), path, getId()))
                                .propagate(DSOutOfServiceException.class, ServiceException::new)
-                               .propagate(ServerError.class, OMEROServerError::new)
+                               .propagate(ServerError.class, ServerException::new)
                                .propagate(DSAccessException.class, AccessException::new)
                                .get();
     }

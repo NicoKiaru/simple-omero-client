@@ -17,7 +17,7 @@ package fr.igred.omero;
 
 
 import fr.igred.omero.exception.AccessException;
-import fr.igred.omero.exception.OMEROServerError;
+import fr.igred.omero.exception.ServerException;
 import fr.igred.omero.exception.ServiceException;
 import omero.ServerError;
 import omero.gateway.exception.DSAccessException;
@@ -221,10 +221,10 @@ public class ExceptionTest extends BasicTest {
     }
 
 
-    @Test(expected = OMEROServerError.class)
+    @Test(expected = ServerException.class)
     public void testExceptionHandler2() throws Exception {
         Throwable t = new ServerError(null);
-        throw new OMEROServerError(t);
+        throw new ServerException(t);
     }
 
 

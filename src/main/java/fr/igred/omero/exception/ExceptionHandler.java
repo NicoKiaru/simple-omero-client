@@ -120,7 +120,7 @@ public final class ExceptionHandler<T> {
 
     /**
      * Apply a function to the specified object and return the result or throw {@link ServiceException} or {@link
-     * OMEROServerError}.
+     * ServerException}.
      *
      * @param value  Object to process.
      * @param mapper Lambda to apply on object.
@@ -131,16 +131,16 @@ public final class ExceptionHandler<T> {
      * @return Whatever the lambda returns.
      *
      * @throws ServiceException Cannot connect to OMERO.
-     * @throws OMEROServerError If the thread was interrupted.
+     * @throws ServerException If the thread was interrupted.
      */
     public static <T, U> U handleServiceAndServer(T value,
                                                   ThrowingFunction<? super T, ? extends U, ? extends Exception> mapper,
                                                   String error)
-    throws ServiceException, OMEROServerError {
+    throws ServiceException, ServerException {
         return of(value, error)
                 .map(mapper)
                 .propagate(DSOutOfServiceException.class, ServiceException::new)
-                .propagate(ServerError.class, OMEROServerError::new)
+                .propagate(ServerError.class, ServerException::new)
                 .get();
     }
 

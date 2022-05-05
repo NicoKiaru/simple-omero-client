@@ -22,7 +22,7 @@ import omero.gateway.model.ScreenData;
 import java.util.List;
 
 
-public class ScreenWrapper extends GenericRepositoryObjectWrapper<ScreenData> {
+public class ScreenWrapper extends RepositoryObjectWrapper<ScreenData> {
 
     public static final String ANNOTATION_LINK = "ScreenAnnotationLink";
 
